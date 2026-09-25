@@ -16,15 +16,21 @@
   --paper:#F5F5F5;        /* fond de page */
   --paper-raised:#FFFFFF; /* cartes, tableaux */
   --green:#006B3F;        /* primaire (vert national) */
-  --green-deep:#0B3D26;   /* titres, barre latérale */
+  --green-deep:#0B3D26;   /* titres */
+  --brand-dark:#0B3D26;   /* barre latérale, bandeaux sombres */
   --gold:#92400E;         /* or pour le texte, 7,1:1 sur blanc */
-  --red:#B91C1C;          /* rejeté / erreur */
+  --gold-solid:#92400E;   /* or en fond, texte blanc */
+  --red:#B91C1C;          /* rejeté / erreur (texte) */
+  --red-solid:#B91C1C;    /* rouge en fond, texte blanc */
+  --ok:#15803D;           /* validé (texte) */
+  --ok-solid:#15803D;     /* vert en fond, texte blanc */
+  --info:#0369A1;         /* en instruction */
   --line:#D9DDDB;         /* bordures */
   --line-soft:#ECEEED;    /* séparateurs légers */
   --field:#8A968F;        /* bordure des champs, 3,1:1 */
-  --info:#0369A1;         /* en instruction */
-  --ok:#15803D;           /* validé */
   --focus:#0369A1;        /* contour de focus */
+  --ok-bg:#ECF7EF; --info-bg:#EFF6FB; --red-bg:#FDF0F0; --warn-bg:#FBF3E8; --warn-line:#E9C98A;
+  --purple:#6B21A8; --purple-bg:#F3E8FF; --row-hover:#F0F5F2; --red-line:#F1C4C4; --ok-line:#B9DCC4;
 }
 *{box-sizing:border-box;}
 body{
@@ -46,7 +52,7 @@ h1,h2,h3{
 /* --- Sidebar --- */
 .sidebar{
   width:220px; flex-shrink:0;
-  background:var(--green-deep);
+  background:var(--brand-dark);
   color:#EFEAE0;
   padding:24px 0;
   display:flex; flex-direction:column;
@@ -122,8 +128,8 @@ main{ flex:1; padding:32px 40px; max-width:1100px; }
   border-radius:6px; padding:12px 16px; font-size:13.5px; margin-bottom:18px;
   display:flex; gap:10px; align-items:flex-start;
 }
-.alert-warn{ background:#FBF3E8; border:1px solid #E9C98A; color:#92400E; }
-.alert-ok{ background:#ECF7EF; border:1px solid #B9DCC4; color:var(--green-deep); }
+.alert-warn{ background:var(--warn-bg); border:1px solid var(--warn-line); color:var(--gold); }
+.alert-ok{ background:var(--ok-bg); border:1px solid var(--ok-line); color:var(--green-deep); }
 
 /* --- Table --- */
 .toolbar{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
@@ -142,13 +148,13 @@ th{
 td{ padding:11px 12px; font-size:13.5px; border-bottom:1px solid var(--line-soft); vertical-align:top; font-variant-numeric:tabular-nums; }
 tr:last-child td{ border-bottom:none; }
 tr.row-clickable{ cursor:pointer; }
-tr.row-clickable:hover{ background:#F0F5F2; }
+tr.row-clickable:hover{ background:var(--row-hover); }
 .badge{ display:inline-block; padding:3px 9px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; }
-.badge-new{ background:#EFF6FB; color:var(--info); }
-.badge-mairie{ background:#FBF3E8; color:#92400E; }
-.badge-tpi{ background:#F3E8FF; color:#6B21A8; }
-.badge-done{ background:#ECF7EF; color:var(--ok); }
-.badge-blocked{ background:#FDF0F0; color:var(--red); }
+.badge-new{ background:var(--info-bg); color:var(--info); }
+.badge-mairie{ background:var(--warn-bg); color:var(--gold); }
+.badge-tpi{ background:var(--purple-bg); color:var(--purple); }
+.badge-done{ background:var(--ok-bg); color:var(--ok); }
+.badge-blocked{ background:var(--red-bg); color:var(--red); }
 .empty{ text-align:center; padding:50px 20px; color:var(--ink-soft); }
 
 /* --- Dashboard --- */
@@ -204,7 +210,7 @@ tr.row-clickable:hover{ background:#F0F5F2; }
 /* --- Login --- */
 .login-screen{
   min-height:100vh; width:100%; display:flex; align-items:center; justify-content:center;
-  background:var(--green-deep); padding:20px; margin:0 auto;
+  background:var(--brand-dark); padding:20px; margin:0 auto;
 }
 .login-card{
   background:var(--paper-raised); border-radius:10px; padding:36px 32px;
@@ -213,15 +219,12 @@ tr.row-clickable:hover{ background:#F0F5F2; }
 .login-mark{ font-family:'Fira Sans',system-ui,sans-serif; font-weight:700; font-size:24px; color:var(--green-deep); margin-bottom:2px; }
 .login-sub{ font-size:13px; color:var(--ink-soft); margin-bottom:28px; }
 .login-error{
-  background:#FDF0F0; color:var(--red); border:1px solid #F1C4C4;
+  background:var(--red-bg); color:var(--red); border:1px solid var(--red-line);
   border-radius:6px; padding:10px 12px; font-size:13px; margin-bottom:16px;
 }
 .login-hint{ margin-top:20px; font-size:12px; color:var(--ink-soft); border-top:1px solid var(--line-soft); padding-top:14px; line-height:1.6; }
 
 /* --- Design system IDME : accessibilité et harmonisation (CSS uniquement) --- */
-/* Remplace la police des titres définie en ligne dans les gabarits JS */
-[style*="Fraunces"]{ font-family:'Fira Sans', system-ui, sans-serif !important; font-weight:700; }
-[style*="Courier New"]{ font-family:'Fira Code', ui-monospace, monospace !important; }
 /* Or lisible sur la barre latérale sombre */
 .sidebar .sub{ color:#E8C35A !important; }
 /* Contour de focus visible au clavier (les boutons « all:unset » n'en avaient plus) */
@@ -230,7 +233,50 @@ tr.row-clickable:hover{ background:#F0F5F2; }
 nav button{ min-height:44px; box-sizing:border-box; transition:background-color .2s ease; }
 .wdot{ width:44px; height:44px; }
 .wdot.active{ border-color:var(--green); box-shadow:0 0 0 3px rgba(0,107,63,0.2); }
+/* Icônes SVG et numéros de dossier */
+.ic{ width:1.15em; height:1.15em; vertical-align:-0.2em; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.mono{ font-family:'Fira Code', ui-monospace, monospace; font-size:13px; letter-spacing:.02em; }
+.module-select-btn > div:first-child{ color:var(--green); }
+.wdot .ic{ width:18px; height:18px; }
 @media (prefers-reduced-motion:reduce){ *{ transition:none !important; } }
+
+/* --- Mode sombre (activé par le bouton de la barre latérale) --- */
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#E8EDE9; --ink-soft:#9AA7A0; --paper:#0E1512; --paper-raised:#18221D;
+  --green-deep:#8FD4AE; --gold:#E8C35A; --red:#F0736A; --ok:#3FB27F; --info:#6CB7F0;
+  --line:#2C3A33; --line-soft:#223029; --field:#5E6E66; --focus:#6CB7F0;
+  --ok-bg:#16301F; --info-bg:#16283A; --red-bg:#3A1E1C; --warn-bg:#352D17; --warn-line:#5C4A1E;
+  --purple:#C9A2F0; --purple-bg:#2A1E3A; --row-hover:#1F2B25; --red-line:#5C2A27; --ok-line:#285C3A;
+}
+:root[data-theme="dark"] .modal-back{ background:rgba(0,0,0,0.6); }
+:root[data-theme="dark"] .wdot.done{ color:#fff; }
+/* L'impression reste toujours claire */
+@media print{
+  :root[data-theme="dark"]{
+    color-scheme:light;
+  --ink:#333333;          /* texte, 12,6:1 sur blanc */
+  --ink-soft:#5B6560;     /* texte secondaire, 5,5:1 sur le fond */
+  --paper:#F5F5F5;        /* fond de page */
+  --paper-raised:#FFFFFF; /* cartes, tableaux */
+  --green:#006B3F;        /* primaire (vert national) */
+  --green-deep:#0B3D26;   /* titres */
+  --brand-dark:#0B3D26;   /* barre latérale, bandeaux sombres */
+  --gold:#92400E;         /* or pour le texte, 7,1:1 sur blanc */
+  --gold-solid:#92400E;   /* or en fond, texte blanc */
+  --red:#B91C1C;          /* rejeté / erreur (texte) */
+  --red-solid:#B91C1C;    /* rouge en fond, texte blanc */
+  --ok:#15803D;           /* validé (texte) */
+  --ok-solid:#15803D;     /* vert en fond, texte blanc */
+  --info:#0369A1;         /* en instruction */
+  --line:#D9DDDB;         /* bordures */
+  --line-soft:#ECEEED;    /* séparateurs légers */
+  --field:#8A968F;        /* bordure des champs, 3,1:1 */
+  --focus:#0369A1;        /* contour de focus */
+  --ok-bg:#ECF7EF; --info-bg:#EFF6FB; --red-bg:#FDF0F0; --warn-bg:#FBF3E8; --warn-line:#E9C98A;
+  --purple:#6B21A8; --purple-bg:#F3E8FF; --row-hover:#F0F5F2; --red-line:#F1C4C4; --ok-line:#B9DCC4;
+  }
+}
 </style>
 </head>
 <body>
@@ -244,11 +290,11 @@ nav button{ min-height:44px; box-sizing:border-box; transition:background-color 
       <div class="sub" style="color:var(--gold); font-style:italic;">« Une identité, un droit, une chance »</div>
     </div>
     <nav id="main-nav">
-      <button data-view="home" class="active" id="nav-home">🏠 Accueil</button>
+      <button data-view="home" class="active" id="nav-home">Accueil</button>
       <button data-view="new" id="nav-new">Inscription & Enrôlement</button>
       <button data-view="list" id="nav-list">Suivi des dossiers</button>
       <button data-view="dash" id="nav-dash">Tableau de bord</button>
-      <button data-view="settings" id="nav-settings">⚙ Paramétrage</button>
+      <button data-view="settings" id="nav-settings">Paramétrage</button>
     </nav>
     <div class="sidebar-foot">
       <div id="user-badge" style="margin-bottom:10px; color:#D8DED9;"></div>
@@ -256,6 +302,7 @@ nav button{ min-height:44px; box-sizing:border-box; transition:background-color 
         <button type="button" id="app-lang-fr" style="all:unset; cursor:pointer; padding:2px 8px; border-radius:4px; font-size:11px; color:#B8C4BC;">FR</button>
         <button type="button" id="app-lang-en" style="all:unset; cursor:pointer; padding:2px 8px; border-radius:4px; font-size:11px; color:#B8C4BC;">EN</button>
       </div>
+      <button type="button" id="theme-toggle" aria-pressed="false" aria-label="Mode sombre / Dark mode" title="Mode sombre / Dark mode" style="all:unset; cursor:pointer; display:flex; align-items:center; gap:6px; color:#B8C4BC; font-size:12px; margin-bottom:10px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Mode sombre</span></button>
       <button id="logout-btn" style="all:unset; cursor:pointer; color:#B8C4BC; font-size:12px; text-decoration:underline;">Se déconnecter</button>
     </div>
   </aside>
@@ -267,6 +314,42 @@ nav button{ min-height:44px; box-sizing:border-box; transition:background-color 
 <div id="receipt-print" class="receipt-print"></div>
 
 <script>
+/* Icônes SVG (design system IDME) — remplacent les emojis */
+const ICONS = {
+  'home':'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  'alert':'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  'wallet':'<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/>',
+  'clip':'<path d="m21 11-8.6 8.6a5 5 0 0 1-7-7l8.5-8.6a3.3 3.3 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4L15.5 7"/>',
+  'check':'<path d="m5 12 5 5 9-10"/>',
+  'x':'<path d="M18 6 6 18M6 6l12 12"/>',
+  'check-circle':'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+  'x-circle':'<circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/>',
+  'pin':'<path d="M12 21s-7-6.3-7-11.5a7 7 0 0 1 14 0C19 14.7 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  'printer':'<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/>',
+  'user':'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  'file':'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  'receipt':'<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+  'send':'<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+  'lock':'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  'unlock':'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>',
+  'idcard':'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.4 1.7-2 3-2s2.4.6 3 2M14 10h4M14 13h3"/>',
+  'passport':'<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M9 17h6"/>',
+  'pen':'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  'ear':'<path d="M6 8.5a6 6 0 1 1 12 0c0 6-6 6-6 10a3 3 0 0 1-6 0"/><path d="M15 8.5a3 3 0 1 0-6 0"/>',
+  'message':'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/>',
+  'graduation':'<path d="M22 10 12 5 2 10l10 5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/>',
+  'handshake':'<path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.9-3.9a3 3 0 0 0-4.2 0l-.9.9a1 1 0 1 1-3-3l2.8-2.8a5.8 5.8 0 0 1 7.1-.9l.5.3a2 2 0 0 0 1.4.3L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/>',
+  'mail':'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  'building':'<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 21v-4h6v4M8 7h2M14 7h2M8 11h2M14 11h2"/>',
+  'clipboard':'<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
+  'save':'<path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8M7 21v-7h10v7"/>',
+  'download':'<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>',
+  'upload':'<path d="M12 21V9M7 14l5-5 5 5M5 3h14"/>',
+  'calendar':'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  'moon':'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'
+};
+function ico(name){ return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICONS[name]||'') + '</svg>'; }
+
 /* ============================================================
    CONFIGURATION FIREBASE — À REMPLIR AVANT LE DÉPLOIEMENT
    1. Allez sur https://console.firebase.google.com → Créer un projet (gratuit)
@@ -338,10 +421,10 @@ const CYCLES = {
 };
 const PIECES_ENVOI_MAIRIE = ["Grosse du jugement","Certificat de non-appel, lorsque requis","Autres"];
 const MODULES = {
-  "Acte de naissance": { icon:"📜", desc:"Jugement supplétif, correction, transcription…" },
-  "CNI": { icon:"🪪", desc:"Carte Nationale d'Identité", fraisOfficiel: 10000, portail: "https://www.idcam.cm", operateur: "DGSN" },
-  "NIU": { icon:"🧾", desc:"Numéro d'Identifiant Unique (DGI)", fraisOfficiel: 1000, portail: "https://www.impots.cm", operateur: "DGI" },
-  "Passeport": { icon:"🛂", desc:"Passeport biométrique", fraisOfficiel: 110000, portail: "https://www.passcam.cm", operateur: "DGSN" }
+  "Acte de naissance": { icon:ico('file'), desc:"Jugement supplétif, correction, transcription…" },
+  "CNI": { icon:ico('idcard'), desc:"Carte Nationale d'Identité", fraisOfficiel: 10000, portail: "https://www.idcam.cm", operateur: "DGSN" },
+  "NIU": { icon:ico('receipt'), desc:"Numéro d'Identifiant Unique (DGI)", fraisOfficiel: 1000, portail: "https://www.impots.cm", operateur: "DGI" },
+  "Passeport": { icon:ico('passport'), desc:"Passeport biométrique", fraisOfficiel: 110000, portail: "https://www.passcam.cm", operateur: "DGSN" }
 };
 const CYCLE_TRANSMISSION_STAGE = { "Cas TPI": 4 };
 const ENVOI_STATUTS = ["En attente","Reçu","Retourné","Complété"];
@@ -405,10 +488,10 @@ function docUploadRow(key, label, d){
       <span style="display:flex; align-items:center; gap:8px; font-size:11.5px;">
         <img src="${doc.fileData}" style="width:30px; height:30px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
         <a href="${doc.fileData}" target="_blank" style="color:var(--green-deep); text-decoration:underline; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fv(doc.fileName)||'fichier'}</a>
-        <button type="button" class="doc-file-remove" data-key="${key}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;">✕</button>
+        <button type="button" class="doc-file-remove" data-key="${key}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
       </span>`
     : `<label style="border:1px solid var(--green-deep); color:var(--green-deep); padding:5px 12px; border-radius:5px; font-size:12px; cursor:pointer;">
-        📎 Charger un fichier
+        ${ico('clip')} Charger un fichier
         <input type="file" accept="image/*" class="doc-file-input" data-key="${key}" style="display:none;">
       </label>`}
   </div>`;
@@ -448,7 +531,7 @@ function pieceAlreadySentElsewhere(d, pieceId, destination, excludeEnvoiId){
 const STEP_LABELS_FR = ["Identification","Paiement","Formulaire","Traitement","Clôture"];
 const STEP_LABELS_EN = ["Identification","Payment","Form","Processing","Closure"];
 let STEP_LABELS = STEP_LABELS_FR;
-const STEP_ICONS = ["🆔","💰","📝","📤","✅"];
+const STEP_ICONS = [ico('idcard'),ico('wallet'),ico('pen'),ico('send'),ico('check-circle')];
 
 let lang = 'fr';
 function setLang(l){
@@ -457,28 +540,28 @@ function setLang(l){
 }
 const I18N = {
   fr: {
-    nav_home: "🏠 Accueil", nav_new: "Inscription & Enrôlement", nav_list: "Suivi des dossiers", nav_dash: "Tableau de bord", nav_settings: "⚙ Paramétrage",
+    nav_home: "Accueil", nav_new: "Inscription & Enrôlement", nav_list: "Suivi des dossiers", nav_dash: "Tableau de bord", nav_settings: "Paramétrage",
     login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.",
     home_title: "Bienvenue sur ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon accompagne les familles vulnérables dans l'obtention de leur acte de naissance, étape par étape, depuis l'identification sur le terrain jusqu'à la remise du document.",
     home_ecoute: "Écoute", home_conseils: "Conseils", home_formation: "Formation", home_accompagnement: "Accompagnement",
     home_stat_total: "Dossiers enrôlés", home_stat_closed: "Actes obtenus", home_stat_communes: "Communes couvertes",
     home_cta_new: "Commencer un enrôlement", home_cta_list: "Voir les dossiers",
-    page_list: "Dossiers", page_dash: "Tableau de bord", page_settings: "⚙ Paramétrage", page_settings_sub: "Configuration de la plateforme",
+    page_list: "Dossiers", page_dash: "Tableau de bord", page_settings: "Paramétrage", page_settings_sub: "Configuration de la plateforme",
     page_new: "Inscription & Enrôlement",
     btn_prev: "← Précédent", btn_next: "Suivant →", btn_save_next: "Enregistrer & Suivant", btn_save_close: "Enregistrer & Clôturer", btn_save_payment: "Enregistrer le paiement", btn_save_only: "Enregistrer", toast_saved: "Enregistrement effectué avec succès", toast_paid: "Paiement effectué avec succès",
     btn_save: "Enregistrer le dossier", btn_edit: "Modifier", btn_delete: "Supprimer", btn_cancel: "Annuler", btn_close: "Fermer", btn_print: "Imprimer",
     step_page_current: "Page en cours", logout: "Se déconnecter"
   },
   en: {
-    nav_home: "🏠 Home", nav_new: "Registration & Enrollment", nav_list: "Case Tracking", nav_dash: "Dashboard", nav_settings: "⚙ Settings",
+    nav_home: "Home", nav_new: "Registration & Enrollment", nav_list: "Case Tracking", nav_dash: "Dashboard", nav_settings: "Settings",
     login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.",
     home_title: "Welcome to ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon supports vulnerable families in obtaining their birth certificate, step by step, from field identification through to document handover.",
     home_ecoute: "Listening", home_conseils: "Advice", home_formation: "Training", home_accompagnement: "Support",
     home_stat_total: "Cases enrolled", home_stat_closed: "Certificates obtained", home_stat_communes: "Communes covered",
     home_cta_new: "Start an enrollment", home_cta_list: "View cases",
-    page_list: "Cases", page_dash: "Dashboard", page_settings: "⚙ Settings", page_settings_sub: "Platform configuration",
+    page_list: "Cases", page_dash: "Dashboard", page_settings: "Settings", page_settings_sub: "Platform configuration",
     page_new: "Registration & Enrollment",
     btn_prev: "← Previous", btn_next: "Next →", btn_save_next: "Save & Next", btn_save_close: "Save & Close", btn_save_payment: "Save payment", btn_save_only: "Save", toast_saved: "Saved successfully", toast_paid: "Payment recorded successfully",
     btn_save: "Save case", btn_edit: "Edit", btn_delete: "Delete", btn_cancel: "Cancel", btn_close: "Close", btn_print: "Print",
@@ -562,8 +645,8 @@ function etatActuelBanner(d){
   if(!d.type_cas || !CYCLES[d.type_cas]) return '';
   const stages = CYCLES[d.type_cas];
   const current = computeCycleStage(d);
-  return `<div style="background:var(--green-deep); border-radius:8px; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; margin:16px 0;">
-    <span style="color:#D9B76A; font-size:12px; font-weight:700;">📍 État actuel</span>
+  return `<div style="background:var(--brand-dark); border-radius:8px; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; margin:16px 0;">
+    <span style="color:#E8C35A; font-size:12px; font-weight:700;">${ico('pin')} État actuel</span>
     <span style="color:#fff; font-size:13px; font-weight:600; text-align:right;">${fv(stages[current])} (${current+1}/${stages.length})</span>
   </div>`;
 }
@@ -864,8 +947,8 @@ function showConfirmModal(message){
     document.body.appendChild(modal);
   }
   modal.innerHTML = `
-    <div style="background:#fff; border-radius:10px; padding:28px 26px; max-width:320px; width:90%; text-align:center; box-shadow:0 12px 32px rgba(0,0,0,0.25);">
-      <div style="width:48px; height:48px; border-radius:50%; background:var(--green-deep); color:#fff; font-size:24px; display:flex; align-items:center; justify-content:center; margin:0 auto 14px;">✓</div>
+    <div style="background:var(--paper-raised); border-radius:10px; padding:28px 26px; max-width:320px; width:90%; text-align:center; box-shadow:0 12px 32px rgba(0,0,0,0.25);">
+      <div style="width:48px; height:48px; border-radius:50%; background:var(--brand-dark); color:#fff; font-size:24px; display:flex; align-items:center; justify-content:center; margin:0 auto 14px;">${ico('check')}</div>
       <p style="font-size:15px; font-weight:600; color:var(--ink); margin:0 0 20px;">${message}</p>
       <button type="button" id="app-confirm-ok-btn" class="btn btn-primary" style="width:100%;">OK</button>
     </div>`;
@@ -878,10 +961,10 @@ function showToast(message){
   if(!toast){
     toast = document.createElement('div');
     toast.id = 'app-toast';
-    toast.style.cssText = 'position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-20px); background:var(--green-deep); color:#fff; padding:11px 22px; border-radius:6px; font-size:13.5px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,0.2); z-index:9999; opacity:0; transition:opacity .25s, transform .25s; display:flex; align-items:center; gap:8px;';
+    toast.style.cssText = 'position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-20px); background:var(--brand-dark); color:#fff; padding:11px 22px; border-radius:6px; font-size:13.5px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,0.2); z-index:9999; opacity:0; transition:opacity .25s, transform .25s; display:flex; align-items:center; gap:8px;';
     document.body.appendChild(toast);
   }
-  toast.innerHTML = `✓ ${message}`;
+  toast.innerHTML = `${ico('check')} ${message}`;
   clearTimeout(toast._hideTimer);
   requestAnimationFrame(()=>{
     toast.style.opacity = '1';
@@ -908,37 +991,37 @@ function printReceiptA4(d){
   const el = document.getElementById('receipt-print');
   const a = appSettings.admin;
   el.innerHTML = `
-    <div style="max-width:480px; margin:0 auto; border:1px solid #E7E3D6;">
-      <div style="background:var(--green-deep); padding:22px 26px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="max-width:480px; margin:0 auto; border:1px solid var(--line-soft);">
+      <div style="background:var(--brand-dark); padding:22px 26px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-family:'Fraunces',serif; color:#fff; font-size:19px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
-          <div style="color:#D9B76A; font-size:11px; font-style:italic; margin-top:3px;">« Une identité, un droit, une chance »</div>
+          <div style="font-family:'Fira Sans',system-ui,sans-serif; color:#fff; font-size:19px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
+          <div style="color:#E8C35A; font-size:11px; font-style:italic; margin-top:3px;">« Une identité, un droit, une chance »</div>
         </div>
       </div>
       <div style="padding:24px 26px;">
         <div style="text-align:center; margin-bottom:18px;">
-          <div style="font-family:'Fraunces',serif; font-size:16px; color:var(--green-deep);">REÇU DE PAIEMENT</div>
+          <div style="font-family:'Fira Sans',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">REÇU DE PAIEMENT</div>
           <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">N° ${fv(d.paiement_recu) || '—'} · Dossier ${fv(d.id) || '—'}</div>
         </div>
         <table style="width:100%; border-collapse:collapse; font-size:13px;">
-          <tr><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; color:var(--ink-soft);">Bénéficiaire</td><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; text-align:right; font-weight:600;">${fv(d.nom)} ${fv(d.prenom)}</td></tr>
-          <tr><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; color:var(--ink-soft);">Motif</td><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; text-align:right;">${(d.motif_paiement||[]).join(', ') || '—'}</td></tr>
-          <tr><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; color:var(--ink-soft);">Date</td><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; text-align:right;">${fv(d.paiement_date) || '—'}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Bénéficiaire</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right; font-weight:600;">${fv(d.nom)} ${fv(d.prenom)}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Motif</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${(d.motif_paiement||[]).join(', ') || '—'}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Date</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${fv(d.paiement_date) || '—'}</td></tr>
         </table>
         <div style="background:var(--paper); border-radius:8px; padding:14px 16px; margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:12.5px; color:var(--ink-soft);">Montant payé</span>
-          <span style="font-family:'Fraunces',serif; font-size:22px; color:#1F6B3A;">${fv(d.paiement_montant) || '—'} FCFA</span>
+          <span style="font-family:'Fira Sans',system-ui,sans-serif; font-size:22px; color:var(--ok);">${fv(d.paiement_montant) || '—'} FCFA</span>
         </div>
         <div style="margin-top:34px; display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink-soft);">
           <span>Signature de l'agent</span>
           <span>Cachet</span>
         </div>
         <div style="display:flex; justify-content:space-between; margin-top:26px;">
-          <div style="border-top:1px solid #D8D3C4; width:130px;"></div>
-          <div style="border-top:1px solid #D8D3C4; width:100px;"></div>
+          <div style="border-top:1px solid var(--line); width:130px;"></div>
+          <div style="border-top:1px solid var(--line); width:100px;"></div>
         </div>
       </div>
-      <div style="background:var(--paper); padding:12px 26px; text-align:center; font-size:10.5px; color:var(--ink-soft); border-top:1px solid #E7E3D6;">
+      <div style="background:var(--paper); padding:12px 26px; text-align:center; font-size:10.5px; color:var(--ink-soft); border-top:1px solid var(--line-soft);">
         ${fv(a.adresse) || 'Nkometou III, Yaoundé'} · ${fv(a.telephone) || ''} · ${fv(a.email) || ''}
       </div>
     </div>
@@ -951,7 +1034,7 @@ function printReceiptTicket(d){
   const el = document.getElementById('receipt-print');
   const dateObj = d.paiement_date ? new Date(d.paiement_date) : new Date();
   el.innerHTML = `
-    <div style="max-width:240px; margin:0 auto; padding:18px 14px; font-family:'Courier New',monospace; font-size:11px; color:#1A211C;">
+    <div style="max-width:240px; margin:0 auto; padding:18px 14px; font-family:'Fira Code',ui-monospace,monospace; font-size:11px; color:var(--ink);">
       <div style="text-align:center; margin-bottom:10px;">
         <div style="font-weight:700; font-size:12.5px;">PARTNER SOCIAL CARE<br>CAMEROON</div>
       </div>
@@ -983,22 +1066,22 @@ function printDecharge(d){
   const el = document.getElementById('receipt-print');
   const a = appSettings.admin;
   el.innerHTML = `
-    <div style="max-width:480px; margin:0 auto; border:1px solid #E7E3D6;">
-      <div style="background:var(--green-deep); padding:22px 26px;">
-        <div style="font-family:'Fraunces',serif; color:#fff; font-size:19px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
-        <div style="color:#D9B76A; font-size:11px; font-style:italic; margin-top:3px;">« Une identité, un droit, une chance »</div>
+    <div style="max-width:480px; margin:0 auto; border:1px solid var(--line-soft);">
+      <div style="background:var(--brand-dark); padding:22px 26px;">
+        <div style="font-family:'Fira Sans',system-ui,sans-serif; color:#fff; font-size:19px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
+        <div style="color:#E8C35A; font-size:11px; font-style:italic; margin-top:3px;">« Une identité, un droit, une chance »</div>
       </div>
       <div style="padding:24px 26px;">
         <div style="text-align:center; margin-bottom:18px;">
-          <div style="font-family:'Fraunces',serif; font-size:16px; color:var(--green-deep);">DÉCHARGE DE REMISE</div>
+          <div style="font-family:'Fira Sans',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">DÉCHARGE DE REMISE</div>
           <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">Dossier ${fv(d.id) || '—'}</div>
         </div>
         <table style="width:100%; border-collapse:collapse; font-size:13px;">
-          <tr><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; color:var(--ink-soft);">Bénéficiaire</td><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; text-align:right; font-weight:600;">${fv(d.nom)} ${fv(d.prenom)}</td></tr>
-          <tr><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; color:var(--ink-soft);">N° dossier judiciaire</td><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; text-align:right;">${fv(d.dossier_judiciaire) || '—'}</td></tr>
-          <tr><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; color:var(--ink-soft);">Référence de l'acte</td><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; text-align:right;">${fv(d.reference_acte) || '—'}</td></tr>
-          <tr><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; color:var(--ink-soft);">Remis à</td><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; text-align:right;">${fv(d.decharge_destinataire) || '—'}</td></tr>
-          <tr><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; color:var(--ink-soft);">Date de remise</td><td style="padding:9px 0; border-bottom:1px solid #E7E3D6; text-align:right;">${fv(d.decharge_date) || '—'}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Bénéficiaire</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right; font-weight:600;">${fv(d.nom)} ${fv(d.prenom)}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">N° dossier judiciaire</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${fv(d.dossier_judiciaire) || '—'}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Référence de l'acte</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${fv(d.reference_acte) || '—'}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Remis à</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${fv(d.decharge_destinataire) || '—'}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Date de remise</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${fv(d.decharge_date) || '—'}</td></tr>
           <tr><td style="padding:9px 0; color:var(--ink-soft);">Référence décharge</td><td style="padding:9px 0; text-align:right;">${fv(d.decharge_reference) || '—'}</td></tr>
         </table>
         <p style="font-size:11.5px; margin:24px 0 0;">Je soussigné(e) <strong>${fv(d.decharge_destinataire) || '_____________________'}</strong>, reconnais avoir reçu le document mentionné ci-dessus.</p>
@@ -1007,8 +1090,8 @@ function printDecharge(d){
           <span>Signature de l'agent</span>
         </div>
         <div style="display:flex; justify-content:space-between; margin-top:26px;">
-          <div style="border-top:1px solid #D8D3C4; width:130px;"></div>
-          <div style="border-top:1px solid #D8D3C4; width:130px;"></div>
+          <div style="border-top:1px solid var(--line); width:130px;"></div>
+          <div style="border-top:1px solid var(--line); width:130px;"></div>
         </div>
       </div>
     </div>
@@ -1027,9 +1110,9 @@ function printFormulaire(d){
 
   el.innerHTML = `
     <div style="max-width:100%; margin:0 auto; font-size:9.5px;">
-      <div style="background:var(--green-deep); padding:9px 14px; border-radius:5px;">
-        <div style="font-family:'Fraunces',serif; color:#fff; font-size:14px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
-        <div style="color:#D9B76A; font-size:9px; font-style:italic;">Fiche d'enrôlement — Dossier ${fv(d.id) || '—'}</div>
+      <div style="background:var(--brand-dark); padding:9px 14px; border-radius:5px;">
+        <div style="font-family:'Fira Sans',system-ui,sans-serif; color:#fff; font-size:14px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
+        <div style="color:#E8C35A; font-size:9px; font-style:italic;">Fiche d'enrôlement — Dossier ${fv(d.id) || '—'}</div>
       </div>
       <div style="display:flex; justify-content:space-between; padding:5px 2px; border-bottom:1px solid var(--line); margin-top:8px; font-size:9.5px;">
         <span><strong>Agent :</strong> ${fv(d.agent) || '_______'}</span>
@@ -1088,9 +1171,9 @@ function printFormulaire(d){
         <div style="width:30%;">Responsable</div>
       </div>
       <div style="display:flex; justify-content:space-between; margin-top:16px;">
-        <div style="border-top:1px solid #D8D3C4; width:28%;"></div>
-        <div style="border-top:1px solid #D8D3C4; width:28%;"></div>
-        <div style="border-top:1px solid #D8D3C4; width:28%;"></div>
+        <div style="border-top:1px solid var(--line); width:28%;"></div>
+        <div style="border-top:1px solid var(--line); width:28%;"></div>
+        <div style="border-top:1px solid var(--line); width:28%;"></div>
       </div>
     </div>
   `;
@@ -1587,7 +1670,7 @@ const STEP_SECTIONS = [
   const locked = editLockLevel === 'payment' || editLockLevel === 'full';
   const dis = locked ? 'disabled' : '';
   return `
-  ${locked ? `<div class="alert alert-warn" style="margin-bottom:14px;">🔒 Paiement déjà encaissé — modification réservée à l'administrateur (correction d'erreur de saisie).</div>` : ''}
+  ${locked ? `<div class="alert alert-warn" style="margin-bottom:14px;">${ico('lock')} Paiement déjà encaissé — modification réservée à l'administrateur (correction d'erreur de saisie).</div>` : ''}
   <div class="grid">
     <div class="field"><label>N° de reçu</label><input name="paiement_recu" value="${fv(d.paiement_recu)}" ${dis}></div>
     <div class="field"><label>Montant payé (FCFA)</label><input type="number" name="paiement_montant" value="${fv(d.paiement_montant)}" ${dis}></div>
@@ -1605,7 +1688,7 @@ const STEP_SECTIONS = [
       ${(d.motif_paiement||[]).length ? (d.motif_paiement||[]).map(m=>`
         <span style="background:var(--paper-raised); border:1px solid var(--line); color:var(--green-deep); padding:6px 12px; border-radius:20px; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
           ${fv(m)}
-          ${locked ? '' : `<button type="button" class="motif-paiement-remove-btn" data-value="${fv(m)}" style="all:unset; cursor:pointer; color:var(--red); font-weight:700; line-height:1;">✕</button>`}
+          ${locked ? '' : `<button type="button" class="motif-paiement-remove-btn" data-value="${fv(m)}" style="all:unset; cursor:pointer; color:var(--red); font-weight:700; line-height:1;" aria-label="Retirer" title="Retirer">${ico('x')}</button>`}
         </span>`).join('') : `<span style="font-size:13px; color:var(--ink-soft);">Aucun motif sélectionné.</span>`}
     </div>
   </div>
@@ -1617,14 +1700,14 @@ const STEP_SECTIONS = [
     </select>
   </div>
   <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
-    <button type="button" class="btn btn-ghost" id="print-receipt-a4-btn" ${printGateAttrs(d)}>🖨 Imprimer le reçu (demi-A4)</button>
-    <button type="button" class="btn btn-ghost" id="print-receipt-ticket-btn" ${printGateAttrs(d)}>🧾 Ticket de caisse</button>
+    <button type="button" class="btn btn-ghost" id="print-receipt-a4-btn" ${printGateAttrs(d)}>${ico('printer')} Imprimer le reçu (demi-A4)</button>
+    <button type="button" class="btn btn-ghost" id="print-receipt-ticket-btn" ${printGateAttrs(d)}>${ico('receipt')} Ticket de caisse</button>
   </div>
   ${!dossiers.some(x=>x.id===d.id) ? `<p style="font-size:11.5px; color:var(--ink-soft); margin-top:8px;">Enregistrez le dossier pour activer l'impression.</p>` : ''}
 
   ${!paymentSatisfied(d) ? `
   <div class="alert alert-warn" style="margin-top:18px;">
-    ⚠ ${
+    ${ico('alert')} ${
       (d.paiement_mode==='Mobile Money' && !(d.paiement_reference||'').trim() && parseFloat(d.paiement_montant) >= (appSettings.admin.montantMinimum ?? 5000))
         ? `La référence de transaction est obligatoire pour un paiement Mobile Money.`
         : (d.paiement_montant ? `Le montant minimum requis est de ${(appSettings.admin.montantMinimum ?? 5000).toLocaleString('fr-FR')} FCFA (montant actuel : ${fv(d.paiement_montant)} FCFA).` : `Le paiement est obligatoire pour continuer (minimum ${(appSettings.admin.montantMinimum ?? 5000).toLocaleString('fr-FR')} FCFA).`)
@@ -1633,13 +1716,13 @@ const STEP_SECTIONS = [
   </div>
   ${isResponsableOrAbove(currentUser.role) ? `
   <div style="border:1px dashed var(--gold); border-radius:6px; padding:14px; margin-top:12px;">
-    <div style="font-size:12.5px; color:#7A5316; font-weight:600; margin-bottom:8px;">🔓 Accorder une exonération</div>
+    <div style="font-size:12.5px; color:var(--gold); font-weight:600; margin-bottom:8px;">${ico('unlock')} Accorder une exonération</div>
     <div class="field"><label>Motif (obligatoire)</label><textarea id="exoneration-motif" rows="2" placeholder="Ex : cas social, indigence…"></textarea></div>
-    <button type="button" class="btn" id="exoneration-confirm-btn" style="margin-top:8px; background:var(--gold); color:#fff; border:none;">Confirmer l'exonération</button>
+    <button type="button" class="btn" id="exoneration-confirm-btn" style="margin-top:8px; background:var(--gold-solid); color:#fff; border:none;">Confirmer l'exonération</button>
   </div>` : ''}
   ` : (d.paiement_exonere ? `
-  <div class="alert" style="margin-top:18px; background:#FBF0E2; border:1px solid #E9C98A; color:#7A5316;">
-    🔓 Exonération accordée par <strong>${fv(d.exoneration_par)}</strong> — motif : ${fv(d.exoneration_motif)}
+  <div class="alert" style="margin-top:18px; background:var(--warn-bg); border:1px solid var(--warn-line); color:var(--gold);">
+    ${ico('unlock')} Exonération accordée par <strong>${fv(d.exoneration_par)}</strong> — motif : ${fv(d.exoneration_motif)}
   </div>` : '')}`;
 }},
 { title:"3. Enregistrement du formulaire", body: d => `
@@ -1719,7 +1802,7 @@ const STEP_SECTIONS = [
       ${(d.motif_non_declaration||[]).length ? (d.motif_non_declaration||[]).map(m=>`
         <span style="background:var(--paper-raised); border:1px solid var(--line); color:var(--green-deep); padding:6px 12px; border-radius:20px; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
           ${fv(m)}
-          <button type="button" class="motif-remove-btn" data-value="${fv(m)}" style="all:unset; cursor:pointer; color:var(--red); font-weight:700; line-height:1;">✕</button>
+          <button type="button" class="motif-remove-btn" data-value="${fv(m)}" style="all:unset; cursor:pointer; color:var(--red); font-weight:700; line-height:1;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
         </span>`).join('') : `<span style="font-size:13px; color:var(--ink-soft);">Aucun motif sélectionné.</span>`}
     </div>
   </div>
@@ -1764,7 +1847,7 @@ const STEP_SECTIONS = [
     <div class="field"><label>Le</label><input type="date" name="engagement_date" value="${fv(d.engagement_date)}"></div>
   </div>
 
-  <button type="button" class="btn btn-ghost" id="print-formulaire-btn" style="margin-top:20px;" ${printGateAttrs(d)}>🖨 Imprimer le formulaire pour signature</button>
+  <button type="button" class="btn btn-ghost" id="print-formulaire-btn" style="margin-top:20px;" ${printGateAttrs(d)}>${ico('printer')} Imprimer le formulaire pour signature</button>
   ${!dossiers.some(x=>x.id===d.id) ? `<p style="font-size:11.5px; color:var(--ink-soft); margin-top:8px;">Enregistrez le dossier pour activer l'impression.</p>` : ''}`},
 { title:"4. Traitement du dossier", body: d => {
   {
@@ -1774,15 +1857,15 @@ const STEP_SECTIONS = [
   }
   if(!d.envois) d.envois = [];
   return `
-  <div style="background:var(--green-deep); border-radius:8px; padding:12px 14px; margin-bottom:18px;">
+  <div style="background:var(--brand-dark); border-radius:8px; padding:12px 14px; margin-bottom:18px;">
     <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
       <span style="font-size:11px; color:#B8C4BC;">Type de problème</span>
-      <span style="font-family:'Fraunces',serif; font-size:14px; color:#fff;">${fv(d.probleme) || 'Non renseigné'}</span>
+      <span style="font-family:'Fira Sans',system-ui,sans-serif; font-size:14px; color:#fff;">${fv(d.probleme) || 'Non renseigné'}</span>
     </div>
     <div style="height:1px; background:rgba(255,255,255,0.15); margin:6px 0;"></div>
     <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
       <span style="font-size:11px; color:#B8C4BC;">Motif de non-déclaration (90 jours)</span>
-      <span style="font-family:'Fraunces',serif; font-size:14px; color:#fff; text-align:right;">${(d.motif_non_declaration||[]).join(', ') || 'Non renseigné'}</span>
+      <span style="font-family:'Fira Sans',system-ui,sans-serif; font-size:14px; color:#fff; text-align:right;">${(d.motif_non_declaration||[]).join(', ') || 'Non renseigné'}</span>
     </div>
   </div>
   <div class="grid">
@@ -1810,14 +1893,14 @@ const STEP_SECTIONS = [
           <span style="display:flex; align-items:center; gap:6px; font-size:11.5px;">
             <img src="${p.fileData}" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
             <a href="${p.fileData}" target="_blank" style="color:var(--green-deep); text-decoration:underline; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fv(p.fileName)||'fichier'}</a>
-            <button type="button" class="piece-file-remove" data-piece-id="${p.id}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;">✕</button>
+            <button type="button" class="piece-file-remove" data-piece-id="${p.id}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
           </span>`
           : `<label style="border:1px solid var(--green-deep); color:var(--green-deep); padding:4px 10px; border-radius:5px; font-size:11.5px; cursor:pointer;">
-              📎 Charger
+              ${ico('clip')} Charger
               <input type="file" accept="image/*" class="piece-file-input" data-piece-id="${p.id}" style="display:none;">
             </label>`
         ) : `<span style="font-size:11px; color:var(--ink-soft);">Chargement dispo une fois fournie</span>`}
-        <button type="button" class="piece-remove" data-piece-id="${p.id}" style="all:unset; cursor:pointer; color:var(--red); font-size:14px; padding:0 4px;">✕</button>
+        <button type="button" class="piece-remove" data-piece-id="${p.id}" style="all:unset; cursor:pointer; color:var(--red); font-size:14px; padding:0 4px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
       </div>`).join('')}
   </div>
   <div style="display:flex; gap:8px; margin-top:12px;">
@@ -1842,20 +1925,20 @@ const STEP_SECTIONS = [
     return `
     <div style="background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; padding:20px;">
       <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:8px;">${current+1} / ${stages.length} étapes franchies — mise à jour automatique</div>
-      <div style="background:#E7E3D6; border-radius:20px; height:8px; margin-bottom:18px; overflow:hidden;">
-        <div style="background:#1F6B3A; height:100%; width:${pct}%;"></div>
+      <div style="background:var(--line-soft); border-radius:20px; height:8px; margin-bottom:18px; overflow:hidden;">
+        <div style="background:var(--ok-solid); height:100%; width:${pct}%;"></div>
       </div>
       ${stages.map((label,i)=>{
         const state = i<current ? 'fait' : (i===current ? 'encours' : 'avenir');
-        const badge = state==='fait' ? `<span style="font-size:11px; color:#1F6B3A; background:#DDEEE1; padding:3px 9px; border-radius:20px;">Fait</span>`
-          : state==='encours' ? `<span style="font-size:11px; color:#7A5316; background:#FBF0E2; padding:3px 9px; border-radius:20px; border:1px solid #E9C98A;">En cours</span>`
-          : `<span style="font-size:11px; color:#B0ABA0;">À venir</span>`;
-        const dot = state==='fait' ? `<span style="width:26px; height:26px; border-radius:50%; background:#1F6B3A; color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</span>`
-          : state==='encours' ? `<span style="width:26px; height:26px; border-radius:50%; background:#B8862F; color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">●</span>`
-          : `<span style="width:26px; height:26px; border-radius:50%; border:2px solid #D8D3C4; display:inline-block; flex-shrink:0;"></span>`;
+        const badge = state==='fait' ? `<span style="font-size:11px; color:var(--ok); background:var(--ok-bg); padding:3px 9px; border-radius:20px;">Fait</span>`
+          : state==='encours' ? `<span style="font-size:11px; color:var(--gold); background:var(--warn-bg); padding:3px 9px; border-radius:20px; border:1px solid var(--warn-line);">En cours</span>`
+          : `<span style="font-size:11px; color:var(--ink-soft);">À venir</span>`;
+        const dot = state==='fait' ? `<span style="width:26px; height:26px; border-radius:50%; background:var(--ok-solid); color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${ico('check')}</span>`
+          : state==='encours' ? `<span style="width:26px; height:26px; border-radius:50%; background:var(--gold-solid); color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">●</span>`
+          : `<span style="width:26px; height:26px; border-radius:50%; border:2px solid var(--line); display:inline-block; flex-shrink:0;"></span>`;
         const meta = stageMeta(d.type_cas, i);
         return `
-        <div style="display:flex; align-items:center; gap:12px; padding:12px 8px; border-bottom:1px solid #F0EDE4; ${state==='encours'?'background:#FBF0E2; border-radius:6px;':''}">
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 8px; border-bottom:1px solid var(--line-soft); ${state==='encours'?'background:var(--warn-bg); border-radius:6px;':''}">
           ${dot}
           <span style="flex:1; font-size:15px; ${state==='avenir'?'color:var(--ink-soft);':state==='encours'?'font-weight:600;':''}">${label}</span>
           ${badge}
@@ -1867,13 +1950,13 @@ const STEP_SECTIONS = [
           <div style="font-weight:600; font-size:13px; margin-bottom:10px;">Décision ${meta.dest||'du TPI'}</div>
           ${!d[meta.field] ? `
           <div style="display:flex; gap:10px;">
-            <button type="button" class="cycle-decision-btn" data-field="${meta.field}" data-value="concluant" style="background:#1F6B3A; color:#fff; border:none; padding:9px 18px; border-radius:6px; font-size:13px; cursor:pointer;">✅ Concluant</button>
-            <button type="button" class="cycle-decision-btn" data-field="${meta.field}" data-value="rejete" style="background:#A83B2E; color:#fff; border:none; padding:9px 18px; border-radius:6px; font-size:13px; cursor:pointer;">❌ Rejeté</button>
+            <button type="button" class="cycle-decision-btn" data-field="${meta.field}" data-value="concluant" style="background:var(--ok-solid); color:#fff; border:none; padding:9px 18px; border-radius:6px; font-size:13px; cursor:pointer;">${ico('check-circle')} Concluant</button>
+            <button type="button" class="cycle-decision-btn" data-field="${meta.field}" data-value="rejete" style="background:var(--red-solid); color:#fff; border:none; padding:9px 18px; border-radius:6px; font-size:13px; cursor:pointer;">${ico('x-circle')} Rejeté</button>
           </div>` : d[meta.field]==='concluant' ? `
-          <p style="font-size:13px; color:#1F6B3A; margin:0;">✅ Retour concluant enregistré.</p>` : `
-          <p style="font-size:13px; color:#A83B2E; margin:0 0 10px;">❌ Dossier rejeté — remplissez le motif ci-dessous puis renvoyez le dossier.</p>
+          <p style="font-size:13px; color:var(--ok); margin:0;">${ico('check-circle')} Retour concluant enregistré.</p>` : `
+          <p style="font-size:13px; color:var(--red); margin:0 0 10px;">${ico('x-circle')} Dossier rejeté — remplissez le motif ci-dessous puis renvoyez le dossier.</p>
           ${(d.incidents||[]).length ? (d.incidents||[]).map(inc=>`
-            <div style="background:#FBEBE8; border-radius:6px; padding:7px 9px; margin-bottom:6px; font-size:12.5px;">
+            <div style="background:var(--red-bg); border-radius:6px; padding:7px 9px; margin-bottom:6px; font-size:12.5px;">
               <strong>${fv(inc.date) || '—'}</strong> — ${fv(inc.motif)}
             </div>`).join('') : ''}
           <div class="field" style="margin-top:8px;"><label>Motif du rejet</label>
@@ -1882,7 +1965,7 @@ const STEP_SECTIONS = [
           <div class="field" style="margin-top:6px; max-width:180px;"><label>Date</label>
             <input id="incident-date" type="date" value="${new Date().toISOString().slice(0,10)}">
           </div>
-          <button type="button" class="btn" id="incident-add-btn" data-field="${meta.field}" style="margin-top:8px; background:var(--gold); color:#fff; border:none;">Enregistrer le motif et renvoyer le dossier</button>
+          <button type="button" class="btn" id="incident-add-btn" data-field="${meta.field}" style="margin-top:8px; background:var(--gold-solid); color:#fff; border:none;">Enregistrer le motif et renvoyer le dossier</button>
           `}
         </div>` : ''}
         ${(meta && meta.kind==='docs') ? `
@@ -1892,12 +1975,12 @@ const STEP_SECTIONS = [
             <div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--line-soft);">
               <img src="${doc.fileData}" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
               <span style="flex:1; font-size:13px;">${fv(doc.nom)}</span>
-              <button type="button" class="cycle-doc-remove" data-field="${meta.field}" data-index="${di}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;">✕</button>
+              <button type="button" class="cycle-doc-remove" data-field="${meta.field}" data-index="${di}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
             </div>`).join('') : `<p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 8px;">Aucun document chargé pour l'instant.</p>`}
           <div style="display:flex; gap:8px; margin-top:10px;">
             <input class="cycle-doc-name" data-field="${meta.field}" placeholder="Nom du document (ex : Jugement signé)" style="flex:1; font-family:inherit; font-size:13px; padding:8px 10px; border:1px solid var(--line); border-radius:5px;">
             <label style="border:1px solid var(--green-deep); color:var(--green-deep); padding:7px 14px; border-radius:5px; font-size:12.5px; cursor:pointer; white-space:nowrap;">
-              📎 Charger
+              ${ico('clip')} Charger
               <input type="file" accept="image/*" class="cycle-doc-file-input" data-field="${meta.field}" style="display:none;">
             </label>
           </div>
@@ -1922,7 +2005,7 @@ const STEP_SECTIONS = [
       const noPieces = piecesNames.length===0;
       const pickerOpen = openPiecePicker === e.id;
       return `
-      <div style="border:1px solid ${noPieces?'#E9C98A':'var(--line)'}; border-radius:6px; padding:10px 12px; margin-bottom:10px;">
+      <div style="border:1px solid ${noPieces?'var(--warn-line)':'var(--line)'}; border-radius:6px; padding:10px 12px; margin-bottom:10px;">
         <div class="grid">
           <div class="field"><label>Destination</label>
             <select class="envoi-destination" data-envoi-id="${e.id}">${DESTINATIONS.map(dd=>`<option${dd===e.destination?' selected':''}>${dd}</option>`).join('')}</select>
@@ -1950,7 +2033,7 @@ const STEP_SECTIONS = [
             <button type="button" class="btn btn-ghost envoi-piece-done" data-envoi-id="${e.id}" style="margin-top:8px; font-size:12.5px; padding:6px 12px;">Terminé</button>
           ` : `
             <div style="font-size:13px;">
-              ${noPieces ? `<span style="color:#7A5316;">⚠ Aucune pièce associée à cet envoi</span>` : `<span style="color:var(--ink-soft);">Pièces :</span> ${piecesNames.join(', ')}`}
+              ${noPieces ? `<span style="color:var(--gold);">${ico('alert')} Aucune pièce associée à cet envoi</span>` : `<span style="color:var(--ink-soft);">Pièces :</span> ${piecesNames.join(', ')}`}
             </div>
             <button type="button" class="btn btn-ghost envoi-piece-toggle" data-envoi-id="${e.id}" style="margin-top:8px; font-size:12.5px; padding:6px 12px;">${noPieces?'Ajouter des pièces':'Modifier les pièces'}</button>
           `}
@@ -1983,9 +2066,9 @@ const STEP_SECTIONS = [
       <button type="button" class="btn btn-ghost" id="new-envoi-piece-done" style="margin-top:8px; font-size:12.5px; padding:6px 12px;">Terminé</button>
     </div>
   ` : `
-    <div style="margin-top:10px; padding:10px 12px; border:1px dashed var(--gold); border-radius:6px; background:#FBF0E2; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-      <span style="font-size:13px; color:#7A5316;">Pièces sélectionnées : ${newEnvoiPieces.length}</span>
-      <button type="button" id="new-envoi-piece-toggle" style="all:unset; cursor:pointer; font-size:12.5px; color:#7A5316; text-decoration:underline;">Sélectionner les pièces</button>
+    <div style="margin-top:10px; padding:10px 12px; border:1px dashed var(--gold); border-radius:6px; background:var(--warn-bg); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span style="font-size:13px; color:var(--gold);">Pièces sélectionnées : ${newEnvoiPieces.length}</span>
+      <button type="button" id="new-envoi-piece-toggle" style="all:unset; cursor:pointer; font-size:12.5px; color:var(--gold); text-decoration:underline;">Sélectionner les pièces</button>
     </div>
   `}
   <button type="button" class="btn btn-ghost" id="add-envoi-btn" style="margin-top:10px;">+ Envoyer vers cette destination</button>`;
@@ -2001,7 +2084,7 @@ const STEP_SECTIONS = [
     <div class="field"><label>Remis à (nom du bénéficiaire/tuteur)</label><input name="decharge_destinataire" value="${fv(d.decharge_destinataire)}"></div>
     <div class="field"><label>Référence décharge</label><input name="decharge_reference" value="${fv(d.decharge_reference)}"></div>
   </div>
-  <button type="button" class="btn btn-ghost" id="print-decharge-btn" style="margin-top:20px;" ${printGateAttrs(d)}>🖨 Imprimer la décharge</button>
+  <button type="button" class="btn btn-ghost" id="print-decharge-btn" style="margin-top:20px;" ${printGateAttrs(d)}>${ico('printer')} Imprimer la décharge</button>
   ${!dossiers.some(x=>x.id===d.id) ? `<p style="font-size:11.5px; color:var(--ink-soft); margin-top:8px;">Enregistrez le dossier pour activer l'impression.</p>` : ''}`}
 ];
 
@@ -2013,9 +2096,9 @@ function progressBadgeHtml(d){
   <div style="display:flex; justify-content:space-between; align-items:center; background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin-bottom:20px;">
     <div>
       <div style="font-size:11px; color:var(--ink-soft); margin-bottom:3px;">Progression du dossier (calculée automatiquement)</div>
-      <div style="font-family:'Fraunces',serif; font-size:16px; color:var(--green-deep);">${icon} ${label}</div>
+      <div style="font-family:'Fira Sans',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">${icon} ${label}</div>
     </div>
-    <span style="font-size:12px; font-weight:600; padding:4px 12px; border-radius:20px; background:#E4EAE5; color:var(--green-deep);">${p.doneCount} / ${p.total}</span>
+    <span style="font-size:12px; font-weight:600; padding:4px 12px; border-radius:20px; background:var(--ok-bg); color:var(--green-deep);">${p.doneCount} / ${p.total}</span>
   </div>`;
 }
 
@@ -2025,8 +2108,8 @@ function wizardHtml(d, step, submitLabel){
   const paymentBlocked = step===1 && !paymentSatisfied(d);
   return `
   ${step > 0 ? `
-  <div style="display:flex; justify-content:space-between; align-items:center; background:var(--green-deep); border-radius:8px; padding:10px 14px; margin-bottom:18px;">
-    <span style="font-family:'Fraunces',serif; font-size:15px; color:#fff;">👤 ${fv(d.nom) || '—'} ${fv(d.prenom) || ''}</span>
+  <div style="display:flex; justify-content:space-between; align-items:center; background:var(--brand-dark); border-radius:8px; padding:10px 14px; margin-bottom:18px;">
+    <span style="font-family:'Fira Sans',system-ui,sans-serif; font-size:15px; color:#fff;">${ico('user')} ${fv(d.nom) || '—'} ${fv(d.prenom) || ''}</span>
     <span style="font-size:11.5px; color:#B8C4BC;">${fv(d.id) || ''}</span>
   </div>` : ''}
   <div class="wizard-head">
@@ -2036,7 +2119,7 @@ function wizardHtml(d, step, submitLabel){
     <div class="wizard-dots">
       ${STEP_SECTIONS.map((x,i)=>`
         <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
-          <button type="button" class="wdot ${i===step?'active':''} ${i<step?'done':''}" data-step="${i}" style="font-size:15px;">${STEP_ICONS[i]}</button>
+          <button type="button" class="wdot ${i===step?'active':''} ${i<step?'done':''}" data-step="${i}" style="font-size:15px;" aria-label="Étape ${i+1}">${i<step ? ico('check') : i+1}</button>
           <span style="font-size:9px; color:${i===step?'var(--green-deep)':'var(--ink-soft)'}; font-weight:${i===step?'600':'400'};">${STEP_LABELS[i]}</span>
         </div>`).join('')}
     </div>
@@ -2046,12 +2129,12 @@ function wizardHtml(d, step, submitLabel){
     <button type="button" class="btn btn-ghost" id="wiz-prev" ${step===0?'disabled style="visibility:hidden;"':''}>${t('btn_prev')}</button>
     ${editLockLevel==='full' ? '' : (
       step===1
-        ? `<button type="button" class="btn" id="wiz-save-payment" ${paymentBlocked?'disabled':''} style="background:${paymentBlocked?'#D8D3C4':'#A83B2E'}; color:#fff; border:none; ${paymentBlocked?'cursor:not-allowed;':''}">${t('btn_save_payment')}</button>`
+        ? `<button type="button" class="btn" id="wiz-save-payment" ${paymentBlocked?'disabled':''} style="background:${paymentBlocked?'var(--line)':'var(--red-solid)'}; color:#fff; border:none; ${paymentBlocked?'cursor:not-allowed;':''}">${t('btn_save_payment')}</button>`
         : `<button type="button" class="btn btn-ghost" id="wiz-save-only">${t('btn_save_only')}</button>`
     )}
     ${isLast
       ? (editLockLevel==='full' ? '' : `<button type="submit" class="btn btn-primary">${submitLabel || t('btn_save')}</button>`)
-      : `<button type="button" class="btn btn-primary" id="wiz-next" ${paymentBlocked?'disabled style="background:#D8D3C4; cursor:not-allowed;"':''}>${t('btn_next')}</button>`}
+      : `<button type="button" class="btn btn-primary" id="wiz-next" ${paymentBlocked?'disabled style="background:var(--line); cursor:not-allowed;"':''}>${t('btn_next')}</button>`}
   </div>`;
 }
 
@@ -2109,19 +2192,19 @@ function renderHome(){
   const clotures = dossiers.filter(d=>d.decharge_remise==='Oui').length;
   const communes = new Set(dossiers.map(d=>d.commune).filter(Boolean)).size;
   return `
-  <div style="background:linear-gradient(135deg, var(--green-deep), #1F4A3D); border-radius:12px; padding:44px 28px; text-align:center; margin-bottom:24px;">
-    <div style="font-family:'Fraunces',serif; font-size:28px; color:#fff;">${t('home_title')}</div>
-    <div style="color:#D9B76A; font-size:14px; font-style:italic; margin-top:8px;">« Une identité, un droit, une chance »</div>
+  <div style="background:linear-gradient(135deg, var(--brand-dark), #006B3F); border-radius:12px; padding:44px 28px; text-align:center; margin-bottom:24px;">
+    <div style="font-family:'Fira Sans',system-ui,sans-serif; font-size:28px; color:#fff;">${t('home_title')}</div>
+    <div style="color:#E8C35A; font-size:14px; font-style:italic; margin-top:8px;">« Une identité, un droit, une chance »</div>
     <p style="color:#CFE0D6; font-size:13.5px; max-width:480px; margin:16px auto 0; line-height:1.6;">
       ${t('home_intro')}
     </p>
   </div>
 
   <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; text-align:center;">
-    <div><div style="font-size:26px;">👂</div><div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('home_ecoute')}</div></div>
-    <div><div style="font-size:26px;">💬</div><div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('home_conseils')}</div></div>
-    <div><div style="font-size:26px;">🎓</div><div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('home_formation')}</div></div>
-    <div><div style="font-size:26px;">🤝</div><div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('home_accompagnement')}</div></div>
+    <div><div style="font-size:26px;">${ico('ear')}</div><div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('home_ecoute')}</div></div>
+    <div><div style="font-size:26px;">${ico('message')}</div><div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('home_conseils')}</div></div>
+    <div><div style="font-size:26px;">${ico('graduation')}</div><div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('home_formation')}</div></div>
+    <div><div style="font-size:26px;">${ico('handshake')}</div><div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('home_accompagnement')}</div></div>
   </div>
 
   <div class="stat-grid">
@@ -2139,12 +2222,12 @@ function renderHome(){
 function renderSettings(){
   if(!currentUser) return '';
   const allTabs = [
-    ['users','👤 Utilisateurs', true],
-    ['sms','✉ SMS', false],
-    ['admin','🏢 Administration', false],
-    ['logs','📜 Journal', false],
-    ['lists','📋 Listes de référence', false],
-    ['backup','💾 Sauvegarde', true]
+    ['users',ico('user')+' Utilisateurs', true],
+    ['sms',ico('mail')+' SMS', false],
+    ['admin',ico('building')+' Administration', false],
+    ['logs',ico('file')+' Journal', false],
+    ['lists',ico('clipboard')+' Listes de référence', false],
+    ['backup',ico('save')+' Sauvegarde', true]
   ];
   const tabs = allTabs.filter(t => !t[2] || isAdminOrAbove(currentUser.role));
   if(!tabs.some(t=>t[0]===settingsTab)) settingsTab = tabs[0][0];
@@ -2194,7 +2277,7 @@ function renderSettingsUsers(){
   </div>
   ${userDraft ? `
   <div style="background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:16px; margin-top:16px;">
-    <h3 style="margin:0 0 12px; font-family:'Fraunces',serif; font-size:17px;">${userDraft.index===null?'Nouvel utilisateur':'Modifier utilisateur'}</h3>
+    <h3 style="margin:0 0 12px; font-family:'Fira Sans',system-ui,sans-serif; font-size:17px;">${userDraft.index===null?'Nouvel utilisateur':'Modifier utilisateur'}</h3>
     <div class="grid">
       <div class="field"><label>Nom complet</label><input id="user-nom" value="${fv(userDraft.nom)}"></div>
       <div class="field"><label>Identifiant</label><input id="user-username" value="${fv(userDraft.username)}"></div>
@@ -2263,7 +2346,7 @@ function renderSettingsLists(){
       ${list.map((item,i)=>`
         <div style="display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid var(--line-soft);">
           <span style="flex:1; font-size:13.5px;">${fv(item)}</span>
-          <button type="button" class="list-remove-btn" data-list="${listKey}" data-index="${i}" style="all:unset; cursor:pointer; color:var(--red); font-size:14px; padding:0 4px;">✕</button>
+          <button type="button" class="list-remove-btn" data-list="${listKey}" data-index="${i}" style="all:unset; cursor:pointer; color:var(--red); font-size:14px; padding:0 4px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
         </div>`).join('')}
       <div style="display:flex; gap:8px; margin-top:10px;">
         <input id="new-${listKey}-item" placeholder="Ajouter un élément…" style="flex:1; font-family:inherit; font-size:13.5px; padding:8px 10px; border:1px solid var(--line); border-radius:5px;">
@@ -2291,7 +2374,7 @@ function renderSettingsLists(){
         ${list.map((item,i)=>`
           <div style="display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid var(--line-soft);">
             <span style="flex:1; font-size:13.5px;">${fv(item)}</span>
-            <button type="button" class="list-remove-btn" data-list="probleme-piece" data-index="${i}" style="all:unset; cursor:pointer; color:var(--red); font-size:14px; padding:0 4px;">✕</button>
+            <button type="button" class="list-remove-btn" data-list="probleme-piece" data-index="${i}" style="all:unset; cursor:pointer; color:var(--red); font-size:14px; padding:0 4px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
           </div>`).join('')}
         ${!list.length ? `<p style="font-size:12.5px; color:var(--ink-soft);">Aucun document défini — utilise la liste par défaut pour l'instant.</p>` : ''}
         <div style="display:flex; gap:8px; margin-top:10px;">
@@ -2308,12 +2391,12 @@ function renderSettingsBackup(){
   <div style="background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:16px;">
     <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">Exporter</h3>
     <p style="font-size:13px; color:var(--ink-soft); margin-bottom:12px;">Télécharge une copie complète des ${dossiers.length} dossiers et de la configuration de la plateforme.</p>
-    <button type="button" class="btn btn-primary" id="export-btn">⬇ Exporter la sauvegarde</button>
+    <button type="button" class="btn btn-primary" id="export-btn">${ico('download')} Exporter la sauvegarde</button>
 
     <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin:26px 0 10px;">Restaurer</h3>
-    <p style="font-size:13px; color:var(--red); margin-bottom:12px;">⚠ Remplace toutes les données actuelles — action irréversible.</p>
+    <p style="font-size:13px; color:var(--red); margin-bottom:12px;">${ico('alert')} Remplace toutes les données actuelles — action irréversible.</p>
     <input type="file" id="import-file" accept="application/json" style="margin-bottom:10px; display:block;">
-    <button type="button" class="btn btn-ghost" id="import-btn">⬆ Importer et restaurer</button>
+    <button type="button" class="btn btn-ghost" id="import-btn">${ico('upload')} Importer et restaurer</button>
   </div>`;
 }
 
@@ -2469,11 +2552,11 @@ function renderForm(){
   <div class="page-head">
     <h1>${t('page_new')}</h1>
     <p>Fiche individuelle</p>
-    <p style="margin-top:8px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'Fraunces',serif; font-size:15px;">${formDraft.id}</strong> — notez-le dès maintenant, il suit le dossier jusqu'à la clôture.</p>
+    <p style="margin-top:8px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'Fira Code',ui-monospace,monospace; font-size:15px;">${formDraft.id}</strong> — notez-le dès maintenant, il suit le dossier jusqu'à la clôture.</p>
   </div>
   ${pendingDuplicate ? `
     <div class="alert alert-warn">
-      <strong>⚠</strong>
+      <strong>${ico('alert')}</strong>
       <div>Attention : une personne présentant des informations similaires existe déjà
       (${pendingDuplicate.map(d=>`<strong>${d.id}</strong> — ${d.nom||''} ${d.prenom||''}, ${d.commune||'commune non renseignée'}`).join(' ; ')}).
       Vérifiez avant de continuer, ou soumettez à nouveau pour confirmer la création d'un nouveau dossier distinct.</div>
@@ -2520,7 +2603,7 @@ function moduleStepBody(step, d, mod){
   if(step===1){
     return `
     <div class="alert alert-warn" style="margin-bottom:16px;">
-      💰 Frais officiel à créditer par le client sur <strong>son propre compte Mobile Money</strong> : <strong>${mod.fraisOfficiel.toLocaleString('fr-FR')} FCFA</strong> (payable lors de l'étape suivante sur ${fv(mod.operateur)}).
+      ${ico('wallet')} Frais officiel à créditer par le client sur <strong>son propre compte Mobile Money</strong> : <strong>${mod.fraisOfficiel.toLocaleString('fr-FR')} FCFA</strong> (payable lors de l'étape suivante sur ${fv(mod.operateur)}).
     </div>
     <div class="grid">
       <div class="field"><label>Frais d'assistance PSCC (FCFA)</label><input name="assistance_montant" type="number" value="${fv(d.assistance_montant)}"></div>
@@ -2532,7 +2615,7 @@ function moduleStepBody(step, d, mod){
   if(step===2){
     return `
     <div class="alert alert-warn" style="margin-bottom:16px;">
-      ⚠ Utilisez le numéro Mobile Money <strong>du client</strong> pour le paiement officiel sur le site — pas celui de PSCC.
+      ${ico('alert')} Utilisez le numéro Mobile Money <strong>du client</strong> pour le paiement officiel sur le site — pas celui de PSCC.
     </div>
     <a href="${mod.portail}" target="_blank" class="btn btn-primary" style="display:inline-block; text-decoration:none; text-align:center; padding:12px 20px;">${mod.icon} Ouvrir ${fv(mod.portail.replace('https://www.','').replace('https://',''))}</a>
     <div class="field" style="margin-top:18px;"><label>Numéro de suivi / référence (si fourni par le site)</label><input name="ref_officielle" value="${fv(d.ref_officielle)}"></div>`;
@@ -2550,7 +2633,7 @@ function renderModuleFormOther(){
   return `
   <div class="page-head">
     <h1>${mod.icon} ${fv(d.module)}</h1>
-    <p style="margin-top:4px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'Fraunces',serif; font-size:15px;">${d.id}</strong></p>
+    <p style="margin-top:4px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'Fira Code',ui-monospace,monospace; font-size:15px;">${d.id}</strong></p>
   </div>
   <form id="module-form" data-mode="new">
     <div class="wizard-head">
@@ -2625,8 +2708,8 @@ function renderList(){
     <input id="search-input" placeholder="Rechercher par ID, nom, prénom, téléphone, commune, village, n° judiciaire, référence d'acte…" value="${searchTerm.replace(/"/g,'&quot;')}">
     <select id="filter-etape">
       <option value=""${!filterEtape?' selected':''}>Toutes étapes</option>
-      ${STEP_LABELS.map((s,i)=>`<option value="${i}"${String(i)===filterEtape?' selected':''}>${STEP_ICONS[i]} ${s} en cours</option>`).join('')}
-      <option value="closed"${filterEtape==='closed'?' selected':''}>${STEP_ICONS[STEP_ICONS.length-1]} Clôturé</option>
+      ${STEP_LABELS.map((s,i)=>`<option value="${i}"${String(i)===filterEtape?' selected':''}>${s} en cours</option>`).join('')}
+      <option value="closed"${filterEtape==='closed'?' selected':''}>Clôturé</option>
     </select>
     <select id="sort-select">
       <option value="date_desc"${sortValue==='date_desc'?' selected':''}>Plus récents d'abord</option>
@@ -2642,7 +2725,7 @@ function renderList(){
   ${filtersExpanded ? `
   <div style="background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:20px;">
 
-    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">📍 Géo-localisation</div>
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">${ico('pin')} Géo-localisation</div>
     <div class="grid" style="margin-bottom:18px;">
       <div class="field"><label>Région</label>${searchableFilterField('filter-region', regions, filterRegion, 'Toutes régions')}</div>
       <div class="field"><label>Département</label>${searchableFilterField('filter-departement', departements, filterDepartement, 'Tous départements')}</div>
@@ -2651,7 +2734,7 @@ function renderList(){
       <div class="field"><label>Centre d'état civil</label>${searchableFilterField('filter-centre', centres, filterCentre, 'Tous centres')}</div>
     </div>
 
-    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">👤 Suivi</div>
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">${ico('user')} Suivi</div>
     <div class="grid" style="margin-bottom:18px;">
       <div class="field"><label>Agent</label>${searchableFilterField('filter-agent', agents, filterAgent, 'Tous agents')}</div>
       <div class="field"><label>Destination</label>
@@ -2669,7 +2752,7 @@ function renderList(){
       </div>
     </div>
 
-    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">💰 Paiement & Pièces</div>
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">${ico('wallet')} Paiement & Pièces</div>
     <div class="grid" style="margin-bottom:18px;">
       <div class="field"><label>Paiement</label>
         <select id="filter-paiement">
@@ -2687,7 +2770,7 @@ function renderList(){
       </div>
     </div>
 
-    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">📅 Période d'enrôlement</div>
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin-bottom:10px;">${ico('calendar')} Période d'enrôlement</div>
     <div class="grid" style="margin-bottom:${activeCount?'18px':'0'};">
       <div class="field"><label>Du</label><input type="date" id="filter-date-debut" value="${filterDateDebut}"></div>
       <div class="field"><label>Au</label><input type="date" id="filter-date-fin" value="${filterDateFin}"></div>
@@ -2711,7 +2794,7 @@ function renderList(){
         const label = p.closed ? `${STEP_ICONS[STEP_ICONS.length-1]} Clôturé` : `${STEP_ICONS[p.currentIndex]} ${STEP_LABELS[p.currentIndex]}`;
         return `
         <tr class="row-clickable" data-id="${d.id}">
-          <td>${d.id}</td>
+          <td class="mono">${d.id}</td>
           <td>${d.nom||''} ${d.prenom||''}</td>
           <td>${d.commune||'—'} / ${d.village||'—'}</td>
           <td><span class="badge ${badgeClass(p.currentIndex, p.closed)}">${label}</span></td>
@@ -2735,7 +2818,7 @@ function renderDash(){
     const a = d.agent || 'Non renseigné'; parAgent[a]=(parAgent[a]||0)+1;
     const v = d.village || 'Non renseigné'; parVillage[v]=(parVillage[v]||0)+1;
     const p = progressInfo(d);
-    const e = p.closed ? `${STEP_ICONS[STEP_ICONS.length-1]} Clôturé` : `${STEP_ICONS[p.currentIndex]} ${STEP_LABELS[p.currentIndex]}`;
+    const e = p.closed ? `Clôturé` : `${STEP_LABELS[p.currentIndex]}`;
     parEtape[e]=(parEtape[e]||0)+1;
   });
   const dossiersAvecIncident = dossiers.filter(d=>(d.incidents||[]).length>0).length;
@@ -2787,7 +2870,7 @@ function renderDash(){
     <div class="stat"><div class="n">${incomplets}</div><div class="l">Dossiers incomplets</div></div>
   </div>
 
-  <div class="dash-group-title">💰 Financier</div>
+  <div class="dash-group-title">${ico('wallet')} Financier</div>
   <div class="stat-grid">
     <div class="stat accent-green"><div class="n">${paiementsEffectues}</div><div class="l">Paiements reçus</div></div>
     <div class="stat"><div class="n">${totalCollecte.toLocaleString('fr-FR')}</div><div class="l">FCFA collectés</div></div>
@@ -2795,7 +2878,7 @@ function renderDash(){
     <div class="stat accent-gold"><div class="n">${exoneres}</div><div class="l">Paiements exonérés</div></div>
   </div>
 
-  <div class="dash-group-title">📤 Traitement & Envois</div>
+  <div class="dash-group-title">${ico('send')} Traitement & Envois</div>
   <div class="stat-grid">
     <div class="stat"><div class="n">${envoyes}</div><div class="l">Dossiers envoyés</div></div>
     <div class="stat"><div class="n">${orienteMairie}</div><div class="l">Orientés Mairie</div></div>
@@ -2806,7 +2889,7 @@ function renderDash(){
     <div class="stat"><div class="n">${delaiMoyen!==null ? delaiMoyen+'j' : '—'}</div><div class="l">Délai moyen jusqu'à l'envoi</div></div>
   </div>
 
-  <div class="dash-group-title">📍 Répartition géographique</div>
+  <div class="dash-group-title">${ico('pin')} Répartition géographique</div>
   ${barSection('Dossiers par étape', parEtape)}
   ${barSection('Dossiers par région', parRegion)}
   ${barSection('Dossiers par commune', parCommune)}
@@ -2832,7 +2915,7 @@ function renderDetail(d){
       <div class="modal">
         <h2>${d.nom||''} ${d.prenom||''}</h2>
         <p style="color:var(--ink-soft); font-size:12.5px; margin:2px 0 16px;">${d.id}</p>
-        ${editLockLevel==='full' ? `<div class="alert alert-warn">🔒 Dossier clôturé — modification réservée à l'administrateur.</div>` : ''}
+        ${editLockLevel==='full' ? `<div class="alert alert-warn">${ico('lock')} Dossier clôturé — modification réservée à l'administrateur.</div>` : ''}
         <form id="edit-form" data-mode="edit" data-id="${d.id}">
           ${progressBadgeHtml(editDraft)}
           ${wizardHtml(editDraft, editStep, 'Enregistrer les modifications')}
@@ -2840,7 +2923,7 @@ function renderDetail(d){
 
         <div class="modal-actions" style="justify-content:space-between; margin-top:0;">
           ${currentUser && currentUser.role !== 'Agent' ? `
-          <button type="button" class="btn" id="modal-delete" style="background:${armed?'var(--red)':'transparent'}; color:${armed?'#fff':'var(--red)'}; border:1px solid var(--red);">
+          <button type="button" class="btn" id="modal-delete" style="background:${armed?'var(--red-solid)':'transparent'}; color:${armed?'#fff':'var(--red)'}; border:1px solid var(--red);">
             ${armed ? 'Confirmer la suppression' : 'Supprimer le dossier'}
           </button>` : '<span></span>'}
           <button type="button" class="btn btn-ghost" id="modal-close">Fermer</button>
@@ -3159,6 +3242,25 @@ function attachHandlers(){
 
 document.getElementById('logout-btn').addEventListener('click', logout);
 loadData();
+</script>
+<script>
+/* Thème clair / sombre (design system IDME) — préférence mémorisée sur ce navigateur */
+(function(){
+  var KEY='idme-theme', root=document.documentElement;
+  function apply(t){
+    root.setAttribute('data-theme', t);
+    var b=document.getElementById('theme-toggle');
+    if(b){ b.setAttribute('aria-pressed', t==='dark' ? 'true' : 'false');
+      var s=b.querySelector('span'); if(s) s.textContent = t==='dark' ? 'Mode clair' : 'Mode sombre'; }
+  }
+  var t='light'; try{ t = localStorage.getItem(KEY) || 'light'; }catch(e){}
+  apply(t);
+  document.addEventListener('click', function(e){
+    if(!e.target.closest || !e.target.closest('#theme-toggle')) return;
+    t = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+    apply(t); try{ localStorage.setItem(KEY, t); }catch(err){}
+  });
+})();
 </script>
 </body>
 </html>

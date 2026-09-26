@@ -985,9 +985,8 @@ function applyConfig(cfg){
 async function loadAppData(){
   stopSync();
   try{
-    const snap = await db.collection('appdata').doc('dossiers').get();
-    dossiers = snap.exists && snap.data().value ? JSON.parse(snap.data().value) : [];
-  }catch(e){ dossiers = []; console.error(e); }
+    await loadDossiers();
+  }catch(e){ dossiers = []; console.error('Erreur de chargement des dossiers', e); }
   formDraft = { id: nextId() };
 
   try{
@@ -1009,10 +1008,13 @@ async function loadAppData(){
 
   // Synchronisation en temps réel : si un collaborateur enregistre un
   // dossier, on récupère la mise à jour automatiquement.
-  syncUnsubscribers.push(db.collection('appdata').doc('dossiers').onSnapshot(snap=>{
-    if(!snap.exists) return;
-    dossiers = snap.data().value ? JSON.parse(snap.data().value) : [];
+  syncUnsubscribers.push(db.collection('dossiers').onSnapshot(snap=>{
+    if(snap.metadata && snap.metadata.hasPendingWrites) return; // nos propres enregistrements en cours
+    dossiers = dossiersFromDocs(snap.docs);
     if(currentUser && (view==='list' || view==='dash')) render();
+    hydrateFiles().then(changed=>{
+      if(changed && currentUser && (view==='list' || view==='dash')) render();
+    }).catch(e=> console.error('Chargement des photos impossible', e));
   }, err=> console.error('Erreur de synchronisation', err)));
 
   syncUnsubscribers.push(db.collection('appdata').doc('config').onSnapshot(snap=>{
@@ -1249,16 +1251,181 @@ function renderLogin(){
   wireAuthShell(renderLogin);
   userInput.focus();
 }
+/* ============================================================
+   STOCKAGE DES DOSSIERS
+   Chaque dossier est un document de la collection « dossiers » et chaque
+   photo un document de la collection « fichiers ». Aucun document ne
+   dépasse ainsi la limite de 1 Mo de Firestore, et deux agents qui
+   enregistrent des dossiers différents n'écrasent plus le travail de l'autre.
+   En mémoire, les photos restent dans « fileData » : le reste de
+   l'application n'a pas besoin de savoir où elles sont rangées.
+   ============================================================ */
+const FILE_CACHE = new Map();     // référence de photo -> image (data URL)
+const REF_BY_DATA = new Map();    // « id dossier|image » -> référence (évite les envois en double)
+let savedSnapshot = new Map();    // id dossier -> contenu enregistré (JSON)
+let savedRefs = new Map();        // id dossier -> Set des références de photos
+
+function isFileHolder(v){ return v && typeof v === 'object' && !Array.isArray(v); }
+
+// Copie du dossier telle qu'elle est enregistrée : les images sont remplacées par une référence.
+function toStored(d, pendingFiles){
+  const refs = new Set();
+  const walk = v=>{
+    if(Array.isArray(v)) return v.map(walk);
+    if(!isFileHolder(v)) return v;
+    const out = {};
+    for(const [k,val] of Object.entries(v)){ if(k !== 'fileData') out[k] = walk(val); }
+    if('fileData' in v){
+      if(typeof v.fileData === 'string' && v.fileData.startsWith('data:')){
+        const key = d.id + '|' + v.fileData;
+        let ref = (v.fileRef && FILE_CACHE.get(v.fileRef) === v.fileData) ? v.fileRef : REF_BY_DATA.get(key);
+        if(!ref){
+          ref = db.collection('fichiers').doc().id;
+          pendingFiles.push({ ref, dossierId: d.id, data: v.fileData, name: v.fileName || v.nom || '' });
+          FILE_CACHE.set(ref, v.fileData);
+          REF_BY_DATA.set(key, ref);
+        }
+        v.fileRef = ref; out.fileRef = ref; refs.add(ref);
+      } else {
+        delete v.fileRef; delete out.fileRef;
+      }
+    } else if(v.fileRef){
+      refs.add(v.fileRef); // photo pas encore chargée : on garde la référence telle quelle
+    }
+    return out;
+  };
+  return { data: walk(d), refs };
+}
+
+function refsOf(obj){
+  const refs = new Set();
+  const walk = v=>{
+    if(Array.isArray(v)) return v.forEach(walk);
+    if(!isFileHolder(v)) return;
+    if(v.fileRef) refs.add(v.fileRef);
+    Object.values(v).forEach(walk);
+  };
+  walk(obj);
+  return refs;
+}
+
+// Remet les images déjà chargées dans les dossiers.
+function applyFiles(obj){
+  const walk = v=>{
+    if(Array.isArray(v)) return v.forEach(walk);
+    if(!isFileHolder(v)) return;
+    if(v.fileRef && !v.fileData && FILE_CACHE.has(v.fileRef)) v.fileData = FILE_CACHE.get(v.fileRef);
+    Object.values(v).forEach(walk);
+  };
+  walk(obj);
+}
+
+function dossiersFromDocs(docs){
+  savedSnapshot = new Map();
+  savedRefs = new Map();
+  const list = [];
+  docs.forEach(doc=>{
+    const raw = doc.data().value;
+    if(!raw) return;
+    try{
+      const obj = JSON.parse(raw);
+      savedSnapshot.set(doc.id, raw);
+      savedRefs.set(doc.id, refsOf(obj));
+      applyFiles(obj);
+      list.push(obj);
+    }catch(e){ console.error('Dossier illisible', doc.id, e); }
+  });
+  return list.sort((a,b)=> String(a.id).localeCompare(String(b.id)));
+}
+
+// Charge les photos manquantes (10 à la fois). Renvoie true si de nouvelles photos sont arrivées.
+async function hydrateFiles(){
+  const missing = new Set();
+  dossiers.forEach(d=> refsOf(d).forEach(r=>{ if(!FILE_CACHE.has(r)) missing.add(r); }));
+  if(!missing.size) return false;
+  const ids = [...missing];
+  for(let i=0; i<ids.length; i+=10){
+    const snaps = await Promise.all(ids.slice(i, i+10).map(id=> db.collection('fichiers').doc(id).get().catch(()=>null)));
+    snaps.forEach(sn=>{ if(sn && sn.exists && sn.data().data) FILE_CACHE.set(sn.id, sn.data().data); });
+  }
+  dossiers.forEach(applyFiles);
+  return true;
+}
+
+async function loadDossiers(){
+  const snap = await db.collection('dossiers').get();
+  if(snap.empty){
+    // Transfert unique depuis l'ancien format (tous les dossiers dans appdata/dossiers).
+    // L'ancien document est conservé tel quel comme sauvegarde.
+    const flag = await db.collection('appdata').doc('migration').get();
+    if(!(flag.exists && flag.data().dossiersV2)){
+      const old = await db.collection('appdata').doc('dossiers').get();
+      const oldList = old.exists && old.data().value ? JSON.parse(old.data().value) : [];
+      if(oldList.length){
+        dossiers = oldList;
+        savedSnapshot = new Map(); savedRefs = new Map();
+        const ok = await saveData();
+        if(!ok) throw new Error('Transfert des dossiers interrompu');
+        await db.collection('appdata').doc('migration').set({ dossiersV2:true, count: oldList.length, at: new Date().toISOString(), by: currentUser ? currentUser.nom : '' });
+        addLog('Transfert des dossiers', `${oldList.length} dossiers vers le nouveau format`);
+        return;
+      }
+    }
+    dossiers = [];
+    return;
+  }
+  dossiers = dossiersFromDocs(snap.docs);
+  await hydrateFiles();
+}
+
 async function saveData(){
   if(!dbReady){
     alert("Configuration Firebase manquante : les données ne sont pas encore sauvegardées en ligne (voir le commentaire CONFIGURATION FIREBASE en haut du fichier).");
-    return;
+    return false;
   }
   try{
-    await db.collection('appdata').doc('dossiers').set({ value: JSON.stringify(dossiers) });
+    const pendingFiles = [];
+    const dossierWrites = [];
+    const fileDeletes = [];
+    const nextSnapshot = new Map();
+    const nextRefs = new Map();
+    const now = new Date().toISOString();
+    for(const d of dossiers){
+      if(!d || !d.id) continue;
+      const { data, refs } = toStored(d, pendingFiles);
+      const json = JSON.stringify(data);
+      if(savedSnapshot.get(d.id) !== json) dossierWrites.push({ id: d.id, json });
+      (savedRefs.get(d.id) || new Set()).forEach(r=>{ if(!refs.has(r)) fileDeletes.push(r); });
+      nextSnapshot.set(d.id, json);
+      nextRefs.set(d.id, refs);
+    }
+    const removed = [...savedSnapshot.keys()].filter(id=> !nextSnapshot.has(id));
+    removed.forEach(id=> (savedRefs.get(id) || new Set()).forEach(r=> fileDeletes.push(r)));
+
+    // 1. Les photos d'abord (une par document), pour que les dossiers ne pointent jamais vers une photo absente.
+    for(let i=0; i<pendingFiles.length; i+=5){
+      await Promise.all(pendingFiles.slice(i, i+5).map(f=>
+        db.collection('fichiers').doc(f.ref).set({ data: f.data, name: f.name, dossierId: f.dossierId, createdAt: now })));
+    }
+    // 2. Les dossiers modifiés et supprimés, par lots.
+    const ops = [
+      ...dossierWrites.map(w=> b=> b.set(db.collection('dossiers').doc(w.id), { value: w.json, updatedAt: now, updatedBy: currentUser ? currentUser.nom : '' })),
+      ...removed.map(id=> b=> b.delete(db.collection('dossiers').doc(id))),
+      ...fileDeletes.map(r=> b=> b.delete(db.collection('fichiers').doc(r)))
+    ];
+    for(let i=0; i<ops.length; i+=400){
+      const batch = db.batch();
+      ops.slice(i, i+400).forEach(op=> op(batch));
+      await batch.commit();
+    }
+    savedSnapshot = nextSnapshot;
+    savedRefs = nextRefs;
+    fileDeletes.forEach(r=> FILE_CACHE.delete(r));
+    return true;
   }catch(e){
     console.error('Erreur de sauvegarde', e);
     alert('Erreur de sauvegarde : ' + e.message);
+    return false;
   }
 }
 

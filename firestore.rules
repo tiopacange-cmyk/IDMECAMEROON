@@ -79,10 +79,23 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Dossiers des citoyens et journal : tout compte actif
+    // Dossiers des citoyens : un document par dossier, une photo par document
+    match /dossiers/{id} {
+      allow read, write: if isActive();
+    }
+    match /fichiers/{id} {
+      allow read, write: if isActive();
+    }
+    // Ancien format (tous les dossiers dans un seul document) : conservé comme sauvegarde,
+    // lu une seule fois pour le transfert vers la collection « dossiers »
     match /appdata/dossiers {
       allow read, write: if isActive();
     }
+    match /appdata/migration {
+      allow read, write: if isActive();
+    }
+
+    // Journal : tout compte actif
     match /appdata/logs {
       allow read, write: if isActive();
     }

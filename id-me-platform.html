@@ -190,15 +190,48 @@ tr.row-clickable:hover{ background:var(--row-hover); }
 .detail-row .v{ text-align:right; font-weight:500; }
 .modal-actions{ display:flex; gap:10px; margin-top:18px; justify-content:flex-end; }
 
+/* La zone principale ne doit jamais dépasser de l'écran (tablette) */
+main{ min-width:0; }
+.table-scroll{ overflow-x:auto; max-width:100%; -webkit-overflow-scrolling:touch; }
+.menu-toggle{ display:none; }
+
+/* Téléphone : barre du haut + menu déroulant */
 @media (max-width:760px){
   .app{ flex-direction:column; }
-  .sidebar{ width:100%; flex-direction:row; padding:14px 16px; align-items:center; }
-  .brand{ border:none; padding:0; margin:0; }
+  .sidebar{ position:sticky; top:0; z-index:40; width:100%; flex-direction:row; flex-wrap:wrap; align-items:center;
+    padding:12px 16px 10px; border-right:0; border-bottom:1px solid var(--line); box-shadow:0 2px 8px rgba(15,23,42,.06); }
+  .brand{ display:flex; align-items:center; gap:10px; border:none; padding:0; margin:0; }
+  .brand img{ width:40px !important; margin:0 !important; }
+  .brand .mark{ font-size:17px; }
   .brand .sub{ display:none; }
-  nav{ flex-direction:row; padding:0; margin-left:auto; }
-  .sidebar-foot{ display:none; }
+  .menu-toggle{ display:inline-flex; align-items:center; gap:8px; margin-left:auto; min-height:44px; padding:8px 16px;
+    border-radius:999px; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink); font:inherit; font-weight:700; cursor:pointer; }
+  .sidebar.open .menu-toggle{ border-color:var(--green); }
+  nav, .sidebar-foot{ display:none; width:100%; }
+  .sidebar.open nav{ display:flex; flex-direction:column; gap:4px; padding:12px 0 0; margin:0; }
+  .sidebar.open .sidebar-foot{ display:block; margin-top:10px; padding:12px 4px 4px; }
   main{ padding:20px 16px; }
   .lab{ width:100px !important; }
+  .page-head h1{ font-size:24px; }
+  .modal{ padding:20px 16px; }
+  .modal-back{ padding:12px; }
+}
+
+/* Téléphone et tablette : les tableaux deviennent des fiches */
+@media (max-width:900px){
+  table.rwd-cards, table.rwd-cards tbody, table.rwd-cards tr, table.rwd-cards td{ display:block; width:100%; }
+  table.rwd-cards{ border:0; background:transparent; }
+  table.rwd-cards thead{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  table.rwd-cards tr{ background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; margin-bottom:12px; padding:4px 14px; }
+  table.rwd-cards td{ text-align:right; white-space:normal !important; padding:10px 0; border-bottom:1px solid var(--line-soft); overflow-wrap:anywhere; }
+  table.rwd-cards td::after{ content:""; display:block; clear:both; }
+  table.rwd-cards td button{ margin:4px 0 4px 14px !important; }
+  table.rwd-cards tr > td:last-child{ border-bottom:0; }
+  table.rwd-cards td::before{ content:attr(data-label); float:left; max-width:45%; margin-right:12px; text-align:left; color:var(--ink-soft);
+    font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+  table.rwd-cards td[data-label=""]{ display:block; text-align:left; }
+  table.rwd-cards td[data-label=""]::before{ content:none; }
+  .table-scroll{ overflow:visible; }
 }
 
 .receipt-print{ display:none; }
@@ -386,6 +419,7 @@ button[data-tab].btn-primary::before,
       <div class="mark" style="font-size:17px;">ID Me Cameroon</div>
       <div class="sub" style="color:var(--gold); font-style:italic;">« Une identité, un droit, une chance »</div>
     </div>
+    <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="main-nav"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></button>
     <nav id="main-nav">
       <button data-view="home" class="active" id="nav-home">Accueil</button>
       <button data-view="new" id="nav-new">Inscription & Enrôlement</button>
@@ -3936,6 +3970,51 @@ document.getElementById('logout-btn').addEventListener('click', logout);
 loadData();
 </script>
 <script>
+/* Téléphone : ouverture / fermeture du menu */
+document.addEventListener('click', function(e){
+  if(!e.target.closest) return;
+  var sb = document.querySelector('.sidebar'), btn = document.getElementById('menu-toggle');
+  if(!sb || !btn) return;
+  if(e.target.closest('#menu-toggle')){
+    var open = !sb.classList.contains('open');
+    sb.classList.toggle('open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  } else if(e.target.closest('#main-nav button') || e.target.closest('#logout-btn')){
+    sb.classList.remove('open'); btn.setAttribute('aria-expanded', 'false');
+  }
+});
+
+/* Tableaux : défilement dans leur cadre (tablette) et fiches lisibles (téléphone).
+   Chaque cellule reçoit le titre de sa colonne, affiché devant la valeur sur petit écran. */
+(function(){
+  function prepare(root){
+    if(!root || !root.querySelectorAll) return;
+    root.querySelectorAll('table').forEach(function(tb){
+      if(tb.closest('#receipt-print')) return;
+      var heads = Array.prototype.map.call(tb.querySelectorAll('thead th'), function(th){ return th.textContent.trim(); });
+      if(heads.length){
+        tb.classList.add('rwd-cards');
+        tb.querySelectorAll('tbody tr').forEach(function(tr){
+          Array.prototype.forEach.call(tr.children, function(td, i){
+            if(td.hasAttribute('data-label')) return;
+            td.setAttribute('data-label', (td.colSpan > 1) ? '' : (heads[i] || ''));
+          });
+        });
+      }
+      if(!tb.parentElement.classList.contains('table-scroll')){
+        var w = document.createElement('div'); w.className = 'table-scroll';
+        tb.parentNode.insertBefore(w, tb); w.appendChild(tb);
+      }
+    });
+  }
+  var obs = new MutationObserver(function(ms){
+    ms.forEach(function(m){ prepare(m.target.nodeType === 1 ? m.target : m.target.parentNode); });
+  });
+  ['main','modal-root'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ prepare(el); obs.observe(el, { childList:true, subtree:true }); }
+  });
+})();
+
 /* Thème clair / sombre (design system IDME) — sur toutes les pages.
    Le choix est mémorisé sur ce navigateur ; sans choix, on suit le réglage de l'appareil. */
 (function(){

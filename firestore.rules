@@ -1,18 +1,12 @@
 rules_version = '2';
-
-// Règles de sécurité Firestore — ID Me Cameroon
-// À publier dans la console Firebase : Firestore Database > Règles.
-// Voir SECURITE.md pour la procédure complète.
 service cloud.firestore {
   match /databases/{database}/documents {
-
     function signedIn() {
       return request.auth != null;
     }
     function profilePath() {
       return /databases/$(database)/documents/users/$(request.auth.uid);
     }
-    // Compte connecté, avec un profil, et non désactivé
     function isActive() {
       return signedIn() && exists(profilePath()) && get(profilePath()).data.active == true;
     }
@@ -34,62 +28,43 @@ service cloud.firestore {
     function setupPath() {
       return /databases/$(database)/documents/appdata/setup;
     }
-
-    // Profils des utilisateurs (aucun mot de passe ici)
     match /users/{uid} {
       allow read: if isActive() && (request.auth.uid == uid || isAdmin());
-
-      // Un Admin ne crée que des Agents et des Responsables ; un Super Admin crée tous les rôles.
       allow create: if ((isSuperAdmin()
                         || (isAdmin() && request.resource.data.role in basicRoles()))
                     && request.resource.data.active == true)
-          // Première installation : le tout premier compte se crée lui-même Super Admin,
-          // une seule fois, dans la même opération que le document appdata/setup.
           || (signedIn() && request.auth.uid == uid
               && !exists(setupPath()) && existsAfter(setupPath())
               && request.resource.data.role == 'Super Admin'
               && request.resource.data.active == true);
-
       allow update: if
-          // Super Admin : peut tout modifier, sauf son propre rôle et son propre état
           (isSuperAdmin()
             && (uid != request.auth.uid
                 || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'active', 'username'])))
-          // Admin : uniquement les comptes Agent / Responsable, sans les promouvoir
        || (isAdmin() && uid != request.auth.uid
             && resource.data.role in basicRoles()
             && request.resource.data.role in basicRoles()
             && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['username']))
-          // L'utilisateur lui-même : seulement lever l'obligation de changer son mot de passe
        || (isActive() && uid == request.auth.uid
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['mustChangePassword'])
             && request.resource.data.mustChangePassword == false);
-
-      // Pas de suppression depuis l'application : on désactive le compte.
       allow delete: if false;
     }
-
-    // Identifiant -> accès technique actuel (lu avant la connexion).
-    // Modifié quand un compte est créé ou que son mot de passe est réinitialisé.
     match /logins/{username} {
       allow get: if true;
       allow create, update: if existsAfter(/databases/$(database)/documents/users/$(request.resource.data.uid))
           && getAfter(/databases/$(database)/documents/users/$(request.resource.data.uid)).data.username == username
           && (
             isSuperAdmin()
-            // Un Admin ne touche qu'aux identifiants des Agents et des Responsables
             || (isAdmin()
                 && getAfter(/databases/$(database)/documents/users/$(request.resource.data.uid)).data.role in basicRoles()
                 && (resource == null
                     || get(/databases/$(database)/documents/users/$(resource.data.uid)).data.role in basicRoles()))
-            // Première installation : le premier Super Admin enregistre son propre identifiant
             || (signedIn() && request.resource.data.uid == request.auth.uid
                 && !exists(setupPath()) && existsAfter(setupPath()))
           );
       allow delete: if false;
     }
-
-    // Indique si la première installation a été faite (lu avant la connexion)
     match /appdata/setup {
       allow get: if true;
       allow create: if signedIn() && !exists(setupPath())
@@ -98,36 +73,25 @@ service cloud.firestore {
                     && getAfter(profilePath()).data.active == true;
       allow update, delete: if false;
     }
-
-    // Dossiers des citoyens : un document par dossier, une photo par document
     match /dossiers/{id} {
       allow read, write: if isActive();
     }
     match /fichiers/{id} {
       allow read, write: if isActive();
     }
-    // Ancien format (tous les dossiers dans un seul document) : conservé comme sauvegarde,
-    // lu une seule fois pour le transfert vers la collection « dossiers »
     match /appdata/dossiers {
       allow read, write: if isActive();
     }
     match /appdata/migration {
       allow read, write: if isActive();
     }
-
-    // Journal : tout compte actif
     match /appdata/logs {
       allow read, write: if isActive();
     }
-
-    // Configuration (listes, SMS, administration) : lecture pour tous les comptes actifs,
-    // modification à partir du rôle Responsable (comme dans l'application)
     match /appdata/config {
       allow read: if isActive();
       allow write: if isResponsableOrAbove();
     }
-
-    // Tout le reste est interdit
     match /{document=**} {
       allow read, write: if false;
     }

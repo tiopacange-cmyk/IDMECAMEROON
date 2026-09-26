@@ -263,6 +263,29 @@ nav button{ min-height:44px; box-sizing:border-box; transition:background-color 
 }
 :root[data-theme="dark"] .modal-back{ background:rgba(0,0,0,0.6); }
 
+/* --- Élément sélectionné : fond jaune or + contour vert/rouge qui tourne --- */
+@property --ring-angle{ syntax:'<angle>'; inherits:false; initial-value:0deg; }
+nav button.active,
+button[data-tab].btn-primary,
+.wdot.active{
+  background:#FCD116 !important; color:#0F172A !important; border-color:transparent !important;
+  position:relative; isolation:isolate; font-weight:700;
+}
+.wdot.active{ box-shadow:none !important; }
+nav button.active::before,
+button[data-tab].btn-primary::before,
+.wdot.active::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; padding:3px; pointer-events:none;
+  background:conic-gradient(from var(--ring-angle), #006B3F 0 25%, #CE1126 25% 50%, #006B3F 50% 75%, #CE1126 75% 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  animation:ring-spin 3s linear infinite;
+}
+@keyframes ring-spin{ to{ --ring-angle:360deg; } }
+@media (prefers-reduced-motion:reduce){
+  nav button.active::before, button[data-tab].btn-primary::before, .wdot.active::before{ animation:none; }
+}
+
 /* --- Pages de connexion et de première installation --- */
 .auth{ display:flex; min-height:100vh; width:100%; background:var(--paper); color:var(--ink); }
 .auth-hero{ position:relative; flex:1 1 50%; background:var(--hero-bg); color:#fff; padding:56px 64px 40px; display:flex; flex-direction:column; gap:32px; overflow:hidden; }

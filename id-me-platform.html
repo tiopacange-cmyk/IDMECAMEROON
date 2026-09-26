@@ -1189,7 +1189,7 @@ function authShell(cardHtml){
         <button type="button" class="auth-pill" data-theme-toggle aria-pressed="false">${ico('moon')}<span>${t('theme_dark')}</span></button>
       </div>
       <div class="auth-card">${cardHtml}</div>
-      <p class="auth-foot">Plateforme ID Me Cameroon © 2026 · v1.0 · 3Tsolution</p>
+      <p class="auth-foot">Plateforme ID Me Cameroon © ${new Date().getFullYear()} · v1.0 · 3Tsolution</p>
     </div>
   </div>`;
 }
@@ -1400,6 +1400,20 @@ async function saveData(){
     const nextSnapshot = new Map();
     const nextRefs = new Map();
     const now = new Date().toISOString();
+    // Nouveau dossier : si un autre agent a déjà pris ce numéro entre-temps, on prend le suivant libre.
+    for(const d of dossiers){
+      if(!d || !d.id || savedSnapshot.has(d.id)) continue;
+      const taken = await db.collection('dossiers').doc(d.id).get();
+      if(!taken.exists) continue;
+      const m = String(d.id).match(/^(PSC-EC\d{4}-)(\d{4,})$/);
+      if(!m){ throw new Error(`Le numéro ${d.id} est déjà utilisé par un autre dossier.`); }
+      let n = +m[2], freeId;
+      do{ n++; freeId = m[1] + String(n).padStart(4,'0'); }
+      while(dossiers.some(x=> x !== d && x.id === freeId) || (await db.collection('dossiers').doc(freeId).get()).exists);
+      alert(`Le numéro ${d.id} vient d'être attribué à un autre dossier par un collègue. Ce dossier reçoit le numéro ${freeId}.`);
+      if(formDraft && formDraft.id === d.id) formDraft.id = freeId;
+      d.id = freeId;
+    }
     for(const d of dossiers){
       if(!d || !d.id) continue;
       const { data, refs } = toStored(d, pendingFiles);
@@ -1440,7 +1454,7 @@ async function saveData(){
 }
 
 function nextId(){
-  const year = 2026;
+  const year = new Date().getFullYear(); // la numérotation repart à 0001 chaque 1er janvier
   const nums = dossiers
     .map(d => { const m = d.id.match(/PSC-EC(\d{4})-(\d{4})/); return m && +m[1]===year ? +m[2] : 0; })
     .concat([0]);
@@ -1449,7 +1463,7 @@ function nextId(){
 }
 
 function nextReceiptNumber(){
-  const year = 2026;
+  const year = new Date().getFullYear();
   const nums = dossiers
     .map(d => { const m = (d.paiement_recu||'').match(/REC-(\d{4})-(\d{4})/); return m && +m[1]===year ? +m[2] : 0; })
     .concat([0]);

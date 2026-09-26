@@ -31,15 +31,24 @@ service cloud.firestore {
     function basicRoles() {
       return ['Agent', 'Responsable'];
     }
+    function setupPath() {
+      return /databases/$(database)/documents/appdata/setup;
+    }
 
     // Profils des utilisateurs (aucun mot de passe ici)
     match /users/{uid} {
       allow read: if isActive() && (request.auth.uid == uid || isAdmin());
 
       // Un Admin ne crée que des Agents et des Responsables ; un Super Admin crée tous les rôles.
-      allow create: if (isSuperAdmin()
+      allow create: if ((isSuperAdmin()
                         || (isAdmin() && request.resource.data.role in basicRoles()))
-                    && request.resource.data.active == true;
+                    && request.resource.data.active == true)
+          // Première installation : le tout premier compte se crée lui-même Super Admin,
+          // une seule fois, dans la même opération que le document appdata/setup.
+          || (signedIn() && request.auth.uid == uid
+              && !exists(setupPath()) && existsAfter(setupPath())
+              && request.resource.data.role == 'Super Admin'
+              && request.resource.data.active == true);
 
       allow update: if
           // Super Admin : peut tout modifier, sauf son propre rôle et son propre état
@@ -58,6 +67,16 @@ service cloud.firestore {
 
       // Pas de suppression depuis l'application : on désactive le compte.
       allow delete: if false;
+    }
+
+    // Indique si la première installation a été faite (lu avant la connexion)
+    match /appdata/setup {
+      allow get: if true;
+      allow create: if signedIn() && !exists(setupPath())
+                    && existsAfter(profilePath())
+                    && getAfter(profilePath()).data.role == 'Super Admin'
+                    && getAfter(profilePath()).data.active == true;
+      allow update, delete: if false;
     }
 
     // Dossiers des citoyens et journal : tout compte actif

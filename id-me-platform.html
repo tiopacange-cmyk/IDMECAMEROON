@@ -736,6 +736,8 @@ const MIN_PASSWORD_LENGTH = 8;
 let legacyUsers = [];      // anciens comptes (avant Firebase Auth), sans mot de passe, à recréer
 let syncUnsubscribers = [];
 let authListenerStarted = false;
+let needsSetup = false;      // aucun compte Super Admin encore créé : écran « Première installation »
+let setupInProgress = false;
 
 function usernameToEmail(username){
   return `${String(username||'').trim().toLowerCase()}@${firebaseConfig.authDomain}`;
@@ -752,42 +754,135 @@ async function loadData(){
     if(!currentUser) renderLogin();
     return;
   }
+  await checkSetup();
   startAuthListener();
+}
+
+// Le document public appdata/setup indique si le premier Super Admin a été créé.
+async function checkSetup(){
+  try{
+    const snap = await db.collection('appdata').doc('setup').get();
+    needsSetup = !snap.exists;
+  }catch(e){
+    needsSetup = false; // en cas de doute, on affiche l'écran de connexion normal
+    console.error('Vérification de la première installation impossible', e);
+  }
 }
 
 function startAuthListener(){
   if(authListenerStarted || !auth) return;
   authListenerStarted = true;
-  auth.onAuthStateChanged(async fbUser=>{
-    if(!fbUser){
-      stopSync();
-      currentUser = null;
-      users = [];
-      document.getElementById('app-root').style.display = 'none';
+  auth.onAuthStateChanged(fbUser=>{
+    if(setupInProgress) return; // la première installation gère elle-même la suite
+    handleAuthUser(fbUser);
+  });
+}
+
+async function handleAuthUser(fbUser){
+  if(!fbUser){
+    stopSync();
+    currentUser = null;
+    users = [];
+    document.getElementById('app-root').style.display = 'none';
+    renderLogin();
+    return;
+  }
+  try{
+    const snap = await db.collection('users').doc(fbUser.uid).get();
+    if(!snap.exists){
+      loginError = `Ce compte n'a pas encore de profil dans la plateforme. Transmettez cet identifiant technique à votre administrateur : ${fbUser.uid}`;
+      await auth.signOut();
+      return;
+    }
+    const prof = snap.data();
+    if(prof.active === false){
+      loginError = "Ce compte est désactivé. Contactez votre administrateur.";
+      await auth.signOut();
+      return;
+    }
+    currentUser = { uid: fbUser.uid, username: prof.username, nom: prof.nom, role: prof.role, mustChangePassword: !!prof.mustChangePassword };
+    if(currentUser.role === 'Super Admin') markSetupDone();
+    await loadAppData();
+    enterApp();
+  }catch(e){
+    console.error('Erreur de chargement du profil', e);
+    loginError = "Accès refusé par le service de données. Vérifiez que les règles de sécurité Firestore sont publiées (voir SECURITE.md).";
+    await auth.signOut();
+  }
+}
+
+// Si des comptes ont été créés à la main dans la console, on ferme quand même
+// l'écran de première installation dès qu'un Super Admin se connecte.
+async function markSetupDone(){
+  needsSetup = false;
+  try{
+    const ref = db.collection('appdata').doc('setup');
+    const snap = await ref.get();
+    if(!snap.exists) await ref.set({ done:true, by: currentUser.uid, at: new Date().toISOString() });
+  }catch(e){ console.error('Impossible de marquer la première installation comme faite', e); }
+}
+
+/* --- Première installation : création du premier compte Super Admin --- */
+function renderSetup(){
+  const root = document.getElementById('login-root');
+  root.style.display = 'flex';
+  root.innerHTML = `
+  <div class="login-screen">
+    <div class="login-card" style="max-width:420px;">
+      <div class="login-mark" style="text-align:center;">ID Me Cameroon</div>
+      <div class="login-sub" style="text-align:center;">Première installation</div>
+      <p style="font-size:14px; margin:0 0 16px;">Aucun compte n'existe encore. Créez le compte <strong>Super Admin</strong> : c'est lui qui créera ensuite les comptes des agents. Cet écran disparaît dès que ce compte est créé.</p>
+      ${loginError ? `<div class="login-error" role="alert">${loginError}</div>` : ''}
+      <div class="field" style="margin-bottom:12px;"><label for="setup-nom">Votre nom complet</label><input id="setup-nom" autocomplete="name"></div>
+      <div class="field" style="margin-bottom:12px;"><label for="setup-username">Identifiant de connexion</label><input id="setup-username" autocomplete="username" aria-describedby="setup-username-help"><span id="setup-username-help" style="font-size:12.5px; color:var(--ink-soft);">Ex. « direction ». 3 à 32 caractères : lettres minuscules, chiffres, point, tiret.</span></div>
+      <div class="field" style="margin-bottom:12px;"><label for="setup-password">Mot de passe</label><input id="setup-password" type="password" autocomplete="new-password" aria-describedby="setup-password-help"><span id="setup-password-help" style="font-size:12.5px; color:var(--ink-soft);">Au moins ${MIN_PASSWORD_LENGTH} caractères. Notez-le en lieu sûr.</span></div>
+      <div class="field" style="margin-bottom:20px;"><label for="setup-confirm">Confirmer le mot de passe</label><input id="setup-confirm" type="password" autocomplete="new-password"></div>
+      <button type="button" class="btn btn-primary" id="setup-btn" style="width:100%;">Créer mon compte Super Admin</button>
+    </div>
+  </div>`;
+  const btn = document.getElementById('setup-btn');
+  btn.addEventListener('click', async ()=>{
+    const nom = document.getElementById('setup-nom').value.trim();
+    const username = document.getElementById('setup-username').value.trim().toLowerCase();
+    const password = document.getElementById('setup-password').value;
+    const confirmPw = document.getElementById('setup-confirm').value;
+    const fail = msg=>{ loginError = msg; renderSetup(); };
+    if(!nom) return fail('Saisissez votre nom complet.');
+    if(!USERNAME_RE.test(username)) return fail("Identifiant invalide : 3 à 32 caractères, lettres minuscules, chiffres, point ou tiret.");
+    if(password.length < MIN_PASSWORD_LENGTH) return fail(`Le mot de passe doit contenir au moins ${MIN_PASSWORD_LENGTH} caractères.`);
+    if(password !== confirmPw) return fail('Les deux mots de passe ne sont pas identiques.');
+    btn.disabled = true;
+    setupInProgress = true;
+    let cred;
+    try{
+      cred = await auth.createUserWithEmailAndPassword(usernameToEmail(username), password);
+    }catch(e){
+      setupInProgress = false;
+      return fail(e.code==='auth/operation-not-allowed'
+        ? "La connexion par mot de passe n'est pas encore activée dans Firebase (Authentication > Sign-in method > E-mail/Mot de passe)."
+        : e.code==='auth/email-already-in-use' ? 'Cet identifiant existe déjà. Essayez de vous connecter.'
+        : 'Le compte n\'a pas pu être créé : ' + e.message);
+    }
+    const uid = cred.user.uid;
+    try{
+      const now = new Date().toISOString();
+      const batch = db.batch();
+      batch.set(db.collection('users').doc(uid), { username, nom, role:'Super Admin', active:true, mustChangePassword:false, createdAt: now, createdBy:'Première installation' });
+      batch.set(db.collection('appdata').doc('setup'), { done:true, by: uid, at: now });
+      await batch.commit();
+    }catch(e){
+      console.error('Première installation refusée', e);
+      try{ await cred.user.delete(); }catch(err){}
+      setupInProgress = false;
+      needsSetup = false;
+      loginError = "La première installation a déjà été faite, ou a été refusée par le service de données. Connectez-vous avec le compte Super Admin existant.";
       renderLogin();
       return;
     }
-    try{
-      const snap = await db.collection('users').doc(fbUser.uid).get();
-      if(!snap.exists){
-        loginError = `Ce compte n'a pas encore de profil dans la plateforme. Transmettez cet identifiant technique à votre administrateur : ${fbUser.uid}`;
-        await auth.signOut();
-        return;
-      }
-      const prof = snap.data();
-      if(prof.active === false){
-        loginError = "Ce compte est désactivé. Contactez votre administrateur.";
-        await auth.signOut();
-        return;
-      }
-      currentUser = { uid: fbUser.uid, username: prof.username, nom: prof.nom, role: prof.role, mustChangePassword: !!prof.mustChangePassword };
-      await loadAppData();
-      enterApp();
-    }catch(e){
-      console.error('Erreur de chargement du profil', e);
-      loginError = "Accès refusé par le service de données. Vérifiez que les règles de sécurité Firestore sont publiées (voir SECURITE.md).";
-      await auth.signOut();
-    }
+    setupInProgress = false;
+    needsSetup = false;
+    loginError = '';
+    await handleAuthUser(auth.currentUser);
   });
 }
 
@@ -977,6 +1072,7 @@ document.addEventListener('click', e=>{
 });
 
 function renderLogin(){
+  if(needsSetup && !currentUser){ renderSetup(); return; }
   const root = document.getElementById('login-root');
   root.style.display = 'flex';
   root.innerHTML = `
@@ -1021,7 +1117,7 @@ function renderLogin(){
     connectionError = '';
     renderLogin();
     await initFirebase();
-    if(dbReady) startAuthListener();
+    if(dbReady){ await checkSetup(); startAuthListener(); }
     renderLogin();
   });
   const langFr = document.getElementById('lang-fr');

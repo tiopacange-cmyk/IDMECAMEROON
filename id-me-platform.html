@@ -8,42 +8,43 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <style>
-/* Design system IDME Cameroun — espace agent (design-system/idme-cameroun/pages/espace-agent.md) */
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Fira+Sans:wght@400;500;600;700&display=swap');
+/* Design system IDME Cameroun — palette « République Accessible » (design-system/idme-cameroun/MASTER.md) */
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root{
-  --ink:#333333;          /* texte, 12,6:1 sur blanc */
-  --ink-soft:#5B6560;     /* texte secondaire, 5,5:1 sur le fond */
-  --paper:#F5F5F5;        /* fond de page */
-  --paper-raised:#FFFFFF; /* cartes, tableaux */
-  --green:#006B3F;        /* primaire (vert national) */
-  --green-deep:#0B3D26;   /* titres */
-  --brand-dark:#0B3D26;   /* barre latérale, bandeaux sombres */
-  --gold:#92400E;         /* or pour le texte, 7,1:1 sur blanc */
-  --gold-solid:#92400E;   /* or en fond, texte blanc */
-  --red:#B91C1C;          /* rejeté / erreur (texte) */
-  --red-solid:#B91C1C;    /* rouge en fond, texte blanc */
-  --ok:#15803D;           /* validé (texte) */
-  --ok-solid:#15803D;     /* vert en fond, texte blanc */
-  --info:#0369A1;         /* en instruction */
-  --line:#D9DDDB;         /* bordures */
-  --line-soft:#ECEEED;    /* séparateurs légers */
-  --field:#8A968F;        /* bordure des champs, 3,1:1 */
-  --focus:#0369A1;        /* contour de focus */
-  --ok-bg:#ECF7EF; --info-bg:#EFF6FB; --red-bg:#FDF0F0; --warn-bg:#FBF3E8; --warn-line:#E9C98A;
-  --purple:#6B21A8; --purple-bg:#F3E8FF; --row-hover:#F0F5F2; --red-line:#F1C4C4; --ok-line:#B9DCC4;
+  --ink:#0F172A;          /* texte, 17:1 sur le fond */
+  --ink-soft:#475569;     /* texte secondaire, 7,2:1 */
+  --paper:#F8FAFC;        /* fond de page (blanc bleuté) */
+  --paper-raised:#FFFFFF; /* cartes, tableaux, barre latérale */
+  --green:#006B3F;        /* primaire (vert national), 6,6:1 sur blanc */
+  --green-deep:#0F172A;   /* titres */
+  --brand-dark:#006B3F;   /* bandeaux colorés (texte blanc) */
+  --gold:#92400E;         /* avertissements, libellés de section */
+  --gold-solid:#92400E;
+  --red:#CE1126;          /* rouge drapeau, 5,6:1 sur blanc */
+  --red-solid:#CE1126;
+  --ok:#15803D;
+  --ok-solid:#15803D;
+  --info:#0369A1;         /* liens, « en instruction » */
+  --line:#E2E8F0;         /* bordures */
+  --line-soft:#EEF2F6;
+  --field:#94A3B8;        /* bordure des champs */
+  --focus:#0F172A;        /* contour de focus */
+  --flag:linear-gradient(90deg,#006B3F 0 33.34%,#CE1126 33.34% 66.67%,#FCD116 66.67% 100%);
+  --ok-bg:#ECF7EF; --info-bg:#EFF6FB; --red-bg:#FEF2F2; --warn-bg:#FBF3E8; --warn-line:#E9C98A;
+  --purple:#6B21A8; --purple-bg:#F3E8FF; --row-hover:#F1F7F4; --red-line:#F5C2C7; --ok-line:#B9DCC4;
 }
 *{box-sizing:border-box;}
 body{
   margin:0;
   background:var(--paper);
   color:var(--ink);
-  font-family:'Fira Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  font-size:15px;
+  font-family:'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size:16px;
   line-height:1.5;
 }
 h1,h2,h3{
-  font-family:'Fira Sans', system-ui, sans-serif;
+  font-family:'Atkinson Hyperlegible', system-ui, sans-serif;
   font-weight:700;
   margin:0;
   color:var(--green-deep);
@@ -53,24 +54,25 @@ h1,h2,h3{
 /* --- Sidebar --- */
 .sidebar{
   width:220px; flex-shrink:0;
-  background:var(--brand-dark);
-  color:#EFEAE0;
+  background:var(--paper-raised);
+  color:var(--ink);
+  border-right:1px solid var(--line);
   padding:24px 0;
   display:flex; flex-direction:column;
 }
-.brand{ padding:0 20px 20px; border-bottom:1px solid rgba(255,255,255,0.12); margin-bottom:16px; }
-.brand .mark{ font-family:'Fira Sans',system-ui,sans-serif; font-weight:700; font-size:20px; font-weight:600; color:#fff; }
-.brand .sub{ font-size:11px; color:#B8C4BC; margin-top:4px; letter-spacing:.02em; }
+.brand{ padding:0 20px 20px; border-bottom:1px solid var(--line); margin-bottom:16px; }
+.brand .mark{ font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-weight:700; font-size:20px; font-weight:700; color:var(--ink); }
+.brand .sub{ font-size:11px; color:var(--ink-soft); margin-top:4px; letter-spacing:.02em; }
 nav{ display:flex; flex-direction:column; gap:2px; padding:0 12px; }
 nav button{
   all:unset; cursor:pointer;
   padding:10px 12px; border-radius:6px;
-  font-size:14px; color:#D8DED9;
+  font-size:15px; color:var(--ink);
   display:flex; align-items:center; gap:10px;
 }
-nav button:hover{ background:rgba(255,255,255,0.06); }
+nav button:hover{ background:var(--row-hover); }
 nav button.active{ background:var(--green); color:#fff; }
-.sidebar-foot{ margin-top:auto; padding:16px 20px 4px; font-size:11px; color:#B8C4BC; border-top:1px solid rgba(255,255,255,0.1); }
+.sidebar-foot{ margin-top:auto; padding:16px 20px 4px; font-size:12px; color:var(--ink-soft); border-top:1px solid var(--line); }
 
 /* --- Main --- */
 main{ flex:1; padding:32px 40px; max-width:1100px; }
@@ -80,7 +82,7 @@ main{ flex:1; padding:32px 40px; max-width:1100px; }
 
 /* --- Form --- */
 .wizard-head{ margin-bottom:22px; }
-.wizard-title{ font-family:'Fira Sans',system-ui,sans-serif; font-weight:700; font-size:19px; color:var(--green-deep); margin-bottom:10px; }
+.wizard-title{ font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-weight:700; font-size:19px; color:var(--green-deep); margin-bottom:10px; }
 .wizard-progress{ background:var(--line-soft); border-radius:3px; height:6px; overflow:hidden; margin-bottom:14px; }
 .wizard-progress-fill{ background:var(--green); height:100%; transition:width .2s ease; }
 .wizard-dots{ display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; }
@@ -98,7 +100,7 @@ main{ flex:1; padding:32px 40px; max-width:1100px; }
 .section-block{ margin-bottom:28px; }
 .section-block h3{
   font-size:13px; text-transform:uppercase; letter-spacing:.06em;
-  color:var(--gold); font-family:'Fira Sans',system-ui,sans-serif; font-weight:700;
+  color:var(--gold); font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-weight:700;
   border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:14px;
 }
 .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 20px; }
@@ -161,7 +163,7 @@ tr.row-clickable:hover{ background:var(--row-hover); }
 /* --- Dashboard --- */
 .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:28px; }
 .stat{ background:var(--paper-raised); padding:16px; }
-.stat .n{ font-family:'Fira Sans',system-ui,sans-serif; font-weight:700; font-size:28px; color:var(--green-deep); font-variant-numeric:tabular-nums; line-height:1.2; }
+.stat .n{ font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-weight:700; font-size:28px; color:var(--green-deep); font-variant-numeric:tabular-nums; line-height:1.2; }
 .stat .l{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
 .stat.accent-green{ border-left:4px solid var(--ok); }
 .stat.accent-green .n{ color:var(--ok); }
@@ -217,7 +219,7 @@ tr.row-clickable:hover{ background:var(--row-hover); }
   background:var(--paper-raised); border-radius:10px; padding:36px 32px;
   max-width:380px; width:100%;
 }
-.login-mark{ font-family:'Fira Sans',system-ui,sans-serif; font-weight:700; font-size:24px; color:var(--green-deep); margin-bottom:2px; }
+.login-mark{ font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-weight:700; font-size:24px; color:var(--green-deep); margin-bottom:2px; }
 .login-sub{ font-size:13px; color:var(--ink-soft); margin-bottom:28px; }
 .login-error{
   background:var(--red-bg); color:var(--red); border:1px solid var(--red-line);
@@ -227,16 +229,24 @@ tr.row-clickable:hover{ background:var(--row-hover); }
 
 /* --- Design system IDME : accessibilité et harmonisation (CSS uniquement) --- */
 /* Or lisible sur la barre latérale sombre */
-.sidebar .sub{ color:#E8C35A !important; }
+.sidebar .sub{ color:var(--green) !important; }
+/* Barre latérale claire : les couleurs écrites en ligne pour un fond sombre sont remplacées */
+.sidebar-foot #user-badge, .sidebar-foot #password-btn, .sidebar-foot #theme-toggle, .sidebar-foot #logout-btn{ color:var(--ink-soft) !important; }
+.sidebar-foot button:hover{ color:var(--green) !important; }
+/* Liseré aux couleurs du drapeau, comme la maquette */
+.app, .login-screen{ position:relative; }
+.app::before, .login-screen::before{ content:""; position:absolute; top:0; left:0; right:0; height:5px; background:var(--flag); z-index:5; }
+.login-screen{ background:var(--paper) !important; }
+.login-card{ border:1px solid var(--line); box-shadow:0 1px 2px rgba(15,23,42,.05), 0 8px 24px rgba(15,23,42,.08); }
 /* Contour de focus visible au clavier (les boutons « all:unset » n'en avaient plus) */
 :focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
-.sidebar :focus-visible, .login-screen button:focus-visible{ outline-color:#E8C35A; }
+
 nav button{ min-height:44px; box-sizing:border-box; transition:background-color .2s ease; }
 .wdot{ width:44px; height:44px; }
 .wdot.active{ border-color:var(--green); box-shadow:0 0 0 3px rgba(0,107,63,0.2); }
 /* Icônes SVG et numéros de dossier */
 .ic{ width:1.15em; height:1.15em; vertical-align:-0.2em; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.mono{ font-family:'Fira Code', ui-monospace, monospace; font-size:13px; letter-spacing:.02em; }
+.mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; letter-spacing:.02em; }
 .module-select-btn > div:first-child{ color:var(--green); }
 .wdot .ic{ width:18px; height:18px; }
 @media (prefers-reduced-motion:reduce){ *{ transition:none !important; } }
@@ -245,37 +255,39 @@ nav button{ min-height:44px; box-sizing:border-box; transition:background-color 
 :root[data-theme="dark"]{
   color-scheme:dark;
   --ink:#E8EDE9; --ink-soft:#9AA7A0; --paper:#0E1512; --paper-raised:#18221D;
-  --green-deep:#8FD4AE; --gold:#E8C35A; --red:#F0736A; --ok:#3FB27F; --info:#6CB7F0;
+  --green-deep:#E8EDE9; --gold:#E8C35A; --red:#F0736A; --ok:#3FB27F; --info:#6CB7F0; --brand-dark:#005532;
   --line:#2C3A33; --line-soft:#223029; --field:#5E6E66; --focus:#6CB7F0;
   --ok-bg:#16301F; --info-bg:#16283A; --red-bg:#3A1E1C; --warn-bg:#352D17; --warn-line:#5C4A1E;
   --purple:#C9A2F0; --purple-bg:#2A1E3A; --row-hover:#1F2B25; --red-line:#5C2A27; --ok-line:#285C3A;
 }
 :root[data-theme="dark"] .modal-back{ background:rgba(0,0,0,0.6); }
+:root[data-theme="dark"] .sidebar .sub{ color:#3FB27F !important; }
 :root[data-theme="dark"] .wdot.done{ color:#fff; }
 /* L'impression reste toujours claire */
 @media print{
   :root[data-theme="dark"]{
     color-scheme:light;
-  --ink:#333333;          /* texte, 12,6:1 sur blanc */
-  --ink-soft:#5B6560;     /* texte secondaire, 5,5:1 sur le fond */
-  --paper:#F5F5F5;        /* fond de page */
-  --paper-raised:#FFFFFF; /* cartes, tableaux */
-  --green:#006B3F;        /* primaire (vert national) */
-  --green-deep:#0B3D26;   /* titres */
-  --brand-dark:#0B3D26;   /* barre latérale, bandeaux sombres */
-  --gold:#92400E;         /* or pour le texte, 7,1:1 sur blanc */
-  --gold-solid:#92400E;   /* or en fond, texte blanc */
-  --red:#B91C1C;          /* rejeté / erreur (texte) */
-  --red-solid:#B91C1C;    /* rouge en fond, texte blanc */
-  --ok:#15803D;           /* validé (texte) */
-  --ok-solid:#15803D;     /* vert en fond, texte blanc */
-  --info:#0369A1;         /* en instruction */
-  --line:#D9DDDB;         /* bordures */
-  --line-soft:#ECEEED;    /* séparateurs légers */
-  --field:#8A968F;        /* bordure des champs, 3,1:1 */
-  --focus:#0369A1;        /* contour de focus */
-  --ok-bg:#ECF7EF; --info-bg:#EFF6FB; --red-bg:#FDF0F0; --warn-bg:#FBF3E8; --warn-line:#E9C98A;
-  --purple:#6B21A8; --purple-bg:#F3E8FF; --row-hover:#F0F5F2; --red-line:#F1C4C4; --ok-line:#B9DCC4;
+  --ink:#0F172A;          /* texte, 17:1 sur le fond */
+  --ink-soft:#475569;     /* texte secondaire, 7,2:1 */
+  --paper:#F8FAFC;        /* fond de page (blanc bleuté) */
+  --paper-raised:#FFFFFF; /* cartes, tableaux, barre latérale */
+  --green:#006B3F;        /* primaire (vert national), 6,6:1 sur blanc */
+  --green-deep:#0F172A;   /* titres */
+  --brand-dark:#006B3F;   /* bandeaux colorés (texte blanc) */
+  --gold:#92400E;         /* avertissements, libellés de section */
+  --gold-solid:#92400E;
+  --red:#CE1126;          /* rouge drapeau, 5,6:1 sur blanc */
+  --red-solid:#CE1126;
+  --ok:#15803D;
+  --ok-solid:#15803D;
+  --info:#0369A1;         /* liens, « en instruction » */
+  --line:#E2E8F0;         /* bordures */
+  --line-soft:#EEF2F6;
+  --field:#94A3B8;        /* bordure des champs */
+  --focus:#0F172A;        /* contour de focus */
+  --flag:linear-gradient(90deg,#006B3F 0 33.34%,#CE1126 33.34% 66.67%,#FCD116 66.67% 100%);
+  --ok-bg:#ECF7EF; --info-bg:#EFF6FB; --red-bg:#FEF2F2; --warn-bg:#FBF3E8; --warn-line:#E9C98A;
+  --purple:#6B21A8; --purple-bg:#F3E8FF; --row-hover:#F1F7F4; --red-line:#F5C2C7; --ok-line:#B9DCC4;
   }
 }
 </style>
@@ -1213,13 +1225,13 @@ function printReceiptA4(d){
     <div style="max-width:480px; margin:0 auto; border:1px solid var(--line-soft);">
       <div style="background:var(--brand-dark); padding:22px 26px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-family:'Fira Sans',system-ui,sans-serif; color:#fff; font-size:19px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
+          <div style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; color:#fff; font-size:19px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
           <div style="color:#E8C35A; font-size:11px; font-style:italic; margin-top:3px;">« Une identité, un droit, une chance »</div>
         </div>
       </div>
       <div style="padding:24px 26px;">
         <div style="text-align:center; margin-bottom:18px;">
-          <div style="font-family:'Fira Sans',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">REÇU DE PAIEMENT</div>
+          <div style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">REÇU DE PAIEMENT</div>
           <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">N° ${fv(d.paiement_recu) || '—'} · Dossier ${fv(d.id) || '—'}</div>
         </div>
         <table style="width:100%; border-collapse:collapse; font-size:13px;">
@@ -1229,7 +1241,7 @@ function printReceiptA4(d){
         </table>
         <div style="background:var(--paper); border-radius:8px; padding:14px 16px; margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:12.5px; color:var(--ink-soft);">Montant payé</span>
-          <span style="font-family:'Fira Sans',system-ui,sans-serif; font-size:22px; color:var(--ok);">${fv(d.paiement_montant) || '—'} FCFA</span>
+          <span style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:22px; color:var(--ok);">${fv(d.paiement_montant) || '—'} FCFA</span>
         </div>
         <div style="margin-top:34px; display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink-soft);">
           <span>Signature de l'agent</span>
@@ -1253,7 +1265,7 @@ function printReceiptTicket(d){
   const el = document.getElementById('receipt-print');
   const dateObj = d.paiement_date ? new Date(d.paiement_date) : new Date();
   el.innerHTML = `
-    <div style="max-width:240px; margin:0 auto; padding:18px 14px; font-family:'Fira Code',ui-monospace,monospace; font-size:11px; color:var(--ink);">
+    <div style="max-width:240px; margin:0 auto; padding:18px 14px; font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px; color:var(--ink);">
       <div style="text-align:center; margin-bottom:10px;">
         <div style="font-weight:700; font-size:12.5px;">PARTNER SOCIAL CARE<br>CAMEROON</div>
       </div>
@@ -1287,12 +1299,12 @@ function printDecharge(d){
   el.innerHTML = `
     <div style="max-width:480px; margin:0 auto; border:1px solid var(--line-soft);">
       <div style="background:var(--brand-dark); padding:22px 26px;">
-        <div style="font-family:'Fira Sans',system-ui,sans-serif; color:#fff; font-size:19px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
+        <div style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; color:#fff; font-size:19px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
         <div style="color:#E8C35A; font-size:11px; font-style:italic; margin-top:3px;">« Une identité, un droit, une chance »</div>
       </div>
       <div style="padding:24px 26px;">
         <div style="text-align:center; margin-bottom:18px;">
-          <div style="font-family:'Fira Sans',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">DÉCHARGE DE REMISE</div>
+          <div style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">DÉCHARGE DE REMISE</div>
           <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">Dossier ${fv(d.id) || '—'}</div>
         </div>
         <table style="width:100%; border-collapse:collapse; font-size:13px;">
@@ -1330,7 +1342,7 @@ function printFormulaire(d){
   el.innerHTML = `
     <div style="max-width:100%; margin:0 auto; font-size:9.5px;">
       <div style="background:var(--brand-dark); padding:9px 14px; border-radius:5px;">
-        <div style="font-family:'Fira Sans',system-ui,sans-serif; color:#fff; font-size:14px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
+        <div style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; color:#fff; font-size:14px;">${fv(a.nom) || 'Partner Social Care Cameroon'}</div>
         <div style="color:#E8C35A; font-size:9px; font-style:italic;">Fiche d'enrôlement — Dossier ${fv(d.id) || '—'}</div>
       </div>
       <div style="display:flex; justify-content:space-between; padding:5px 2px; border-bottom:1px solid var(--line); margin-top:8px; font-size:9.5px;">
@@ -2079,12 +2091,12 @@ const STEP_SECTIONS = [
   <div style="background:var(--brand-dark); border-radius:8px; padding:12px 14px; margin-bottom:18px;">
     <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
       <span style="font-size:11px; color:#B8C4BC;">Type de problème</span>
-      <span style="font-family:'Fira Sans',system-ui,sans-serif; font-size:14px; color:#fff;">${fv(d.probleme) || 'Non renseigné'}</span>
+      <span style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:14px; color:#fff;">${fv(d.probleme) || 'Non renseigné'}</span>
     </div>
     <div style="height:1px; background:rgba(255,255,255,0.15); margin:6px 0;"></div>
     <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
       <span style="font-size:11px; color:#B8C4BC;">Motif de non-déclaration (90 jours)</span>
-      <span style="font-family:'Fira Sans',system-ui,sans-serif; font-size:14px; color:#fff; text-align:right;">${(d.motif_non_declaration||[]).join(', ') || 'Non renseigné'}</span>
+      <span style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:14px; color:#fff; text-align:right;">${(d.motif_non_declaration||[]).join(', ') || 'Non renseigné'}</span>
     </div>
   </div>
   <div class="grid">
@@ -2315,7 +2327,7 @@ function progressBadgeHtml(d){
   <div style="display:flex; justify-content:space-between; align-items:center; background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin-bottom:20px;">
     <div>
       <div style="font-size:11px; color:var(--ink-soft); margin-bottom:3px;">Progression du dossier (calculée automatiquement)</div>
-      <div style="font-family:'Fira Sans',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">${icon} ${label}</div>
+      <div style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:16px; color:var(--green-deep);">${icon} ${label}</div>
     </div>
     <span style="font-size:12px; font-weight:600; padding:4px 12px; border-radius:20px; background:var(--ok-bg); color:var(--green-deep);">${p.doneCount} / ${p.total}</span>
   </div>`;
@@ -2328,7 +2340,7 @@ function wizardHtml(d, step, submitLabel){
   return `
   ${step > 0 ? `
   <div style="display:flex; justify-content:space-between; align-items:center; background:var(--brand-dark); border-radius:8px; padding:10px 14px; margin-bottom:18px;">
-    <span style="font-family:'Fira Sans',system-ui,sans-serif; font-size:15px; color:#fff;">${ico('user')} ${fv(d.nom) || '—'} ${fv(d.prenom) || ''}</span>
+    <span style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:15px; color:#fff;">${ico('user')} ${fv(d.nom) || '—'} ${fv(d.prenom) || ''}</span>
     <span style="font-size:11.5px; color:#B8C4BC;">${fv(d.id) || ''}</span>
   </div>` : ''}
   <div class="wizard-head">
@@ -2392,9 +2404,9 @@ function render(){
   const appLangFr = document.getElementById('app-lang-fr');
   const appLangEn = document.getElementById('app-lang-en');
   if(appLangFr) appLangFr.style.fontWeight = lang==='fr' ? '700' : '400';
-  if(appLangFr) appLangFr.style.color = lang==='fr' ? '#fff' : '#B8C4BC';
+  if(appLangFr) appLangFr.style.color = lang==='fr' ? 'var(--green)' : 'var(--ink-soft)';
   if(appLangEn) appLangEn.style.fontWeight = lang==='en' ? '700' : '400';
-  if(appLangEn) appLangEn.style.color = lang==='en' ? '#fff' : '#B8C4BC';
+  if(appLangEn) appLangEn.style.color = lang==='en' ? 'var(--green)' : 'var(--ink-soft)';
   if(appLangFr && !appLangFr.dataset.wired){ appLangFr.dataset.wired='1'; appLangFr.addEventListener('click', ()=>{ setLang('fr'); render(); }); }
   if(appLangEn && !appLangEn.dataset.wired){ appLangEn.dataset.wired='1'; appLangEn.addEventListener('click', ()=>{ setLang('en'); render(); }); }
   const main = document.getElementById('main');
@@ -2412,7 +2424,7 @@ function renderHome(){
   const communes = new Set(dossiers.map(d=>d.commune).filter(Boolean)).size;
   return `
   <div style="background:linear-gradient(135deg, var(--brand-dark), #006B3F); border-radius:12px; padding:44px 28px; text-align:center; margin-bottom:24px;">
-    <div style="font-family:'Fira Sans',system-ui,sans-serif; font-size:28px; color:#fff;">${t('home_title')}</div>
+    <div style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:28px; color:#fff;">${t('home_title')}</div>
     <div style="color:#E8C35A; font-size:14px; font-style:italic; margin-top:8px;">« Une identité, un droit, une chance »</div>
     <p style="color:#CFE0D6; font-size:13.5px; max-width:480px; margin:16px auto 0; line-height:1.6;">
       ${t('home_intro')}
@@ -2512,7 +2524,7 @@ function renderSettingsUsers(){
   </div>` : ''}
   ${userDraft ? `
   <div style="background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:16px; margin-top:16px;">
-    <h3 style="margin:0 0 12px; font-family:'Fira Sans',system-ui,sans-serif; font-size:17px;">${editing ? 'Modifier utilisateur' : 'Nouvel utilisateur'}</h3>
+    <h3 style="margin:0 0 12px; font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:17px;">${editing ? 'Modifier utilisateur' : 'Nouvel utilisateur'}</h3>
     <div class="grid">
       <div class="field"><label for="user-nom">Nom complet</label><input id="user-nom" value="${fv(userDraft.nom)}"></div>
       <div class="field"><label for="user-username">Identifiant</label><input id="user-username" value="${fv(userDraft.username)}" ${editing ? 'readonly aria-readonly="true" style="background:var(--line-soft);"' : ''} autocomplete="off" aria-describedby="user-username-help"><span id="user-username-help" style="font-size:12px; color:var(--ink-soft);">${editing ? "L'identifiant ne peut pas être modifié." : '3 à 32 caractères : lettres minuscules, chiffres, point, tiret.'}</span></div>
@@ -2828,7 +2840,7 @@ function renderForm(){
   <div class="page-head">
     <h1>${t('page_new')}</h1>
     <p>Fiche individuelle</p>
-    <p style="margin-top:8px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'Fira Code',ui-monospace,monospace; font-size:15px;">${formDraft.id}</strong> — notez-le dès maintenant, il suit le dossier jusqu'à la clôture.</p>
+    <p style="margin-top:8px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:15px;">${formDraft.id}</strong> — notez-le dès maintenant, il suit le dossier jusqu'à la clôture.</p>
   </div>
   ${pendingDuplicate ? `
     <div class="alert alert-warn">
@@ -2909,7 +2921,7 @@ function renderModuleFormOther(){
   return `
   <div class="page-head">
     <h1>${mod.icon} ${fv(d.module)}</h1>
-    <p style="margin-top:4px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'Fira Code',ui-monospace,monospace; font-size:15px;">${d.id}</strong></p>
+    <p style="margin-top:4px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:15px;">${d.id}</strong></p>
   </div>
   <form id="module-form" data-mode="new">
     <div class="wizard-head">

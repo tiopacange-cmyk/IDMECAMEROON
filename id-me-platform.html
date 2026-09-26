@@ -37,6 +37,10 @@
 }
 *{box-sizing:border-box;}
 [hidden]{ display:none !important; }
+.spinner{ width:18px; height:18px; border:2.5px solid currentColor; border-right-color:transparent; border-radius:50%; display:inline-block; animation:spin .8s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce){ .spinner{ animation-duration:2.4s; } }
+.auth-submit:disabled{ opacity:.85; cursor:progress; }
 body{
   margin:0;
   background:var(--paper);
@@ -739,7 +743,7 @@ function setLang(l){
 const I18N = {
   fr: {
     nav_home: "Accueil", nav_new: "Inscription & Enrôlement", nav_list: "Suivi des dossiers", nav_dash: "Tableau de bord", nav_settings: "Paramétrage",
-    login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.", login_offline: "Connexion impossible : le service de données n'est pas disponible. Vérifiez votre connexion internet.", login_locked: "Trop de tentatives. Patientez quelques minutes avant de réessayer.", login_network: "Pas de connexion internet. Vérifiez le réseau puis réessayez.", login_eyebrow: "Espace agents", login_title: "Connexion", login_help: "Utilisez l'identifiant fourni par votre administrateur.", login_forgot: "Mot de passe oublié ?", login_forgot_msg: "Contactez l'administrateur de la plateforme : il réinitialisera votre mot de passe et vous donnera un mot de passe provisoire, à changer à votre connexion.", pw_show: "Afficher le mot de passe", pw_hide: "Masquer le mot de passe", hero_by: "par Partner Social Care Cameroon", hero_l1: "Une identité, un droit,", hero_l2: "une chance.", hero_lead: "Actes de naissance, CNI, NIU et passeports : chaque dossier suivi étape par étape, de l'enrôlement jusqu'à la remise du document.", feat1_t: "Chaque dossier est suivi", feat1_d: "Étapes, paiements et pièces à jour pour toute l'équipe.", feat2_t: "Reçus et décharges", feat2_d: "Imprimés en un clic, avec le numéro de dossier.", feat3_t: "Accès sécurisé", feat3_d: "Un compte par agent, des droits selon le rôle.", theme_dark: "Mode sombre", theme_light: "Mode clair",
+    login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.", login_offline: "Connexion impossible : le service de données n'est pas disponible. Vérifiez votre connexion internet.", login_locked: "Trop de tentatives. Patientez quelques minutes avant de réessayer.", login_network: "Pas de connexion internet. Vérifiez le réseau puis réessayez.", login_loading: "Connexion en cours…", login_eyebrow: "Espace agents", login_title: "Connexion", login_help: "Utilisez l'identifiant fourni par votre administrateur.", login_forgot: "Mot de passe oublié ?", login_forgot_msg: "Contactez l'administrateur de la plateforme : il réinitialisera votre mot de passe et vous donnera un mot de passe provisoire, à changer à votre connexion.", pw_show: "Afficher le mot de passe", pw_hide: "Masquer le mot de passe", hero_by: "par Partner Social Care Cameroon", hero_l1: "Une identité, un droit,", hero_l2: "une chance.", hero_lead: "Actes de naissance, CNI, NIU et passeports : chaque dossier suivi étape par étape, de l'enrôlement jusqu'à la remise du document.", feat1_t: "Chaque dossier est suivi", feat1_d: "Étapes, paiements et pièces à jour pour toute l'équipe.", feat2_t: "Reçus et décharges", feat2_d: "Imprimés en un clic, avec le numéro de dossier.", feat3_t: "Accès sécurisé", feat3_d: "Un compte par agent, des droits selon le rôle.", theme_dark: "Mode sombre", theme_light: "Mode clair",
     home_title: "Bienvenue sur ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon accompagne les familles vulnérables dans l'obtention de leur acte de naissance, étape par étape, depuis l'identification sur le terrain jusqu'à la remise du document.",
     home_ecoute: "Écoute", home_conseils: "Conseils", home_formation: "Formation", home_accompagnement: "Accompagnement",
@@ -753,7 +757,7 @@ const I18N = {
   },
   en: {
     nav_home: "Home", nav_new: "Registration & Enrollment", nav_list: "Case Tracking", nav_dash: "Dashboard", nav_settings: "Settings",
-    login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.", login_offline: "Cannot sign in: the data service is unavailable. Check your internet connection.", login_locked: "Too many attempts. Wait a few minutes before trying again.", login_network: "No internet connection. Check the network and try again.", login_eyebrow: "Staff area", login_title: "Sign in", login_help: "Use the username given by your administrator.", login_forgot: "Forgot password?", login_forgot_msg: "Contact the platform administrator: they will reset your password and give you a temporary one, to be changed when you sign in.", pw_show: "Show password", pw_hide: "Hide password", hero_by: "by Partner Social Care Cameroon", hero_l1: "One identity, one right,", hero_l2: "one chance.", hero_lead: "Birth certificates, ID cards, tax numbers and passports: every case tracked step by step, from enrollment to document delivery.", feat1_t: "Every case is tracked", feat1_d: "Steps, payments and documents up to date for the whole team.", feat2_t: "Receipts and discharges", feat2_d: "Printed in one click, with the case number.", feat3_t: "Secure access", feat3_d: "One account per agent, rights by role.", theme_dark: "Dark mode", theme_light: "Light mode",
+    login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.", login_offline: "Cannot sign in: the data service is unavailable. Check your internet connection.", login_locked: "Too many attempts. Wait a few minutes before trying again.", login_network: "No internet connection. Check the network and try again.", login_loading: "Signing in…", login_eyebrow: "Staff area", login_title: "Sign in", login_help: "Use the username given by your administrator.", login_forgot: "Forgot password?", login_forgot_msg: "Contact the platform administrator: they will reset your password and give you a temporary one, to be changed when you sign in.", pw_show: "Show password", pw_hide: "Hide password", hero_by: "by Partner Social Care Cameroon", hero_l1: "One identity, one right,", hero_l2: "one chance.", hero_lead: "Birth certificates, ID cards, tax numbers and passports: every case tracked step by step, from enrollment to document delivery.", feat1_t: "Every case is tracked", feat1_d: "Steps, payments and documents up to date for the whole team.", feat2_t: "Receipts and discharges", feat2_d: "Printed in one click, with the case number.", feat3_t: "Secure access", feat3_d: "One account per agent, rights by role.", theme_dark: "Dark mode", theme_light: "Light mode",
     home_title: "Welcome to ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon supports vulnerable families in obtaining their birth certificate, step by step, from field identification through to document handover.",
     home_ecoute: "Listening", home_conseils: "Advice", home_formation: "Training", home_accompagnement: "Support",
@@ -982,6 +986,7 @@ function startAuthListener(){
 }
 
 async function handleAuthUser(fbUser){
+  if(fbUser) setLoginBusy(true);
   if(!fbUser){
     stopSync();
     currentUser = null;
@@ -1111,27 +1116,32 @@ function applyConfig(cfg){
 
 async function loadAppData(){
   stopSync();
-  try{
-    await loadDossiers();
-  }catch(e){ dossiers = []; console.error('Erreur de chargement des dossiers', e); }
+  // Les quatre chargements sont lancés en même temps au lieu de l'un après l'autre.
+  await Promise.all([
+    (async ()=>{
+      try{ await loadDossiers(); }
+      catch(e){ dossiers = []; console.error('Erreur de chargement des dossiers', e); }
+    })(),
+    (async ()=>{
+      try{
+        const snap = await db.collection('appdata').doc('config').get();
+        if(snap.exists && snap.data().value){
+          const needsCleanup = applyConfig(JSON.parse(snap.data().value));
+          if(needsCleanup && canWriteConfig()) await saveConfig();
+        } else if(canWriteConfig()){
+          await saveConfig();
+        }
+      }catch(e){ console.error('Erreur de chargement de la configuration', e); }
+    })(),
+    (async ()=>{
+      try{
+        const snap = await db.collection('appdata').doc('logs').get();
+        appLogs = snap.exists && snap.data().value ? JSON.parse(snap.data().value) : [];
+      }catch(e){ appLogs = []; }
+    })(),
+    loadUsers()
+  ]);
   formDraft = { id: nextId() };
-
-  try{
-    const snap = await db.collection('appdata').doc('config').get();
-    if(snap.exists && snap.data().value){
-      const needsCleanup = applyConfig(JSON.parse(snap.data().value));
-      if(needsCleanup && canWriteConfig()) await saveConfig();
-    } else if(canWriteConfig()){
-      await saveConfig();
-    }
-  }catch(e){ console.error('Erreur de chargement de la configuration', e); }
-
-  try{
-    const snap = await db.collection('appdata').doc('logs').get();
-    appLogs = snap.exists && snap.data().value ? JSON.parse(snap.data().value) : [];
-  }catch(e){ appLogs = []; }
-
-  await loadUsers();
 
   // Synchronisation en temps réel : si un collaborateur enregistre un
   // dossier, on récupère la mise à jour automatiquement.
@@ -1187,6 +1197,7 @@ async function login(username, password){
   if(!dbReady || !auth){ loginError = t('login_offline'); renderLogin(); return; }
   if(!u || !password){ loginError = t('login_error'); renderLogin(); return; }
   loginError = '';
+  setLoginBusy(true);
   try{
     await auth.signInWithEmailAndPassword(await loginEmailFor(u), password);
     // La suite (profil, données, ouverture de la plateforme) est gérée par startAuthListener().
@@ -1198,6 +1209,14 @@ async function login(username, password){
   }
 }
 
+function setLoginBusy(on){
+  const b = document.getElementById('login-btn');
+  if(!b) return;
+  b.disabled = on;
+  b.setAttribute('aria-busy', on ? 'true' : 'false');
+  b.innerHTML = on ? `<span class="spinner" aria-hidden="true"></span> ${t('login_loading')}` : `${t('login_btn')} ${ico('chevron-right')}`;
+}
+
 function enterApp(){
   loginError = '';
   addLog('Connexion', `${currentUser.nom} (${currentUser.role})`);
@@ -1207,6 +1226,9 @@ function enterApp(){
     document.getElementById('app-root').style.display = 'flex';
     render();
     if(currentUser.mustChangePassword) openPasswordModal(true);
+    hydrateFiles().then(changed=>{
+      if(changed && currentUser && ['home','list','dash'].includes(view)) render();
+    }).catch(e=> console.error('Chargement des photos impossible', e));
   }catch(err){
     alert('Erreur au chargement de la plateforme : ' + err.message);
     console.error(err);
@@ -1466,7 +1488,13 @@ function dossiersFromDocs(docs){
 }
 
 // Charge les photos manquantes (10 à la fois). Renvoie true si de nouvelles photos sont arrivées.
-async function hydrateFiles(){
+let hydrating = null;
+function hydrateFiles(){
+  // Un seul chargement de photos à la fois
+  if(!hydrating) hydrating = hydrateFilesNow().finally(()=>{ hydrating = null; });
+  return hydrating;
+}
+async function hydrateFilesNow(){
   const missing = new Set();
   dossiers.forEach(d=> refsOf(d).forEach(r=>{ if(!FILE_CACHE.has(r)) missing.add(r); }));
   if(!missing.size) return false;
@@ -1502,7 +1530,7 @@ async function loadDossiers(){
     return;
   }
   dossiers = dossiersFromDocs(snap.docs);
-  await hydrateFiles();
+  // Les photos sont chargées après l'ouverture de la plateforme (voir enterApp).
 }
 
 async function saveData(){

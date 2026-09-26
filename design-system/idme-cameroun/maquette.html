@@ -1,0 +1,497 @@
+<title>Maquette IDME Cameroun</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fira+Code:wght@400;500&family=Fira+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;700&display=swap">
+<style>
+/* ---------- Habillage de la page (suit le thème du lecteur) ---------- */
+:root{
+  --page-bg:#EEF1EF; --page-fg:#14201A; --page-muted:#4A5A52; --page-line:#CBD5CF; --page-chip:#FFFFFF;
+  --frame-shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --page-bg:#0D1310; --page-fg:#E3EAE6; --page-muted:#9DAAA3; --page-line:#2A3731; --page-chip:#17201B;
+    --frame-shadow:0 0 0 1px #2A3731,0 8px 24px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page-bg:#0D1310; --page-fg:#E3EAE6; --page-muted:#9DAAA3; --page-line:#2A3731; --page-chip:#17201B;
+  --frame-shadow:0 0 0 1px #2A3731,0 8px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page-bg); color:var(--page-fg);
+  font:16px/1.5 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding-inline:16px; padding-block:0 64px;
+}
+.wrap{max-width:1180px;margin:0 auto}
+.flagline{height:6px;display:flex;margin-inline:-16px}
+.flagline i{flex:1}.flagline i:nth-child(1){background:#006B3F}.flagline i:nth-child(2){background:#CE1126}.flagline i:nth-child(3){background:#FCD116}
+header.intro{padding-block:40px 24px;display:grid;gap:12px;max-width:760px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--page-muted);font-weight:700}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:0;text-wrap:balance}
+.intro p{margin:0;color:var(--page-muted);max-width:65ch}
+.notice{display:inline-flex;gap:8px;align-items:center;font-size:14px;padding:6px 12px;border:1px dashed var(--page-line);border-radius:999px;width:fit-content;color:var(--page-muted)}
+section.zone{padding-block:40px 8px;border-top:1px solid var(--page-line);margin-top:24px;display:grid;gap:20px}
+.zone-head{display:grid;gap:4px;max-width:760px}
+.zone-head h2{margin:0;font-size:24px;line-height:1.25}
+.zone-head p{margin:0;color:var(--page-muted)}
+.tokens{display:flex;flex-wrap:wrap;gap:8px}
+.tok{display:flex;align-items:center;gap:8px;background:var(--page-chip);border:1px solid var(--page-line);border-radius:8px;padding:6px 10px 6px 6px;font-size:13px}
+.tok b{width:22px;height:22px;border-radius:5px;border:1px solid rgba(0,0,0,.12);flex:none}
+.tok code{font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--page-muted)}
+.row{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.caption{font-size:13px;color:var(--page-muted);margin:8px 2px 0;max-width:390px}
+svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Écrans : couleurs du design system, fixes ---------- */
+.screen{border-radius:16px;overflow:hidden;box-shadow:var(--frame-shadow);max-width:100%}
+.phone{width:390px;max-width:100%}
+
+/* === Espace citoyen (MASTER) === */
+.cit{
+  --primary:#006B3F;--primary-h:#005532;--on-primary:#FFF;--secondary:#334155;--accent:#0369A1;
+  --highlight:#FCD116;--bg:#F8FAFC;--fg:#0F172A;--card:#FFF;--muted:#E8ECF1;--muted-fg:#475569;
+  --border:#E2E8F0;--field:#94A3B8;--danger:#CE1126;--success:#15803D;--warn:#92400E;--ring:#0F172A;
+  background:var(--bg);color:var(--fg);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:16px;
+}
+.cit a{color:var(--accent)}
+.cit .topbar{background:var(--card);border-bottom:1px solid var(--border)}
+.cit .topbar .fl{height:4px;display:flex}.cit .topbar .fl i{flex:1}
+.cit .topbar .fl i:nth-child(1){background:#006B3F}.cit .topbar .fl i:nth-child(2){background:#CE1126}.cit .topbar .fl i:nth-child(3){background:#FCD116}
+.cit .brand{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+.cit .logo{display:flex;align-items:center;gap:10px;font-weight:700}
+.cit .logo .mk{width:32px;height:32px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:14px}
+.cit .lang{font-size:14px;border:1px solid var(--border);border-radius:8px;padding:6px 10px;min-height:36px;background:var(--card);color:var(--fg);font-family:inherit}
+.cit .body{padding:20px 16px 24px;display:grid;gap:16px}
+.cit h3{font-size:24px;line-height:1.25;margin:0;text-wrap:balance}
+.cit .lead{margin:0;color:var(--muted-fg)}
+.cit label{font-weight:700;display:block;margin-bottom:6px}
+.cit .search{display:flex;gap:8px}
+.cit .input{flex:1;min-width:0;min-height:48px;padding:12px 14px;border:1px solid var(--field);border-radius:8px;font:inherit;color:var(--fg);background:#fff}
+.cit .input:focus-visible,.cit button:focus-visible,.cit a:focus-visible,.cit .svc:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+.cit .btn{min-height:48px;min-width:48px;padding:12px 20px;border-radius:8px;font:inherit;font-weight:700;cursor:pointer;border:2px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background-color .2s ease}
+.cit .btn-primary{background:var(--primary);color:var(--on-primary)}
+.cit .btn-primary:hover{background:var(--primary-h)}
+.cit .btn-secondary{background:transparent;color:var(--fg);border-color:var(--fg)}
+.cit .services{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cit .svc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:grid;gap:8px;text-align:left;font:inherit;color:var(--fg);cursor:pointer;transition:border-color .2s ease}
+.cit .svc:hover{border-color:var(--primary)}
+.cit .svc .ico{width:36px;height:36px;border-radius:8px;background:#E6F2EC;color:var(--primary);display:grid;place-items:center}
+.cit .svc strong{font-size:15px;line-height:1.3}
+.cit .svc span{font-size:13px;color:var(--muted-fg)}
+.cit .track{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;gap:12px}
+.cit .track-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.cit .num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:14px;letter-spacing:.04em;color:var(--muted-fg)}
+.cit .status{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;padding:4px 10px;border-radius:999px;border:1px solid currentColor}
+.cit .st-info{color:var(--accent);background:#EFF6FB}
+.cit .steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.cit .steps li{display:grid;grid-template-columns:24px 1fr;gap:10px;padding-bottom:12px;position:relative;font-size:15px}
+.cit .steps li:not(:last-child)::before{content:"";position:absolute;left:11px;top:24px;bottom:0;width:2px;background:var(--border)}
+.cit .steps li.done:not(:last-child)::before{background:var(--success)}
+.cit .dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--field);background:#fff}
+.cit .done .dot{background:var(--success);border-color:var(--success);color:#fff}
+.cit .now .dot{border-color:var(--accent);color:var(--accent)}
+.cit .steps small{display:block;color:var(--muted-fg);font-size:13px}
+.cit .dot svg{width:14px;height:14px}
+/* formulaire */
+.cit .progress{display:flex;gap:6px}.cit .progress i{height:6px;flex:1;border-radius:3px;background:var(--muted)}.cit .progress i.on{background:var(--primary)}
+.cit .step-l{font-size:14px;color:var(--muted-fg);margin:0}
+.cit .errsum{border:2px solid var(--danger);border-radius:8px;padding:12px 14px;background:#FEF2F2;display:grid;gap:6px}
+.cit .errsum strong{display:flex;gap:8px;align-items:center;color:var(--danger)}
+.cit .errsum ul{margin:0;padding-left:28px}
+.cit .errsum a{color:var(--danger);font-weight:700}
+.cit .field{display:grid;gap:4px}
+.cit .help{font-size:14px;color:var(--muted-fg);margin:0}
+.cit .err{font-size:14px;color:var(--danger);font-weight:700;display:flex;gap:6px;align-items:flex-start;margin:0}
+.cit .err svg{width:18px;height:18px;margin-top:1px}
+.cit .input[aria-invalid="true"]{border:2px solid var(--danger)}
+.cit .input.full{width:100%}
+.cit .actions{display:flex;gap:10px;flex-wrap:wrap}
+.cit .actions .btn{flex:1}
+.cit .fee{display:flex;justify-content:space-between;padding:12px 14px;border-radius:8px;background:var(--muted);font-size:15px}
+
+/* === Espace agent (surcharge) === */
+.agent{
+  --bg:#F5F5F5;--surface:#FFF;--fg:#333333;--muted-fg:#5B6560;--border:#E3E3E3;--primary:#006B3F;--on-primary:#FFF;
+  --info:#0369A1;--ok:#15803D;--bad:#B91C1C;--warn:#92400E;--row:#FAFAFA;--chip-info:#EFF6FB;--chip-ok:#ECF7EF;--chip-bad:#FDF0F0;--chip-warn:#FBF3E8;--chip-idle:#F1F3F2;
+  background:var(--bg);color:var(--fg);font-family:"Fira Sans",system-ui,sans-serif;font-size:14px;width:100%;
+}
+.agent.dark{
+  --bg:#0E1512;--surface:#18221D;--fg:#E8EDE9;--muted-fg:#9AA7A0;--border:#2C3A33;--primary:#3FB27F;--on-primary:#0E1512;
+  --info:#6CB7F0;--ok:#3FB27F;--bad:#F0736A;--warn:#E8C35A;--row:#1C2721;--chip-info:#16283A;--chip-ok:#16301F;--chip-bad:#3A1E1C;--chip-warn:#352D17;--chip-idle:#222D27;
+}
+.agent .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.agent .bar .t{display:flex;gap:10px;align-items:center;font-weight:700}
+.agent .bar .mk{width:28px;height:28px;border-radius:6px;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-size:12px}
+.agent .who{color:var(--muted-fg);font-size:13px}
+.agent .tgl{min-height:44px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.agent .tgl:focus-visible,.agent button:focus-visible{outline:3px solid var(--info);outline-offset:2px}
+.agent .main{padding:16px;display:grid;gap:16px}
+.agent .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.agent .kpi{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:grid;gap:2px}
+.agent .kpi .l{font-size:12px;color:var(--muted-fg);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.agent .kpi .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.agent .kpi .d{font-size:12px;color:var(--muted-fg)}
+.agent .kpi.alert{border-left:4px solid var(--bad)}
+.agent .kpi.alert .v{color:var(--bad)}
+.agent .panel{background:var(--surface);border:1px solid var(--border);border-radius:8px}
+.agent .filters{display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border);align-items:center}
+.agent .f{min-height:44px;padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;cursor:pointer}
+.agent .f[aria-pressed="true"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.agent .f .n{font-variant-numeric:tabular-nums;opacity:.85;margin-left:4px}
+.agent .scroll{overflow-x:auto}
+.agent table{width:100%;border-collapse:collapse;min-width:720px}
+.agent th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted-fg);font-weight:500;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0}
+.agent td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.agent tr:nth-child(even) td{background:var(--row)}
+.agent .code{font-family:"Fira Code",ui-monospace,monospace;font-size:13px}
+.agent .tab{font-variant-numeric:tabular-nums}
+.agent .late{color:var(--bad);font-weight:700}
+.agent .chip{display:inline-flex;gap:6px;align-items:center;padding:3px 9px;border-radius:999px;font-size:13px;font-weight:500;white-space:nowrap}
+.agent .chip svg{width:15px;height:15px}
+.agent .c-info{color:var(--info);background:var(--chip-info)}
+.agent .c-ok{color:var(--ok);background:var(--chip-ok)}
+.agent .c-bad{color:var(--bad);background:var(--chip-bad)}
+.agent .c-warn{color:var(--warn);background:var(--chip-warn)}
+.agent .c-idle{color:var(--muted-fg);background:var(--chip-idle)}
+.agent .act{min-height:36px;padding:6px 12px;border-radius:6px;border:1px solid var(--primary);background:transparent;color:var(--primary);font:inherit;font-weight:500;cursor:pointer}
+.agent kbd{font-family:"Fira Code",monospace;font-size:12px;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface)}
+.agent .foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 12px;color:var(--muted-fg);font-size:13px}
+
+/* === Document officiel (surcharge) === */
+.doc{
+  --primary:#064E3B;--paper:#F4F1E8;--guill:#DCE6E0;--gold-t:#92400E;--seal:#B08D3C;--stamp:#9E2A2B;--fg:#0F172A;--line:#CBD5E1;--muted-fg:#475569;
+  font-family:"IBM Plex Sans",system-ui,sans-serif;color:var(--fg);
+}
+.doc .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;letter-spacing:.06em}
+.doc.verify{background:#FFFFFF}
+.doc .vhead{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;font-weight:700}
+.doc .vhead .mk{width:30px;height:30px;border-radius:7px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px}
+.doc .vbody{padding:20px 16px 24px;display:grid;gap:16px}
+.doc .result{border-radius:12px;padding:16px;background:#EAF3EE;border:2px solid var(--primary);display:grid;gap:6px}
+.doc .result .r{display:flex;gap:10px;align-items:center;font-size:20px;font-weight:700;color:var(--primary)}
+.doc .result .r svg{width:28px;height:28px}
+.doc .result p{margin:0}
+.doc dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:15px}
+.doc dt{color:var(--muted-fg)}
+.doc dd{margin:0;font-weight:500}
+.doc .privacy{font-size:13px;color:var(--muted-fg);display:flex;gap:8px;margin:0}
+.doc .privacy svg{width:18px;height:18px}
+.doc .vbtn{min-height:48px;border-radius:8px;border:2px solid var(--fg);background:transparent;color:var(--fg);font:inherit;font-weight:700;cursor:pointer}
+.doc .vbtn:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+/* aperçu du récépissé */
+.doc.paper{background:var(--paper);width:560px;position:relative}
+.doc.paper .guil{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.doc.paper .in{position:relative;padding:0 24px 24px;display:grid;gap:18px}
+.doc .tri{height:5px;display:flex;margin-inline:-24px}.doc .tri i{flex:1}.doc .tri i:nth-child(1){background:#006B3F}.doc .tri i:nth-child(2){background:#CE1126}.doc .tri i:nth-child(3){background:#FCD116}
+.doc .ph{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding-top:18px;flex-wrap:wrap}
+.doc .ph h4{margin:0;font-size:20px;color:var(--primary);line-height:1.25}
+.doc .ph .sub{font-size:13px;color:var(--gold-t);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.doc .specimen{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--stamp);border:1.5px solid var(--stamp);padding:2px 8px;border-radius:4px;height:fit-content}
+.doc .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding-block:14px}
+.doc .grid2 .k{font-size:12px;color:var(--gold-t);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.doc .grid2 .v{font-size:15px;font-weight:500}
+.doc .dfoot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.doc .seal{width:104px;height:104px;flex:none}
+.doc .stampbox{display:grid;gap:6px}
+.doc .stamp{display:inline-flex;gap:8px;align-items:center;font-weight:700;letter-spacing:.12em;color:var(--primary);border:2.5px solid var(--primary);padding:6px 12px;border-radius:6px;transform:rotate(-3deg);width:fit-content;font-size:14px}
+.doc .stamp svg{width:18px;height:18px}
+.doc .codebig{font-size:18px;color:var(--fg)}
+.doc .small{font-size:13px;color:var(--muted-fg);margin:0}
+
+@media (max-width:720px){
+  .agent .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .doc .grid2{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="flagline" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">Design system · IDME Cameroun</span>
+    <h1>Maquette des trois espaces</h1>
+    <p>Espace citoyen, espace agent et document délivré, dessinés avec les couleurs, polices et règles de <code>design-system/idme-cameroun/</code>. Chaque écran utilise sa propre palette, quel que soit le thème de cette page.</p>
+    <span class="notice"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Données fictives, à titre d'exemple</span>
+  </header>
+
+  <!-- ===================== ESPACE CITOYEN ===================== -->
+  <section class="zone" aria-labelledby="z1">
+    <div class="zone-head">
+      <span class="eyebrow">MASTER.md</span>
+      <h2 id="z1">Espace citoyen : République Accessible</h2>
+      <p>Atkinson Hyperlegible, texte à 16 px minimum, zones cliquables de 48 px, statuts avec icône et libellé.</p>
+    </div>
+    <div class="tokens" aria-label="Palette de l'espace citoyen">
+      <span class="tok"><b style="background:#006B3F"></b>Primaire <code>#006B3F</code></span>
+      <span class="tok"><b style="background:#0369A1"></b>Liens <code>#0369A1</code></span>
+      <span class="tok"><b style="background:#0F172A"></b>Texte <code>#0F172A</code></span>
+      <span class="tok"><b style="background:#CE1126"></b>Erreur <code>#CE1126</code></span>
+      <span class="tok"><b style="background:#15803D"></b>Succès <code>#15803D</code></span>
+      <span class="tok"><b style="background:#FCD116"></b>Drapeau <code>#FCD116</code></span>
+      <span class="tok"><b style="background:#F8FAFC"></b>Fond <code>#F8FAFC</code></span>
+    </div>
+
+    <div class="row">
+      <!-- Accueil -->
+      <div>
+        <div class="screen phone cit">
+          <div class="topbar">
+            <div class="fl" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="brand">
+              <span class="logo"><span class="mk">ID</span>IDME Cameroun</span>
+              <select class="lang" id="lang1" aria-label="Langue"><option>Français</option><option>English</option></select>
+            </div>
+          </div>
+          <div class="body">
+            <h3>Bonjour Aïcha, que souhaitez-vous faire ?</h3>
+            <div>
+              <label for="q1">Rechercher une démarche</label>
+              <form class="search" onsubmit="event.preventDefault()">
+                <input class="input" id="q1" type="search" placeholder="Ex. renouveler ma CNI">
+                <button class="btn btn-primary" type="submit" aria-label="Rechercher"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+              </form>
+            </div>
+            <div class="services">
+              <button class="svc" type="button"><span class="ico"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.4 1.7-2 3-2s2.4.6 3 2M14 10h4M14 13h3"/></svg></span><strong>Carte nationale d'identité</strong><span>Première demande ou renouvellement</span></button>
+              <button class="svc" type="button"><span class="ico"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M9 17h6"/></svg></span><strong>Passeport</strong><span>Demande et rendez-vous biométrique</span></button>
+              <button class="svc" type="button"><span class="ico"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span><strong>Acte de naissance</strong><span>Copie intégrale ou extrait</span></button>
+              <button class="svc" type="button"><span class="ico"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><strong>Suivre un dossier</strong><span>Avec votre numéro de dossier</span></button>
+            </div>
+            <div class="track" aria-label="Votre dossier en cours">
+              <div class="track-h">
+                <strong>Renouvellement CNI</strong>
+                <span class="status st-info"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>En instruction</span>
+              </div>
+              <span class="num">N° CNI-2026-DLA-004381</span>
+              <ol class="steps">
+                <li class="done"><span class="dot"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span><span>Dossier déposé<small>12/09/2026 · Douala 1er</small></span></li>
+                <li class="done"><span class="dot"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span><span>Empreintes et photo enregistrées<small>15/09/2026</small></span></li>
+                <li class="now"><span class="dot"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/></svg></span><span>Vérification en cours<small>Délai estimé : 10 jours</small></span></li>
+                <li><span class="dot"></span><span>Prête au retrait<small>Vous recevrez un SMS</small></span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <p class="caption">Accueil sur mobile : une recherche, quatre démarches, puis le suivi du dossier en cours avec des étapes lisibles.</p>
+      </div>
+
+      <!-- Formulaire -->
+      <div>
+        <div class="screen phone cit">
+          <div class="topbar">
+            <div class="fl" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="brand">
+              <span class="logo"><span class="mk">ID</span>Demande de passeport</span>
+            </div>
+          </div>
+          <form class="body" onsubmit="event.preventDefault()" novalidate>
+            <div class="progress" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+            <p class="step-l">Étape 2 sur 4 · Informations personnelles</p>
+            <div class="errsum" role="alert">
+              <strong><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>2 champs à corriger</strong>
+              <ul><li><a href="#nais">Date de naissance</a></li><li><a href="#tel">Numéro de téléphone</a></li></ul>
+            </div>
+            <div class="field">
+              <label for="nom">Nom(s)</label>
+              <input class="input full" id="nom" value="Mballa Ndongo">
+            </div>
+            <div class="field">
+              <label for="nais">Date de naissance</label>
+              <p class="help" id="nais-h">Au format JJ/MM/AAAA, comme sur votre acte de naissance.</p>
+              <input class="input full" id="nais" value="31/02/1994" aria-invalid="true" aria-describedby="nais-h nais-e">
+              <p class="err" id="nais-e"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Cette date n'existe pas. Vérifiez le jour et le mois.</p>
+            </div>
+            <div class="field">
+              <label for="tel">Numéro de téléphone</label>
+              <p class="help" id="tel-h">Pour recevoir le SMS quand le passeport est prêt.</p>
+              <input class="input full" id="tel" value="+237 6 99 12" inputmode="tel" aria-invalid="true" aria-describedby="tel-h tel-e">
+              <p class="err" id="tel-e"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Il manque des chiffres : un numéro camerounais en compte 9 après +237.</p>
+            </div>
+            <div class="fee"><span>Frais de dossier (exemple)</span><strong>110 000 FCFA</strong></div>
+            <div class="actions">
+              <button class="btn btn-secondary" type="button">Retour</button>
+              <button class="btn btn-primary" type="submit">Continuer</button>
+            </div>
+          </form>
+        </div>
+        <p class="caption">Formulaire en étapes : libellés visibles, aide sous chaque libellé, erreur sous le champ et récapitulatif en haut.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ESPACE AGENT ===================== -->
+  <section class="zone" aria-labelledby="z2">
+    <div class="zone-head">
+      <span class="eyebrow">pages/espace-agent.md</span>
+      <h2 id="z2">Espace agent : console de traitement</h2>
+      <p>Fira Sans et Fira Code, densité élevée, chiffres alignés. Le bouton en haut à droite de l'écran bascule en mode sombre.</p>
+    </div>
+    <div class="tokens" aria-label="Palette de l'espace agent">
+      <span class="tok"><b style="background:#F5F5F5"></b>Fond <code>#F5F5F5</code></span>
+      <span class="tok"><b style="background:#333333"></b>Texte <code>#333333</code></span>
+      <span class="tok"><b style="background:#0369A1"></b>En instruction <code>#0369A1</code></span>
+      <span class="tok"><b style="background:#15803D"></b>Validé <code>#15803D</code></span>
+      <span class="tok"><b style="background:#B91C1C"></b>Rejeté <code>#B91C1C</code></span>
+      <span class="tok"><b style="background:#0E1512"></b>Sombre <code>#0E1512</code></span>
+      <span class="tok"><b style="background:#3FB27F"></b>Primaire sombre <code>#3FB27F</code></span>
+    </div>
+
+    <div class="screen agent" id="agent">
+      <div class="bar">
+        <span class="t"><span class="mk">ID</span>Console agent · Centre de Douala 1er</span>
+        <span style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <span class="who">Agent : J. Ekambi</span>
+          <button class="tgl" id="tgl" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Mode sombre</span></button>
+        </span>
+      </div>
+      <div class="main">
+        <div class="kpis">
+          <div class="kpi"><span class="l">En attente</span><span class="v">48</span><span class="d">dont 12 reçus aujourd'hui</span></div>
+          <div class="kpi alert"><span class="l">En retard</span><span class="v">7</span><span class="d">plus de 15 jours</span></div>
+          <div class="kpi"><span class="l">Traités aujourd'hui</span><span class="v">23</span><span class="d">objectif : 30</span></div>
+          <div class="kpi"><span class="l">Délai moyen</span><span class="v">9,4 j</span><span class="d">sur 30 jours</span></div>
+        </div>
+        <div class="panel">
+          <div class="filters" role="group" aria-label="Filtrer par statut">
+            <button class="f" type="button" aria-pressed="true">Tous<span class="n">48</span></button>
+            <button class="f" type="button" aria-pressed="false">En instruction<span class="n">29</span></button>
+            <button class="f" type="button" aria-pressed="false">Pièce manquante<span class="n">12</span></button>
+            <button class="f" type="button" aria-pressed="false">En retard<span class="n">7</span></button>
+          </div>
+          <div class="scroll">
+            <table>
+              <thead><tr><th scope="col">Dossier</th><th scope="col">Demandeur</th><th scope="col">Démarche</th><th scope="col">Déposé le</th><th scope="col">Délai</th><th scope="col">Statut</th><th scope="col"><span class="sr" style="position:absolute;left:-9999px">Action</span></th></tr></thead>
+              <tbody>
+                <tr><td class="code">CNI-2026-DLA-004381</td><td>Aïcha Bello</td><td>Renouvellement CNI</td><td class="tab">12/09/2026</td><td class="tab">13 j</td><td><span class="chip c-info"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>En instruction</span></td><td><button class="act" type="button">Ouvrir</button></td></tr>
+                <tr><td class="code">PAS-2026-DLA-001127</td><td>Paul Mballa Ndongo</td><td>Passeport</td><td class="tab">04/09/2026</td><td class="tab late">21 j</td><td><span class="chip c-warn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Pièce manquante</span></td><td><button class="act" type="button">Ouvrir</button></td></tr>
+                <tr><td class="code">ACT-2026-DLA-008902</td><td>Grâce Nkeng</td><td>Acte de naissance</td><td class="tab">22/09/2026</td><td class="tab">3 j</td><td><span class="chip c-ok"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Validé</span></td><td><button class="act" type="button">Ouvrir</button></td></tr>
+                <tr><td class="code">CNI-2026-DLA-004355</td><td>Samuel Tchoupo</td><td>Première CNI</td><td class="tab">01/09/2026</td><td class="tab late">24 j</td><td><span class="chip c-bad"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/></svg>Rejeté</span></td><td><button class="act" type="button">Ouvrir</button></td></tr>
+                <tr><td class="code">CNI-2026-DLA-004402</td><td>Hélène Fouda</td><td>Duplicata CNI</td><td class="tab">24/09/2026</td><td class="tab">1 j</td><td><span class="chip c-idle"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Déposé</span></td><td><button class="act" type="button">Ouvrir</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="foot"><span>5 dossiers sur 48 affichés</span><span>Raccourcis : <kbd>J</kbd> <kbd>K</kbd> naviguer · <kbd>V</kbd> valider · <kbd>R</kbd> rejeter (motif requis)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DOCUMENT OFFICIEL ===================== -->
+  <section class="zone" aria-labelledby="z3">
+    <div class="zone-head">
+      <span class="eyebrow">pages/document-officiel.md</span>
+      <h2 id="z3">Document délivré et vérification : Autorité &amp; Sceau</h2>
+      <p>IBM Plex Sans et IBM Plex Mono pour les numéros. Fond papier, guillochis et sceau doré restent décoratifs. L'aperçu est un récépissé de démarche, pas une reproduction de carte d'identité.</p>
+    </div>
+    <div class="tokens" aria-label="Palette du document officiel">
+      <span class="tok"><b style="background:#064E3B"></b>Primaire <code>#064E3B</code></span>
+      <span class="tok"><b style="background:#F4F1E8"></b>Papier <code>#F4F1E8</code></span>
+      <span class="tok"><b style="background:#92400E"></b>Or texte <code>#92400E</code></span>
+      <span class="tok"><b style="background:#B08D3C"></b>Or sceau <code>#B08D3C</code></span>
+      <span class="tok"><b style="background:#9E2A2B"></b>Rouge tampon <code>#9E2A2B</code></span>
+      <span class="tok"><b style="background:#DCE6E0"></b>Guillochis <code>#DCE6E0</code></span>
+    </div>
+
+    <div class="row">
+      <!-- Vérification -->
+      <div>
+        <div class="screen phone doc verify">
+          <div class="vhead"><span class="mk">ID</span>Vérifier un document</div>
+          <div class="vbody">
+            <div class="result" role="status">
+              <span class="r"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>Document authentique</span>
+              <p>Ce récépissé a bien été délivré par IDME Cameroun et il est toujours valide.</p>
+            </div>
+            <dl>
+              <dt>Titulaire</dt><dd>A. B*** (initiales)</dd>
+              <dt>Démarche</dt><dd>Renouvellement CNI</dd>
+              <dt>Délivré le</dt><dd>12/09/2026</dd>
+              <dt>Code</dt><dd class="mono">7KQ4-M2XD-91FP</dd>
+            </dl>
+            <p class="privacy"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Seules ces informations sont affichées, pour protéger la vie privée du titulaire.</p>
+            <button class="vbtn" type="button">Vérifier un autre code</button>
+          </div>
+        </div>
+        <p class="caption">Page publique de vérification : le résultat en une phrase d'abord, puis le minimum de données personnelles.</p>
+      </div>
+
+      <!-- Récépissé -->
+      <div style="max-width:100%">
+        <div class="screen doc paper">
+          <svg class="guil" viewBox="0 0 560 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true" id="guil"></svg>
+          <div class="in">
+            <div class="tri" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="ph">
+              <div>
+                <div class="sub">IDME Cameroun</div>
+                <h4>Récépissé de dépôt de dossier</h4>
+              </div>
+              <span class="specimen">SPÉCIMEN</span>
+            </div>
+            <div class="grid2">
+              <div><div class="k">Titulaire</div><div class="v">Aïcha Bello</div></div>
+              <div><div class="k">Démarche</div><div class="v">Renouvellement CNI</div></div>
+              <div><div class="k">N° de dossier</div><div class="v mono">CNI-2026-DLA-004381</div></div>
+              <div><div class="k">Centre</div><div class="v">Douala 1er</div></div>
+              <div><div class="k">Déposé le</div><div class="v">12/09/2026</div></div>
+              <div><div class="k">Retrait estimé</div><div class="v">à partir du 06/10/2026</div></div>
+            </div>
+            <div class="dfoot">
+              <div class="stampbox">
+                <span class="stamp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>ENREGISTRÉ</span>
+                <p class="small">Code de vérification</p>
+                <span class="mono codebig">7KQ4-M2XD-91FP</span>
+              </div>
+              <svg class="seal" viewBox="0 0 120 120" aria-hidden="true">
+                <defs><path id="sc" d="M60 60m-43 0a43 43 0 1 1 86 0a43 43 0 1 1-86 0"/></defs>
+                <circle cx="60" cy="60" r="56" fill="none" stroke="#B08D3C" stroke-width="3"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#B08D3C" stroke-width="1" stroke-dasharray="2 3"/>
+                <circle cx="60" cy="60" r="32" fill="#B08D3C" fill-opacity=".12" stroke="#B08D3C" stroke-width="1.5"/>
+                <text font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="2.4" fill="#92400E"><textPath href="#sc">IDME CAMEROUN · DOCUMENT VÉRIFIABLE ·</textPath></text>
+                <path d="M60 42l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z" fill="#B08D3C"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <p class="caption">Récépissé imprimable : liseré tricolore, numéros en chasse fixe, sceau et guillochis décoratifs, mention « Spécimen ».</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+// Bascule clair / sombre de la console agent
+(function(){
+  var btn=document.getElementById('tgl'), panel=document.getElementById('agent');
+  btn.addEventListener('click',function(){
+    var on=panel.classList.toggle('dark');
+    btn.setAttribute('aria-pressed',on?'true':'false');
+    btn.querySelector('span').textContent=on?'Mode clair':'Mode sombre';
+  });
+  // Filtres (démonstration de l'état sélectionné)
+  document.querySelectorAll('.agent .f').forEach(function(f){
+    f.addEventListener('click',function(){
+      document.querySelectorAll('.agent .f').forEach(function(x){x.setAttribute('aria-pressed','false')});
+      f.setAttribute('aria-pressed','true');
+    });
+  });
+  // Guillochis : rosaces de courbes fines
+  var g=document.getElementById('guil'), ns='http://www.w3.org/2000/svg', out='';
+  for(var k=0;k<2;k++){
+    var cx=k?470:90, cy=k?330:90;
+    for(var j=0;j<14;j++){
+      var d='', R=70+j*9, r=18+j*1.5, n=12;
+      for(var t=0;t<=360;t+=3){
+        var a=t*Math.PI/180, rr=R+r*Math.sin(n*a);
+        d+=(t?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1);
+      }
+      out+='<path d="'+d+'Z" fill="none" stroke="#DCE6E0" stroke-width="0.8"/>';
+    }
+  }
+  g.innerHTML=out;
+})();
+</script>

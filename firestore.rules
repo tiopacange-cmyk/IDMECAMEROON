@@ -1,0 +1,83 @@
+rules_version = '2';
+
+// Règles de sécurité Firestore — ID Me Cameroon
+// À publier dans la console Firebase : Firestore Database > Règles.
+// Voir SECURITE.md pour la procédure complète.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function profilePath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+    // Compte connecté, avec un profil, et non désactivé
+    function isActive() {
+      return signedIn() && exists(profilePath()) && get(profilePath()).data.active == true;
+    }
+    function myRole() {
+      return get(profilePath()).data.role;
+    }
+    function isAdmin() {
+      return isActive() && myRole() in ['Admin', 'Super Admin'];
+    }
+    function isSuperAdmin() {
+      return isActive() && myRole() == 'Super Admin';
+    }
+    function isResponsableOrAbove() {
+      return isActive() && myRole() in ['Responsable', 'Admin', 'Super Admin'];
+    }
+    function basicRoles() {
+      return ['Agent', 'Responsable'];
+    }
+
+    // Profils des utilisateurs (aucun mot de passe ici)
+    match /users/{uid} {
+      allow read: if isActive() && (request.auth.uid == uid || isAdmin());
+
+      // Un Admin ne crée que des Agents et des Responsables ; un Super Admin crée tous les rôles.
+      allow create: if (isSuperAdmin()
+                        || (isAdmin() && request.resource.data.role in basicRoles()))
+                    && request.resource.data.active == true;
+
+      allow update: if
+          // Super Admin : peut tout modifier, sauf son propre rôle et son propre état
+          (isSuperAdmin()
+            && (uid != request.auth.uid
+                || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'active', 'username'])))
+          // Admin : uniquement les comptes Agent / Responsable, sans les promouvoir
+       || (isAdmin() && uid != request.auth.uid
+            && resource.data.role in basicRoles()
+            && request.resource.data.role in basicRoles()
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['username']))
+          // L'utilisateur lui-même : seulement lever l'obligation de changer son mot de passe
+       || (isActive() && uid == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['mustChangePassword'])
+            && request.resource.data.mustChangePassword == false);
+
+      // Pas de suppression depuis l'application : on désactive le compte.
+      allow delete: if false;
+    }
+
+    // Dossiers des citoyens et journal : tout compte actif
+    match /appdata/dossiers {
+      allow read, write: if isActive();
+    }
+    match /appdata/logs {
+      allow read, write: if isActive();
+    }
+
+    // Configuration (listes, SMS, administration) : lecture pour tous les comptes actifs,
+    // modification à partir du rôle Responsable (comme dans l'application)
+    match /appdata/config {
+      allow read: if isActive();
+      allow write: if isResponsableOrAbove();
+    }
+
+    // Tout le reste est interdit
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

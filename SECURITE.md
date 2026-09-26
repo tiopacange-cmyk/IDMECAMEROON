@@ -4,8 +4,9 @@ L'application vérifie désormais les mots de passe avec **Firebase Authenticati
 Les mots de passe ne sont plus écrits dans le code ni enregistrés dans Firestore, et les
 données ne sont accessibles qu'aux comptes connectés et actifs.
 
-> **Important :** tant que les étapes 1 à 4 ne sont pas faites, **personne ne peut se connecter**
-> avec la nouvelle version. Faites-les avant de mettre la nouvelle version en ligne.
+> **Important :** avant de mettre la nouvelle version en ligne, faites les deux réglages
+> Firebase ci-dessous (étapes 1 et 2), puis mettez le fichier en ligne et créez votre compte
+> tout de suite (étape 3). Les anciens identifiants ne fonctionnent plus.
 
 ## Ce qui a changé
 
@@ -21,56 +22,53 @@ données ne sont accessibles qu'aux comptes connectés et actifs.
 L'identifiant reste le même à l'écran (ex. `agent1`). En interne, il correspond à l'adresse
 technique `agent1@pscc-idme.firebaseapp.com`. Aucun e-mail n'est envoyé à cette adresse.
 
-## Étape 1 — Activer la connexion par mot de passe
+## Étape 1 — Activer la connexion par mot de passe (1 minute)
 
 1. Ouvrez la [console Firebase](https://console.firebase.google.com), projet **pscc-idme**.
-2. Menu **Authentication** > **Commencer** (si ce n'est pas déjà fait).
-3. Onglet **Sign-in method** > **E-mail/Mot de passe** > **Activer** > **Enregistrer**.
+2. Menu de gauche **Authentication** > **Commencer** (si ce bouton s'affiche).
+3. Onglet **Sign-in method** > **E-mail/Mot de passe** > activez le premier interrupteur > **Enregistrer**.
 
-## Étape 2 — Créer le premier compte Super Admin
+## Étape 2 — Publier les règles de sécurité (1 minute)
 
-1. **Authentication** > onglet **Users** > **Ajouter un utilisateur**.
-2. Adresse e-mail : `VOTRE-IDENTIFIANT@pscc-idme.firebaseapp.com`
-   (par exemple `direction@pscc-idme.firebaseapp.com` ; l'identifiant en minuscules,
-   3 à 32 caractères : lettres, chiffres, point, tiret).
-3. Mot de passe : au moins 8 caractères, que vous seul connaissez.
-4. Une fois créé, **copiez l'UID** affiché dans la liste (une suite de lettres et de chiffres).
-
-## Étape 3 — Créer son profil dans Firestore
-
-1. **Firestore Database** > onglet **Données** > **Commencer une collection**.
-2. ID de la collection : `users`.
-3. ID du document : **collez l'UID** copié à l'étape 2.
-4. Ajoutez ces champs :
-
-| Champ | Type | Valeur |
-|---|---|---|
-| `username` | string | votre identifiant (ex. `direction`) |
-| `nom` | string | votre nom complet |
-| `role` | string | `Super Admin` |
-| `active` | boolean | `true` |
-
-5. **Enregistrer**.
-
-## Étape 4 — Publier les règles de sécurité
-
-1. **Firestore Database** > onglet **Règles**.
-2. Remplacez tout le contenu par celui du fichier [`firestore.rules`](firestore.rules).
+1. Menu de gauche **Firestore Database** > onglet **Règles**.
+2. Effacez tout le contenu et collez celui du fichier [`firestore.rules`](firestore.rules).
 3. **Publier**.
 
-À partir de ce moment, la base n'est plus ouverte : seuls les comptes créés comme ci-dessus
-peuvent lire ou modifier les dossiers.
+> Dès cet instant, l'ancienne version de l'application ne peut plus lire les données :
+> enchaînez directement avec l'étape 3.
 
-## Étape 5 — Première connexion et recréation des comptes
+## Étape 3 — Mettre la nouvelle version en ligne et créer votre compte
 
-1. Ouvrez l'application et connectez-vous avec l'identifiant et le mot de passe de l'étape 2.
-   **Connectez-vous en Super Admin avant tout autre utilisateur** : c'est cette connexion qui
-   efface les anciens mots de passe de `appdata/config`.
-2. Allez dans **Paramétrage > Utilisateurs**. Un encadré liste les **comptes de l'ancien
+1. Remplacez l'ancien fichier sur votre hébergement par le nouveau `id-me-platform.html`.
+2. Ouvrez le site (Ctrl + F5 pour éviter l'ancienne version en cache).
+3. L'écran **« Première installation »** s'affiche : saisissez votre nom, un identifiant
+   (ex. `direction`) et un mot de passe d'au moins 8 caractères.
+4. Cliquez sur **Créer mon compte Super Admin** : vous êtes connecté.
+
+L'écran de première installation disparaît définitivement dès que ce compte est créé.
+Faites cette étape **sans attendre** après la mise en ligne : tant que le premier compte
+n'existe pas, toute personne qui ouvre le site verrait cet écran. Si le message
+« La première installation a déjà été faite » apparaît alors que vous n'avez rien créé,
+contactez votre prestataire : quelqu'un l'a fait avant vous.
+
+## Étape 4 — Recréer les comptes de l'équipe
+
+1. Allez dans **Paramétrage > Utilisateurs**. Un encadré liste les **comptes de l'ancien
    système à recréer**.
-3. Pour chaque compte : cliquez sur **Recréer…**, saisissez un **mot de passe provisoire**
-   (8 caractères minimum), **Enregistrer**. Communiquez ce mot de passe à la personne.
-4. À sa première connexion, chaque utilisateur doit choisir son propre mot de passe.
+2. Pour chaque compte : **Recréer…**, saisissez un **mot de passe provisoire**
+   (8 caractères minimum), **Enregistrer**. Communiquez-le à la personne.
+3. À sa première connexion, chaque utilisateur choisit son propre mot de passe.
+
+Votre première connexion efface aussi les anciens mots de passe encore enregistrés dans la base.
+
+## Si la connexion ne marche pas
+
+| Message | Solution |
+|---|---|
+| « La connexion par mot de passe n'est pas encore activée » | Étape 1. |
+| « Accès refusé par le service de données » | Étape 2 : les règles ne sont pas publiées. |
+| « Identifiant ou mot de passe incorrect » | Tapez seulement l'identifiant (ex. `direction`), sans `@…`. |
+| L'ancienne page s'affiche encore | Ctrl + F5 ou fenêtre privée. |
 
 ## Au quotidien
 

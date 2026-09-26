@@ -263,6 +263,29 @@ nav button{ min-height:44px; box-sizing:border-box; transition:background-color 
 }
 :root[data-theme="dark"] .modal-back{ background:rgba(0,0,0,0.6); }
 
+/* --- Élément sélectionné : fond jaune or + contour vert/rouge qui tourne --- */
+@property --ring-angle{ syntax:'<angle>'; inherits:false; initial-value:0deg; }
+nav button.active,
+button[data-tab].btn-primary,
+.wdot.active{
+  background:#FCD116 !important; color:#0F172A !important; border-color:transparent !important;
+  position:relative; isolation:isolate; font-weight:700;
+}
+.wdot.active{ box-shadow:none !important; }
+nav button.active::before,
+button[data-tab].btn-primary::before,
+.wdot.active::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; padding:3px; pointer-events:none;
+  background:conic-gradient(from var(--ring-angle), #006B3F 0 25%, #CE1126 25% 50%, #006B3F 50% 75%, #CE1126 75% 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  animation:ring-spin 3s linear infinite;
+}
+@keyframes ring-spin{ to{ --ring-angle:360deg; } }
+@media (prefers-reduced-motion:reduce){
+  nav button.active::before, button[data-tab].btn-primary::before, .wdot.active::before{ animation:none; }
+}
+
 /* --- Pages de connexion et de première installation --- */
 .auth{ display:flex; min-height:100vh; width:100%; background:var(--paper); color:var(--ink); }
 .auth-hero{ position:relative; flex:1 1 50%; background:var(--hero-bg); color:#fff; padding:56px 64px 40px; display:flex; flex-direction:column; gap:32px; overflow:hidden; }
@@ -622,7 +645,7 @@ function setLang(l){
 const I18N = {
   fr: {
     nav_home: "Accueil", nav_new: "Inscription & Enrôlement", nav_list: "Suivi des dossiers", nav_dash: "Tableau de bord", nav_settings: "Paramétrage",
-    login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.", login_offline: "Connexion impossible : le service de données n'est pas disponible. Vérifiez votre connexion internet.", login_locked: "Trop de tentatives. Patientez quelques minutes avant de réessayer.", login_network: "Pas de connexion internet. Vérifiez le réseau puis réessayez.", login_eyebrow: "Espace agents", login_title: "Connexion", login_help: "Utilisez l'identifiant fourni par votre administrateur.", login_forgot: "Mot de passe oublié ?", login_forgot_msg: "Contactez l'administrateur de la plateforme : il désactivera votre ancien accès et vous créera un nouveau compte avec un mot de passe provisoire.", pw_show: "Afficher le mot de passe", pw_hide: "Masquer le mot de passe", hero_by: "par Partner Social Care Cameroon", hero_l1: "Une identité, un droit,", hero_l2: "une chance.", hero_lead: "Actes de naissance, CNI, NIU et passeports : chaque dossier suivi étape par étape, de l'enrôlement jusqu'à la remise du document.", feat1_t: "Chaque dossier est suivi", feat1_d: "Étapes, paiements et pièces à jour pour toute l'équipe.", feat2_t: "Reçus et décharges", feat2_d: "Imprimés en un clic, avec le numéro de dossier.", feat3_t: "Accès sécurisé", feat3_d: "Un compte par agent, des droits selon le rôle.", theme_dark: "Mode sombre", theme_light: "Mode clair",
+    login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.", login_offline: "Connexion impossible : le service de données n'est pas disponible. Vérifiez votre connexion internet.", login_locked: "Trop de tentatives. Patientez quelques minutes avant de réessayer.", login_network: "Pas de connexion internet. Vérifiez le réseau puis réessayez.", login_eyebrow: "Espace agents", login_title: "Connexion", login_help: "Utilisez l'identifiant fourni par votre administrateur.", login_forgot: "Mot de passe oublié ?", login_forgot_msg: "Contactez l'administrateur de la plateforme : il réinitialisera votre mot de passe et vous donnera un mot de passe provisoire, à changer à votre connexion.", pw_show: "Afficher le mot de passe", pw_hide: "Masquer le mot de passe", hero_by: "par Partner Social Care Cameroon", hero_l1: "Une identité, un droit,", hero_l2: "une chance.", hero_lead: "Actes de naissance, CNI, NIU et passeports : chaque dossier suivi étape par étape, de l'enrôlement jusqu'à la remise du document.", feat1_t: "Chaque dossier est suivi", feat1_d: "Étapes, paiements et pièces à jour pour toute l'équipe.", feat2_t: "Reçus et décharges", feat2_d: "Imprimés en un clic, avec le numéro de dossier.", feat3_t: "Accès sécurisé", feat3_d: "Un compte par agent, des droits selon le rôle.", theme_dark: "Mode sombre", theme_light: "Mode clair",
     home_title: "Bienvenue sur ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon accompagne les familles vulnérables dans l'obtention de leur acte de naissance, étape par étape, depuis l'identification sur le terrain jusqu'à la remise du document.",
     home_ecoute: "Écoute", home_conseils: "Conseils", home_formation: "Formation", home_accompagnement: "Accompagnement",
@@ -636,7 +659,7 @@ const I18N = {
   },
   en: {
     nav_home: "Home", nav_new: "Registration & Enrollment", nav_list: "Case Tracking", nav_dash: "Dashboard", nav_settings: "Settings",
-    login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.", login_offline: "Cannot sign in: the data service is unavailable. Check your internet connection.", login_locked: "Too many attempts. Wait a few minutes before trying again.", login_network: "No internet connection. Check the network and try again.", login_eyebrow: "Staff area", login_title: "Sign in", login_help: "Use the username given by your administrator.", login_forgot: "Forgot password?", login_forgot_msg: "Contact the platform administrator: they will disable your old access and create a new account with a temporary password.", pw_show: "Show password", pw_hide: "Hide password", hero_by: "by Partner Social Care Cameroon", hero_l1: "One identity, one right,", hero_l2: "one chance.", hero_lead: "Birth certificates, ID cards, tax numbers and passports: every case tracked step by step, from enrollment to document delivery.", feat1_t: "Every case is tracked", feat1_d: "Steps, payments and documents up to date for the whole team.", feat2_t: "Receipts and discharges", feat2_d: "Printed in one click, with the case number.", feat3_t: "Secure access", feat3_d: "One account per agent, rights by role.", theme_dark: "Dark mode", theme_light: "Light mode",
+    login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.", login_offline: "Cannot sign in: the data service is unavailable. Check your internet connection.", login_locked: "Too many attempts. Wait a few minutes before trying again.", login_network: "No internet connection. Check the network and try again.", login_eyebrow: "Staff area", login_title: "Sign in", login_help: "Use the username given by your administrator.", login_forgot: "Forgot password?", login_forgot_msg: "Contact the platform administrator: they will reset your password and give you a temporary one, to be changed when you sign in.", pw_show: "Show password", pw_hide: "Hide password", hero_by: "by Partner Social Care Cameroon", hero_l1: "One identity, one right,", hero_l2: "one chance.", hero_lead: "Birth certificates, ID cards, tax numbers and passports: every case tracked step by step, from enrollment to document delivery.", feat1_t: "Every case is tracked", feat1_d: "Steps, payments and documents up to date for the whole team.", feat2_t: "Receipts and discharges", feat2_d: "Printed in one click, with the case number.", feat3_t: "Secure access", feat3_d: "One account per agent, rights by role.", theme_dark: "Dark mode", theme_light: "Light mode",
     home_title: "Welcome to ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon supports vulnerable families in obtaining their birth certificate, step by step, from field identification through to document handover.",
     home_ecoute: "Listening", home_conseils: "Advice", home_formation: "Training", home_accompagnement: "Support",
@@ -819,6 +842,15 @@ let setupInProgress = false;
 function usernameToEmail(username){
   return `${String(username||'').trim().toLowerCase()}@${firebaseConfig.authDomain}`;
 }
+// Adresse technique actuelle d'un identifiant. Après une réinitialisation du mot de passe,
+// l'identifiant pointe vers un nouvel accès (document public logins/{identifiant}).
+async function loginEmailFor(username){
+  try{
+    const snap = await db.collection('logins').doc(username).get();
+    if(snap.exists && snap.data().email) return snap.data().email;
+  }catch(e){ console.warn('Table des identifiants indisponible, adresse par défaut utilisée', e); }
+  return usernameToEmail(username);
+}
 function canWriteConfig(){ return !!currentUser && currentUser.role !== 'Agent'; }
 function stopSync(){ syncUnsubscribers.forEach(fn=>{ try{ fn(); }catch(e){} }); syncUnsubscribers = []; }
 
@@ -943,6 +975,7 @@ function renderSetup(){
       const now = new Date().toISOString();
       const batch = db.batch();
       batch.set(db.collection('users').doc(uid), { username, nom, role:'Super Admin', active:true, mustChangePassword:false, createdAt: now, createdBy:'Première installation' });
+      batch.set(db.collection('logins').doc(username), { email: usernameToEmail(username), uid });
       batch.set(db.collection('appdata').doc('setup'), { done:true, by: uid, at: now });
       await batch.commit();
     }catch(e){
@@ -985,9 +1018,8 @@ function applyConfig(cfg){
 async function loadAppData(){
   stopSync();
   try{
-    const snap = await db.collection('appdata').doc('dossiers').get();
-    dossiers = snap.exists && snap.data().value ? JSON.parse(snap.data().value) : [];
-  }catch(e){ dossiers = []; console.error(e); }
+    await loadDossiers();
+  }catch(e){ dossiers = []; console.error('Erreur de chargement des dossiers', e); }
   formDraft = { id: nextId() };
 
   try{
@@ -1009,10 +1041,13 @@ async function loadAppData(){
 
   // Synchronisation en temps réel : si un collaborateur enregistre un
   // dossier, on récupère la mise à jour automatiquement.
-  syncUnsubscribers.push(db.collection('appdata').doc('dossiers').onSnapshot(snap=>{
-    if(!snap.exists) return;
-    dossiers = snap.data().value ? JSON.parse(snap.data().value) : [];
+  syncUnsubscribers.push(db.collection('dossiers').onSnapshot(snap=>{
+    if(snap.metadata && snap.metadata.hasPendingWrites) return; // nos propres enregistrements en cours
+    dossiers = dossiersFromDocs(snap.docs);
     if(currentUser && (view==='list' || view==='dash')) render();
+    hydrateFiles().then(changed=>{
+      if(changed && currentUser && (view==='list' || view==='dash')) render();
+    }).catch(e=> console.error('Chargement des photos impossible', e));
   }, err=> console.error('Erreur de synchronisation', err)));
 
   syncUnsubscribers.push(db.collection('appdata').doc('config').onSnapshot(snap=>{
@@ -1030,7 +1065,7 @@ async function loadUsers(){
   if(!currentUser || !isAdminOrAbove(currentUser.role)) return;
   try{
     const snap = await db.collection('users').get();
-    users = snap.docs.map(d=>({ uid: d.id, ...d.data() }))
+    users = snap.docs.map(d=>({ uid: d.id, ...d.data() })).filter(u=> !u.replacedBy)
       .sort((a,b)=> String(a.nom||'').localeCompare(String(b.nom||''), 'fr'));
   }catch(e){ console.error('Erreur de chargement des utilisateurs', e); }
 }
@@ -1059,7 +1094,7 @@ async function login(username, password){
   if(!u || !password){ loginError = t('login_error'); renderLogin(); return; }
   loginError = '';
   try{
-    await auth.signInWithEmailAndPassword(usernameToEmail(u), password);
+    await auth.signInWithEmailAndPassword(await loginEmailFor(u), password);
     // La suite (profil, données, ouverture de la plateforme) est gérée par startAuthListener().
   }catch(e){
     loginError = e.code==='auth/too-many-requests' ? t('login_locked')
@@ -1177,7 +1212,7 @@ function authShell(cardHtml){
         <button type="button" class="auth-pill" data-theme-toggle aria-pressed="false">${ico('moon')}<span>${t('theme_dark')}</span></button>
       </div>
       <div class="auth-card">${cardHtml}</div>
-      <p class="auth-foot">Plateforme ID Me Cameroon © 2026 · v1.0 · 3Tsolution</p>
+      <p class="auth-foot">Plateforme ID Me Cameroon © ${new Date().getFullYear()} · v1.0 · 3Tsolution</p>
     </div>
   </div>`;
 }
@@ -1249,21 +1284,200 @@ function renderLogin(){
   wireAuthShell(renderLogin);
   userInput.focus();
 }
+/* ============================================================
+   STOCKAGE DES DOSSIERS
+   Chaque dossier est un document de la collection « dossiers » et chaque
+   photo un document de la collection « fichiers ». Aucun document ne
+   dépasse ainsi la limite de 1 Mo de Firestore, et deux agents qui
+   enregistrent des dossiers différents n'écrasent plus le travail de l'autre.
+   En mémoire, les photos restent dans « fileData » : le reste de
+   l'application n'a pas besoin de savoir où elles sont rangées.
+   ============================================================ */
+const FILE_CACHE = new Map();     // référence de photo -> image (data URL)
+const REF_BY_DATA = new Map();    // « id dossier|image » -> référence (évite les envois en double)
+let savedSnapshot = new Map();    // id dossier -> contenu enregistré (JSON)
+let savedRefs = new Map();        // id dossier -> Set des références de photos
+
+function isFileHolder(v){ return v && typeof v === 'object' && !Array.isArray(v); }
+
+// Copie du dossier telle qu'elle est enregistrée : les images sont remplacées par une référence.
+function toStored(d, pendingFiles){
+  const refs = new Set();
+  const walk = v=>{
+    if(Array.isArray(v)) return v.map(walk);
+    if(!isFileHolder(v)) return v;
+    const out = {};
+    for(const [k,val] of Object.entries(v)){ if(k !== 'fileData') out[k] = walk(val); }
+    if('fileData' in v){
+      if(typeof v.fileData === 'string' && v.fileData.startsWith('data:')){
+        const key = d.id + '|' + v.fileData;
+        let ref = (v.fileRef && FILE_CACHE.get(v.fileRef) === v.fileData) ? v.fileRef : REF_BY_DATA.get(key);
+        if(!ref){
+          ref = db.collection('fichiers').doc().id;
+          pendingFiles.push({ ref, dossierId: d.id, data: v.fileData, name: v.fileName || v.nom || '' });
+          FILE_CACHE.set(ref, v.fileData);
+          REF_BY_DATA.set(key, ref);
+        }
+        v.fileRef = ref; out.fileRef = ref; refs.add(ref);
+      } else {
+        delete v.fileRef; delete out.fileRef;
+      }
+    } else if(v.fileRef){
+      refs.add(v.fileRef); // photo pas encore chargée : on garde la référence telle quelle
+    }
+    return out;
+  };
+  return { data: walk(d), refs };
+}
+
+function refsOf(obj){
+  const refs = new Set();
+  const walk = v=>{
+    if(Array.isArray(v)) return v.forEach(walk);
+    if(!isFileHolder(v)) return;
+    if(v.fileRef) refs.add(v.fileRef);
+    Object.values(v).forEach(walk);
+  };
+  walk(obj);
+  return refs;
+}
+
+// Remet les images déjà chargées dans les dossiers.
+function applyFiles(obj){
+  const walk = v=>{
+    if(Array.isArray(v)) return v.forEach(walk);
+    if(!isFileHolder(v)) return;
+    if(v.fileRef && !v.fileData && FILE_CACHE.has(v.fileRef)) v.fileData = FILE_CACHE.get(v.fileRef);
+    Object.values(v).forEach(walk);
+  };
+  walk(obj);
+}
+
+function dossiersFromDocs(docs){
+  savedSnapshot = new Map();
+  savedRefs = new Map();
+  const list = [];
+  docs.forEach(doc=>{
+    const raw = doc.data().value;
+    if(!raw) return;
+    try{
+      const obj = JSON.parse(raw);
+      savedSnapshot.set(doc.id, raw);
+      savedRefs.set(doc.id, refsOf(obj));
+      applyFiles(obj);
+      list.push(obj);
+    }catch(e){ console.error('Dossier illisible', doc.id, e); }
+  });
+  return list.sort((a,b)=> String(a.id).localeCompare(String(b.id)));
+}
+
+// Charge les photos manquantes (10 à la fois). Renvoie true si de nouvelles photos sont arrivées.
+async function hydrateFiles(){
+  const missing = new Set();
+  dossiers.forEach(d=> refsOf(d).forEach(r=>{ if(!FILE_CACHE.has(r)) missing.add(r); }));
+  if(!missing.size) return false;
+  const ids = [...missing];
+  for(let i=0; i<ids.length; i+=10){
+    const snaps = await Promise.all(ids.slice(i, i+10).map(id=> db.collection('fichiers').doc(id).get().catch(()=>null)));
+    snaps.forEach(sn=>{ if(sn && sn.exists && sn.data().data) FILE_CACHE.set(sn.id, sn.data().data); });
+  }
+  dossiers.forEach(applyFiles);
+  return true;
+}
+
+async function loadDossiers(){
+  const snap = await db.collection('dossiers').get();
+  if(snap.empty){
+    // Transfert unique depuis l'ancien format (tous les dossiers dans appdata/dossiers).
+    // L'ancien document est conservé tel quel comme sauvegarde.
+    const flag = await db.collection('appdata').doc('migration').get();
+    if(!(flag.exists && flag.data().dossiersV2)){
+      const old = await db.collection('appdata').doc('dossiers').get();
+      const oldList = old.exists && old.data().value ? JSON.parse(old.data().value) : [];
+      if(oldList.length){
+        dossiers = oldList;
+        savedSnapshot = new Map(); savedRefs = new Map();
+        const ok = await saveData();
+        if(!ok) throw new Error('Transfert des dossiers interrompu');
+        await db.collection('appdata').doc('migration').set({ dossiersV2:true, count: oldList.length, at: new Date().toISOString(), by: currentUser ? currentUser.nom : '' });
+        addLog('Transfert des dossiers', `${oldList.length} dossiers vers le nouveau format`);
+        return;
+      }
+    }
+    dossiers = [];
+    return;
+  }
+  dossiers = dossiersFromDocs(snap.docs);
+  await hydrateFiles();
+}
+
 async function saveData(){
   if(!dbReady){
     alert("Configuration Firebase manquante : les données ne sont pas encore sauvegardées en ligne (voir le commentaire CONFIGURATION FIREBASE en haut du fichier).");
-    return;
+    return false;
   }
   try{
-    await db.collection('appdata').doc('dossiers').set({ value: JSON.stringify(dossiers) });
+    const pendingFiles = [];
+    const dossierWrites = [];
+    const fileDeletes = [];
+    const nextSnapshot = new Map();
+    const nextRefs = new Map();
+    const now = new Date().toISOString();
+    // Nouveau dossier : si un autre agent a déjà pris ce numéro entre-temps, on prend le suivant libre.
+    for(const d of dossiers){
+      if(!d || !d.id || savedSnapshot.has(d.id)) continue;
+      const taken = await db.collection('dossiers').doc(d.id).get();
+      if(!taken.exists) continue;
+      const m = String(d.id).match(/^(PSC-EC\d{4}-)(\d{4,})$/);
+      if(!m){ throw new Error(`Le numéro ${d.id} est déjà utilisé par un autre dossier.`); }
+      let n = +m[2], freeId;
+      do{ n++; freeId = m[1] + String(n).padStart(4,'0'); }
+      while(dossiers.some(x=> x !== d && x.id === freeId) || (await db.collection('dossiers').doc(freeId).get()).exists);
+      alert(`Le numéro ${d.id} vient d'être attribué à un autre dossier par un collègue. Ce dossier reçoit le numéro ${freeId}.`);
+      if(formDraft && formDraft.id === d.id) formDraft.id = freeId;
+      d.id = freeId;
+    }
+    for(const d of dossiers){
+      if(!d || !d.id) continue;
+      const { data, refs } = toStored(d, pendingFiles);
+      const json = JSON.stringify(data);
+      if(savedSnapshot.get(d.id) !== json) dossierWrites.push({ id: d.id, json });
+      (savedRefs.get(d.id) || new Set()).forEach(r=>{ if(!refs.has(r)) fileDeletes.push(r); });
+      nextSnapshot.set(d.id, json);
+      nextRefs.set(d.id, refs);
+    }
+    const removed = [...savedSnapshot.keys()].filter(id=> !nextSnapshot.has(id));
+    removed.forEach(id=> (savedRefs.get(id) || new Set()).forEach(r=> fileDeletes.push(r)));
+
+    // 1. Les photos d'abord (une par document), pour que les dossiers ne pointent jamais vers une photo absente.
+    for(let i=0; i<pendingFiles.length; i+=5){
+      await Promise.all(pendingFiles.slice(i, i+5).map(f=>
+        db.collection('fichiers').doc(f.ref).set({ data: f.data, name: f.name, dossierId: f.dossierId, createdAt: now })));
+    }
+    // 2. Les dossiers modifiés et supprimés, par lots.
+    const ops = [
+      ...dossierWrites.map(w=> b=> b.set(db.collection('dossiers').doc(w.id), { value: w.json, updatedAt: now, updatedBy: currentUser ? currentUser.nom : '' })),
+      ...removed.map(id=> b=> b.delete(db.collection('dossiers').doc(id))),
+      ...fileDeletes.map(r=> b=> b.delete(db.collection('fichiers').doc(r)))
+    ];
+    for(let i=0; i<ops.length; i+=400){
+      const batch = db.batch();
+      ops.slice(i, i+400).forEach(op=> op(batch));
+      await batch.commit();
+    }
+    savedSnapshot = nextSnapshot;
+    savedRefs = nextRefs;
+    fileDeletes.forEach(r=> FILE_CACHE.delete(r));
+    return true;
   }catch(e){
     console.error('Erreur de sauvegarde', e);
     alert('Erreur de sauvegarde : ' + e.message);
+    return false;
   }
 }
 
 function nextId(){
-  const year = 2026;
+  const year = new Date().getFullYear(); // la numérotation repart à 0001 chaque 1er janvier
   const nums = dossiers
     .map(d => { const m = d.id.match(/PSC-EC(\d{4})-(\d{4})/); return m && +m[1]===year ? +m[2] : 0; })
     .concat([0]);
@@ -1272,7 +1486,7 @@ function nextId(){
 }
 
 function nextReceiptNumber(){
-  const year = 2026;
+  const year = new Date().getFullYear();
   const nums = dossiers
     .map(d => { const m = (d.paiement_recu||'').match(/REC-(\d{4})-(\d{4})/); return m && +m[1]===year ? +m[2] : 0; })
     .concat([0]);
@@ -2617,6 +2831,7 @@ function renderSettingsUsers(){
             <td style="text-align:right; white-space:nowrap;">
               ${protectedUser ? `<span style="font-size:12px; color:var(--ink-soft);">Réservé Super Admin</span>` : `
               <button type="button" class="user-edit-btn" data-uid="${u.uid}" style="all:unset; cursor:pointer; color:var(--green-deep); font-size:12.5px; text-decoration:underline; margin-right:14px;">Modifier</button>
+              ${self || !active ? '' : `<button type="button" class="user-reset-btn" data-uid="${u.uid}" style="all:unset; cursor:pointer; color:var(--green-deep); font-size:12.5px; text-decoration:underline; margin-right:14px;">Réinitialiser le mot de passe</button>`}
               ${self ? '' : `<button type="button" class="user-toggle-btn" data-uid="${u.uid}" style="all:unset; cursor:pointer; color:${active?'var(--red)':'var(--green-deep)'}; font-size:12.5px; text-decoration:underline;">${active ? 'Désactiver' : 'Réactiver'}</button>`}`}
             </td>
           </tr>`;
@@ -2652,11 +2867,68 @@ function renderSettingsUsers(){
   </div>` : ''}`;
 }
 
+/* --- Réinitialisation du mot de passe par un administrateur ---
+   Le plan gratuit de Firebase ne permet pas de changer le mot de passe d'un autre
+   compte. On crée donc un nouvel accès pour le même identifiant (même nom, même rôle),
+   on désactive l'ancien, et l'identifiant pointe désormais vers le nouvel accès. */
+function generateTempPassword(){
+  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+  const rnd = new Uint32Array(8);
+  crypto.getRandomValues(rnd);
+  const s = Array.from(rnd, n=> chars[n % chars.length]).join('');
+  return s.slice(0,4) + '-' + s.slice(4);
+}
+
+async function resetUserPassword(u){
+  const temp = generateTempPassword();
+  const email = `${u.username}.r${Date.now().toString(36)}@${firebaseConfig.authDomain}`;
+  const newUid = await createAuthAccount(email, temp);
+  const now = new Date().toISOString();
+  const profile = { ...u };
+  delete profile.uid;
+  const batch = db.batch();
+  batch.set(db.collection('users').doc(newUid), { ...profile, active:true, mustChangePassword:true, previousUid: u.uid, resetAt: now, resetBy: currentUser.nom });
+  batch.update(db.collection('users').doc(u.uid), { active:false, replacedBy: newUid });
+  batch.set(db.collection('logins').doc(u.username), { email, uid: newUid });
+  await batch.commit();
+  addLog('Mot de passe réinitialisé', `${u.nom} (${u.username})`);
+  await loadUsers();
+  return temp;
+}
+
+function showTempPassword(u, temp){
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+  <div class="modal-back">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tmp-title" style="max-width:460px;">
+      <h2 id="tmp-title">Mot de passe provisoire</h2>
+      <p style="margin:0 0 14px;">Transmettez ces informations à <strong>${fv(u.nom)}</strong>. À sa prochaine connexion, il devra choisir son propre mot de passe.</p>
+      <div class="detail-row"><span class="k">Identifiant</span><span class="v mono">${fv(u.username)}</span></div>
+      <div class="detail-row"><span class="k">Mot de passe provisoire</span><span class="v mono" id="tmp-pw" style="font-size:20px; letter-spacing:.08em; user-select:all;">${temp}</span></div>
+      <p style="font-size:13px; color:var(--ink-soft); margin:12px 0 0;">Ce mot de passe ne sera plus affiché après fermeture de cette fenêtre. En cas d'oubli, refaites une réinitialisation.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="tmp-copy">Copier</button>
+        <button type="button" class="btn btn-primary" id="tmp-close">J'ai transmis le mot de passe</button>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('tmp-copy').addEventListener('click', async ()=>{
+    const btn = document.getElementById('tmp-copy');
+    try{ await navigator.clipboard.writeText(`Identifiant : ${u.username}\nMot de passe provisoire : ${temp}`); btn.textContent = 'Copié'; }
+    catch(e){
+      const range = document.createRange(); range.selectNodeContents(document.getElementById('tmp-pw'));
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      btn.textContent = 'Sélectionné : faites Ctrl + C';
+    }
+  });
+  document.getElementById('tmp-close').addEventListener('click', ()=>{ root.innerHTML = ''; render(); });
+}
+
 // Crée le compte Firebase Auth sans déconnecter l'administrateur :
 // on passe par une seconde instance de l'application Firebase.
-async function createAuthAccount(username, password){
+async function createAuthAccount(email, password){
   const secondary = firebase.apps.find(a=>a.name==='gestion-comptes') || firebase.initializeApp(firebaseConfig, 'gestion-comptes');
-  const cred = await secondary.auth().createUserWithEmailAndPassword(usernameToEmail(username), password);
+  const cred = await secondary.auth().createUserWithEmailAndPassword(email, password);
   const uid = cred.user.uid;
   await secondary.auth().signOut();
   return uid;
@@ -2785,6 +3057,23 @@ function wireSettings(){
   document.querySelectorAll('.user-edit-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{ const u = users.find(x=>x.uid===btn.dataset.uid); if(u) userDraft = { ...u }; render(); });
   });
+  document.querySelectorAll('.user-reset-btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const u = users.find(x=>x.uid===btn.dataset.uid);
+      if(!u) return;
+      if(isAdminOrAbove(u.role) && currentUser.role!=='Super Admin'){ alert('Seul un Super Admin peut réinitialiser ce compte.'); return; }
+      if(!confirm(`Réinitialiser le mot de passe de ${u.nom} ? Son mot de passe actuel ne fonctionnera plus.`)) return;
+      btn.disabled = true;
+      try{
+        const temp = await resetUserPassword(u);
+        showTempPassword(u, temp);
+      }catch(e){
+        console.error('Réinitialisation impossible', e);
+        alert('La réinitialisation a échoué : ' + e.message);
+        btn.disabled = false;
+      }
+    });
+  });
   document.querySelectorAll('.user-toggle-btn').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const u = users.find(x=>x.uid===btn.dataset.uid);
@@ -2820,12 +3109,15 @@ function wireSettings(){
         if(!USERNAME_RE.test(username)){ alert("Identifiant invalide : 3 à 32 caractères, lettres minuscules, chiffres, point ou tiret."); return; }
         if(password.length < MIN_PASSWORD_LENGTH){ alert(`Le mot de passe provisoire doit contenir au moins ${MIN_PASSWORD_LENGTH} caractères.`); return; }
         let uid;
-        try{ uid = await createAuthAccount(username, password); }
+        try{ uid = await createAuthAccount(usernameToEmail(username), password); }
         catch(e){
           alert(e.code==='auth/email-already-in-use' ? 'Cet identifiant est déjà utilisé.' : 'Le compte n\'a pas pu être créé : ' + e.message);
           return;
         }
-        await db.collection('users').doc(uid).set({ username, nom, role, active:true, mustChangePassword:true, createdAt:new Date().toISOString(), createdBy: currentUser.nom });
+        const batch = db.batch();
+        batch.set(db.collection('users').doc(uid), { username, nom, role, active:true, mustChangePassword:true, createdAt:new Date().toISOString(), createdBy: currentUser.nom });
+        batch.set(db.collection('logins').doc(username), { email: usernameToEmail(username), uid });
+        await batch.commit();
         addLog('Utilisateur créé', `${nom} (${role})`);
         if(legacyUsers.some(u=>u.username===username)){
           legacyUsers = legacyUsers.filter(u=>u.username!==username);

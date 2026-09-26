@@ -69,6 +69,26 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Identifiant -> accès technique actuel (lu avant la connexion).
+    // Modifié quand un compte est créé ou que son mot de passe est réinitialisé.
+    match /logins/{username} {
+      allow get: if true;
+      allow create, update: if existsAfter(/databases/$(database)/documents/users/$(request.resource.data.uid))
+          && getAfter(/databases/$(database)/documents/users/$(request.resource.data.uid)).data.username == username
+          && (
+            isSuperAdmin()
+            // Un Admin ne touche qu'aux identifiants des Agents et des Responsables
+            || (isAdmin()
+                && getAfter(/databases/$(database)/documents/users/$(request.resource.data.uid)).data.role in basicRoles()
+                && (resource == null
+                    || get(/databases/$(database)/documents/users/$(resource.data.uid)).data.role in basicRoles()))
+            // Première installation : le premier Super Admin enregistre son propre identifiant
+            || (signedIn() && request.resource.data.uid == request.auth.uid
+                && !exists(setupPath()) && existsAfter(setupPath()))
+          );
+      allow delete: if false;
+    }
+
     // Indique si la première installation a été faite (lu avant la connexion)
     match /appdata/setup {
       allow get: if true;
@@ -79,10 +99,23 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Dossiers des citoyens et journal : tout compte actif
+    // Dossiers des citoyens : un document par dossier, une photo par document
+    match /dossiers/{id} {
+      allow read, write: if isActive();
+    }
+    match /fichiers/{id} {
+      allow read, write: if isActive();
+    }
+    // Ancien format (tous les dossiers dans un seul document) : conservé comme sauvegarde,
+    // lu une seule fois pour le transfert vers la collection « dossiers »
     match /appdata/dossiers {
       allow read, write: if isActive();
     }
+    match /appdata/migration {
+      allow read, write: if isActive();
+    }
+
+    // Journal : tout compte actif
     match /appdata/logs {
       allow read, write: if isActive();
     }

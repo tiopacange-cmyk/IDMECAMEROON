@@ -41,6 +41,16 @@
 @keyframes spin{ to{ transform:rotate(360deg); } }
 @media (prefers-reduced-motion:reduce){ .spinner{ animation-duration:2.4s; } }
 .auth-submit:disabled{ opacity:.85; cursor:progress; }
+.spinner-lg{ width:34px; height:34px; border-width:3.5px; color:var(--green); }
+.auth-card{ position:relative; }
+.auth-wait{ position:absolute; inset:0; z-index:5; border-radius:inherit; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  padding:24px; text-align:center; background:color-mix(in srgb, var(--paper-raised) 88%, transparent); backdrop-filter:blur(2px); }
+.auth-wait strong{ font-size:20px; color:var(--ink); }
+.auth-wait span:last-child{ color:var(--ink-soft); font-size:15px; }
+.busy-pill{ position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); z-index:200;
+  display:flex; align-items:center; gap:10px; max-width:calc(100% - 32px); padding:10px 18px; border-radius:999px;
+  background:var(--brand-dark); color:#fff; font-size:14px; box-shadow:0 6px 20px rgba(0,0,0,.25); }
+.busy-pill .spinner{ width:16px; height:16px; }
 body{
   margin:0;
   background:var(--paper);
@@ -743,7 +753,7 @@ function setLang(l){
 const I18N = {
   fr: {
     nav_home: "Accueil", nav_new: "Inscription & Enrôlement", nav_list: "Suivi des dossiers", nav_dash: "Tableau de bord", nav_settings: "Paramétrage",
-    login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.", login_offline: "Connexion impossible : le service de données n'est pas disponible. Vérifiez votre connexion internet.", login_locked: "Trop de tentatives. Patientez quelques minutes avant de réessayer.", login_network: "Pas de connexion internet. Vérifiez le réseau puis réessayez.", login_loading: "Connexion en cours…", login_eyebrow: "Espace agents", login_title: "Connexion", login_help: "Utilisez l'identifiant fourni par votre administrateur.", login_forgot: "Mot de passe oublié ?", login_forgot_msg: "Contactez l'administrateur de la plateforme : il réinitialisera votre mot de passe et vous donnera un mot de passe provisoire, à changer à votre connexion.", pw_show: "Afficher le mot de passe", pw_hide: "Masquer le mot de passe", hero_by: "par Partner Social Care Cameroon", hero_l1: "Une identité, un droit,", hero_l2: "une chance.", hero_lead: "Actes de naissance, CNI, NIU et passeports : chaque dossier suivi étape par étape, de l'enrôlement jusqu'à la remise du document.", feat1_t: "Chaque dossier est suivi", feat1_d: "Étapes, paiements et pièces à jour pour toute l'équipe.", feat2_t: "Reçus et décharges", feat2_d: "Imprimés en un clic, avec le numéro de dossier.", feat3_t: "Accès sécurisé", feat3_d: "Un compte par agent, des droits selon le rôle.", theme_dark: "Mode sombre", theme_light: "Mode clair",
+    login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.", login_offline: "Connexion impossible : le service de données n'est pas disponible. Vérifiez votre connexion internet.", login_locked: "Trop de tentatives. Patientez quelques minutes avant de réessayer.", login_network: "Pas de connexion internet. Vérifiez le réseau puis réessayez.", login_loading: "Connexion en cours…", wait_title: "Veuillez patienter…", wait_login: "Connexion et chargement de vos dossiers.", wait_photos: "Chargement des photos des dossiers.", wait_saving: "Enregistrement en cours.", login_eyebrow: "Espace agents", login_title: "Connexion", login_help: "Utilisez l'identifiant fourni par votre administrateur.", login_forgot: "Mot de passe oublié ?", login_forgot_msg: "Contactez l'administrateur de la plateforme : il réinitialisera votre mot de passe et vous donnera un mot de passe provisoire, à changer à votre connexion.", pw_show: "Afficher le mot de passe", pw_hide: "Masquer le mot de passe", hero_by: "par Partner Social Care Cameroon", hero_l1: "Une identité, un droit,", hero_l2: "une chance.", hero_lead: "Actes de naissance, CNI, NIU et passeports : chaque dossier suivi étape par étape, de l'enrôlement jusqu'à la remise du document.", feat1_t: "Chaque dossier est suivi", feat1_d: "Étapes, paiements et pièces à jour pour toute l'équipe.", feat2_t: "Reçus et décharges", feat2_d: "Imprimés en un clic, avec le numéro de dossier.", feat3_t: "Accès sécurisé", feat3_d: "Un compte par agent, des droits selon le rôle.", theme_dark: "Mode sombre", theme_light: "Mode clair",
     home_title: "Bienvenue sur ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon accompagne les familles vulnérables dans l'obtention de leur acte de naissance, étape par étape, depuis l'identification sur le terrain jusqu'à la remise du document.",
     home_ecoute: "Écoute", home_conseils: "Conseils", home_formation: "Formation", home_accompagnement: "Accompagnement",
@@ -757,7 +767,7 @@ const I18N = {
   },
   en: {
     nav_home: "Home", nav_new: "Registration & Enrollment", nav_list: "Case Tracking", nav_dash: "Dashboard", nav_settings: "Settings",
-    login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.", login_offline: "Cannot sign in: the data service is unavailable. Check your internet connection.", login_locked: "Too many attempts. Wait a few minutes before trying again.", login_network: "No internet connection. Check the network and try again.", login_loading: "Signing in…", login_eyebrow: "Staff area", login_title: "Sign in", login_help: "Use the username given by your administrator.", login_forgot: "Forgot password?", login_forgot_msg: "Contact the platform administrator: they will reset your password and give you a temporary one, to be changed when you sign in.", pw_show: "Show password", pw_hide: "Hide password", hero_by: "by Partner Social Care Cameroon", hero_l1: "One identity, one right,", hero_l2: "one chance.", hero_lead: "Birth certificates, ID cards, tax numbers and passports: every case tracked step by step, from enrollment to document delivery.", feat1_t: "Every case is tracked", feat1_d: "Steps, payments and documents up to date for the whole team.", feat2_t: "Receipts and discharges", feat2_d: "Printed in one click, with the case number.", feat3_t: "Secure access", feat3_d: "One account per agent, rights by role.", theme_dark: "Dark mode", theme_light: "Light mode",
+    login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.", login_offline: "Cannot sign in: the data service is unavailable. Check your internet connection.", login_locked: "Too many attempts. Wait a few minutes before trying again.", login_network: "No internet connection. Check the network and try again.", login_loading: "Signing in…", wait_title: "Please wait…", wait_login: "Signing in and loading your cases.", wait_photos: "Loading case photos.", wait_saving: "Saving.", login_eyebrow: "Staff area", login_title: "Sign in", login_help: "Use the username given by your administrator.", login_forgot: "Forgot password?", login_forgot_msg: "Contact the platform administrator: they will reset your password and give you a temporary one, to be changed when you sign in.", pw_show: "Show password", pw_hide: "Hide password", hero_by: "by Partner Social Care Cameroon", hero_l1: "One identity, one right,", hero_l2: "one chance.", hero_lead: "Birth certificates, ID cards, tax numbers and passports: every case tracked step by step, from enrollment to document delivery.", feat1_t: "Every case is tracked", feat1_d: "Steps, payments and documents up to date for the whole team.", feat2_t: "Receipts and discharges", feat2_d: "Printed in one click, with the case number.", feat3_t: "Secure access", feat3_d: "One account per agent, rights by role.", theme_dark: "Dark mode", theme_light: "Light mode",
     home_title: "Welcome to ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon supports vulnerable families in obtaining their birth certificate, step by step, from field identification through to document handover.",
     home_ecoute: "Listening", home_conseils: "Advice", home_formation: "Training", home_accompagnement: "Support",
@@ -1215,6 +1225,37 @@ function setLoginBusy(on){
   b.disabled = on;
   b.setAttribute('aria-busy', on ? 'true' : 'false');
   b.innerHTML = on ? `<span class="spinner" aria-hidden="true"></span> ${t('login_loading')}` : `${t('login_btn')} ${ico('chevron-right')}`;
+  const card = document.querySelector('.auth-card');
+  if(!card) return;
+  let veil = card.querySelector('.auth-wait');
+  if(on && !veil){
+    veil = document.createElement('div');
+    veil.className = 'auth-wait';
+    veil.setAttribute('role', 'status');
+    veil.innerHTML = `<span class="spinner spinner-lg" aria-hidden="true"></span><strong>${t('wait_title')}</strong><span>${t('wait_login')}</span>`;
+    card.appendChild(veil);
+  } else if(!on && veil){ veil.remove(); }
+}
+
+/* Bulle « Veuillez patienter » pour les attentes dans la plateforme.
+   Elle n'apparaît que si l'attente dépasse 0,4 s, pour ne pas clignoter. */
+const busyTasks = new Map();
+let busySeq = 0;
+function showBusy(message){
+  const id = ++busySeq;
+  const timer = setTimeout(()=>{ busyTasks.set(id, message); drawBusy(); }, 400);
+  return ()=>{ clearTimeout(timer); busyTasks.delete(id); drawBusy(); };
+}
+function drawBusy(){
+  let el = document.getElementById('busy-pill');
+  if(!busyTasks.size){ if(el) el.remove(); return; }
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'busy-pill'; el.className = 'busy-pill'; el.setAttribute('role', 'status');
+    document.body.appendChild(el);
+  }
+  const msg = [...busyTasks.values()].pop();
+  el.innerHTML = `<span class="spinner" aria-hidden="true"></span><span><strong>${t('wait_title')}</strong> ${msg}</span>`;
 }
 
 function enterApp(){
@@ -1491,7 +1532,10 @@ function dossiersFromDocs(docs){
 let hydrating = null;
 function hydrateFiles(){
   // Un seul chargement de photos à la fois
-  if(!hydrating) hydrating = hydrateFilesNow().finally(()=>{ hydrating = null; });
+  if(!hydrating){
+    const done = showBusy(t('wait_photos'));
+    hydrating = hydrateFilesNow().finally(()=>{ done(); hydrating = null; });
+  }
   return hydrating;
 }
 async function hydrateFilesNow(){
@@ -1538,6 +1582,7 @@ async function saveData(){
     alert("Configuration Firebase manquante : les données ne sont pas encore sauvegardées en ligne (voir le commentaire CONFIGURATION FIREBASE en haut du fichier).");
     return false;
   }
+  const doneBusy = showBusy(t('wait_saving'));
   try{
     const pendingFiles = [];
     const dossierWrites = [];
@@ -1595,6 +1640,8 @@ async function saveData(){
     console.error('Erreur de sauvegarde', e);
     alert('Erreur de sauvegarde : ' + e.message);
     return false;
+  }finally{
+    doneBusy();
   }
 }
 

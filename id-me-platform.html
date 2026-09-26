@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'sha256-El9wdi6S8g3JGeQcuo39DZCy3GAfgkN5MKzkR6qprRA=' 'sha256-G3GzLvw+2/+6Sc28DD+83AewFnS+Ng+NcZWE6d8/8nU=' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ID Me Cameroon — Plateforme de suivi des dossiers</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
@@ -589,6 +590,9 @@ async function initFirebase(){
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
         auth = firebase.auth();
+        // La session s'arrête quand l'onglet ou le navigateur est fermé
+        // (important sur les ordinateurs partagés).
+        auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(e=> console.warn('Persistance de session', e));
         dbReady = true;
         connectionError = '';
         return;
@@ -698,8 +702,8 @@ function docUploadRow(key, label, d){
     <span style="font-size:13.5px;">${label}</span>
     ${doc && doc.fileData ? `
       <span style="display:flex; align-items:center; gap:8px; font-size:11.5px;">
-        <img src="${doc.fileData}" style="width:30px; height:30px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
-        <a href="${doc.fileData}" target="_blank" style="color:var(--green-deep); text-decoration:underline; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fv(doc.fileName)||'fichier'}</a>
+        <img src="${safeImg(doc.fileData)}" style="width:30px; height:30px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
+        <a href="${safeImg(doc.fileData)}" target="_blank" style="color:var(--green-deep); text-decoration:underline; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fv(doc.fileName)||'fichier'}</a>
         <button type="button" class="doc-file-remove" data-key="${key}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
       </span>`
     : `<label style="border:1px solid var(--green-deep); color:var(--green-deep); padding:5px 12px; border-radius:5px; font-size:12px; cursor:pointer;">
@@ -753,7 +757,7 @@ function setLang(l){
 const I18N = {
   fr: {
     nav_home: "Accueil", nav_new: "Inscription & Enrôlement", nav_list: "Suivi des dossiers", nav_dash: "Tableau de bord", nav_settings: "Paramétrage",
-    login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.", login_offline: "Connexion impossible : le service de données n'est pas disponible. Vérifiez votre connexion internet.", login_locked: "Trop de tentatives. Patientez quelques minutes avant de réessayer.", login_network: "Pas de connexion internet. Vérifiez le réseau puis réessayez.", login_loading: "Connexion en cours…", wait_title: "Veuillez patienter…", wait_login: "Connexion et chargement de vos dossiers.", wait_photos: "Chargement des photos des dossiers.", wait_saving: "Enregistrement en cours.", login_eyebrow: "Espace agents", login_title: "Connexion", login_help: "Utilisez l'identifiant fourni par votre administrateur.", login_forgot: "Mot de passe oublié ?", login_forgot_msg: "Contactez l'administrateur de la plateforme : il réinitialisera votre mot de passe et vous donnera un mot de passe provisoire, à changer à votre connexion.", pw_show: "Afficher le mot de passe", pw_hide: "Masquer le mot de passe", hero_by: "par Partner Social Care Cameroon", hero_l1: "Une identité, un droit,", hero_l2: "une chance.", hero_lead: "Actes de naissance, CNI, NIU et passeports : chaque dossier suivi étape par étape, de l'enrôlement jusqu'à la remise du document.", feat1_t: "Chaque dossier est suivi", feat1_d: "Étapes, paiements et pièces à jour pour toute l'équipe.", feat2_t: "Reçus et décharges", feat2_d: "Imprimés en un clic, avec le numéro de dossier.", feat3_t: "Accès sécurisé", feat3_d: "Un compte par agent, des droits selon le rôle.", theme_dark: "Mode sombre", theme_light: "Mode clair",
+    login_id: "Identifiant", login_pw: "Mot de passe", login_btn: "Se connecter", login_connecting: "Connexion au service de données en cours…", login_retry: "Réessayer", login_error: "Identifiant ou mot de passe incorrect.", login_offline: "Connexion impossible : le service de données n'est pas disponible. Vérifiez votre connexion internet.", login_locked: "Trop de tentatives. Patientez quelques minutes avant de réessayer.", login_network: "Pas de connexion internet. Vérifiez le réseau puis réessayez.", login_loading: "Connexion en cours…", logout_done: "Vous êtes déconnecté.", logout_idle: "Vous avez été déconnecté après 30 minutes d'inactivité.", logout_elsewhere: "Votre session a été fermée (déconnexion depuis un autre onglet ou session expirée).", logout_disabled: "Votre compte a été désactivé. Contactez votre administrateur.", logout_role: "Votre rôle a été modifié. Reconnectez-vous pour continuer.", wait_title: "Veuillez patienter…", wait_login: "Connexion et chargement de vos dossiers.", wait_photos: "Chargement des photos des dossiers.", wait_saving: "Enregistrement en cours.", login_eyebrow: "Espace agents", login_title: "Connexion", login_help: "Utilisez l'identifiant fourni par votre administrateur.", login_forgot: "Mot de passe oublié ?", login_forgot_msg: "Contactez l'administrateur de la plateforme : il réinitialisera votre mot de passe et vous donnera un mot de passe provisoire, à changer à votre connexion.", pw_show: "Afficher le mot de passe", pw_hide: "Masquer le mot de passe", hero_by: "par Partner Social Care Cameroon", hero_l1: "Une identité, un droit,", hero_l2: "une chance.", hero_lead: "Actes de naissance, CNI, NIU et passeports : chaque dossier suivi étape par étape, de l'enrôlement jusqu'à la remise du document.", feat1_t: "Chaque dossier est suivi", feat1_d: "Étapes, paiements et pièces à jour pour toute l'équipe.", feat2_t: "Reçus et décharges", feat2_d: "Imprimés en un clic, avec le numéro de dossier.", feat3_t: "Accès sécurisé", feat3_d: "Un compte par agent, des droits selon le rôle.", theme_dark: "Mode sombre", theme_light: "Mode clair",
     home_title: "Bienvenue sur ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon accompagne les familles vulnérables dans l'obtention de leur acte de naissance, étape par étape, depuis l'identification sur le terrain jusqu'à la remise du document.",
     home_ecoute: "Écoute", home_conseils: "Conseils", home_formation: "Formation", home_accompagnement: "Accompagnement",
@@ -767,7 +771,7 @@ const I18N = {
   },
   en: {
     nav_home: "Home", nav_new: "Registration & Enrollment", nav_list: "Case Tracking", nav_dash: "Dashboard", nav_settings: "Settings",
-    login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.", login_offline: "Cannot sign in: the data service is unavailable. Check your internet connection.", login_locked: "Too many attempts. Wait a few minutes before trying again.", login_network: "No internet connection. Check the network and try again.", login_loading: "Signing in…", wait_title: "Please wait…", wait_login: "Signing in and loading your cases.", wait_photos: "Loading case photos.", wait_saving: "Saving.", login_eyebrow: "Staff area", login_title: "Sign in", login_help: "Use the username given by your administrator.", login_forgot: "Forgot password?", login_forgot_msg: "Contact the platform administrator: they will reset your password and give you a temporary one, to be changed when you sign in.", pw_show: "Show password", pw_hide: "Hide password", hero_by: "by Partner Social Care Cameroon", hero_l1: "One identity, one right,", hero_l2: "one chance.", hero_lead: "Birth certificates, ID cards, tax numbers and passports: every case tracked step by step, from enrollment to document delivery.", feat1_t: "Every case is tracked", feat1_d: "Steps, payments and documents up to date for the whole team.", feat2_t: "Receipts and discharges", feat2_d: "Printed in one click, with the case number.", feat3_t: "Secure access", feat3_d: "One account per agent, rights by role.", theme_dark: "Dark mode", theme_light: "Light mode",
+    login_id: "Username", login_pw: "Password", login_btn: "Log in", login_connecting: "Connecting to data service…", login_retry: "Retry", login_error: "Incorrect username or password.", login_offline: "Cannot sign in: the data service is unavailable. Check your internet connection.", login_locked: "Too many attempts. Wait a few minutes before trying again.", login_network: "No internet connection. Check the network and try again.", login_loading: "Signing in…", logout_done: "You are signed out.", logout_idle: "You were signed out after 30 minutes of inactivity.", logout_elsewhere: "Your session was closed (signed out in another tab or expired).", logout_disabled: "Your account has been disabled. Contact your administrator.", logout_role: "Your role has changed. Sign in again to continue.", wait_title: "Please wait…", wait_login: "Signing in and loading your cases.", wait_photos: "Loading case photos.", wait_saving: "Saving.", login_eyebrow: "Staff area", login_title: "Sign in", login_help: "Use the username given by your administrator.", login_forgot: "Forgot password?", login_forgot_msg: "Contact the platform administrator: they will reset your password and give you a temporary one, to be changed when you sign in.", pw_show: "Show password", pw_hide: "Hide password", hero_by: "by Partner Social Care Cameroon", hero_l1: "One identity, one right,", hero_l2: "one chance.", hero_lead: "Birth certificates, ID cards, tax numbers and passports: every case tracked step by step, from enrollment to document delivery.", feat1_t: "Every case is tracked", feat1_d: "Steps, payments and documents up to date for the whole team.", feat2_t: "Receipts and discharges", feat2_d: "Printed in one click, with the case number.", feat3_t: "Secure access", feat3_d: "One account per agent, rights by role.", theme_dark: "Dark mode", theme_light: "Light mode",
     home_title: "Welcome to ID Me Cameroon",
     home_intro: "Partner Social Care Cameroon supports vulnerable families in obtaining their birth certificate, step by step, from field identification through to document handover.",
     home_ecoute: "Listening", home_conseils: "Advice", home_formation: "Training", home_accompagnement: "Support",
@@ -963,6 +967,10 @@ function canWriteConfig(){ return !!currentUser && currentUser.role !== 'Agent';
 function stopSync(){ syncUnsubscribers.forEach(fn=>{ try{ fn(); }catch(e){} }); syncUnsubscribers = []; }
 
 async function loadData(){
+  try{
+    const m = sessionStorage.getItem(AUTH_MSG_KEY);
+    if(m){ loginError = m; sessionStorage.removeItem(AUTH_MSG_KEY); }
+  }catch(e){}
   renderLogin();
   await initFirebase();
   if(!dbReady){
@@ -997,6 +1005,7 @@ function startAuthListener(){
 
 async function handleAuthUser(fbUser){
   if(fbUser) setLoginBusy(true);
+  if(!fbUser && currentUser){ endSession(t('logout_elsewhere')); return; }
   if(!fbUser){
     stopSync();
     currentUser = null;
@@ -1155,6 +1164,13 @@ async function loadAppData(){
 
   // Synchronisation en temps réel : si un collaborateur enregistre un
   // dossier, on récupère la mise à jour automatiquement.
+  syncUnsubscribers.push(db.collection('users').doc(currentUser.uid).onSnapshot(snap=>{
+    if(!currentUser) return;
+    const prof = snap.exists ? snap.data() : null;
+    if(!prof || prof.active === false) endSession(t('logout_disabled'));
+    else if(prof.role !== currentUser.role) endSession(t('logout_role'));
+  }, err=> console.error('Surveillance du compte', err)));
+
   syncUnsubscribers.push(db.collection('dossiers').onSnapshot(snap=>{
     if(snap.metadata && snap.metadata.hasPendingWrites) return; // nos propres enregistrements en cours
     dossiers = dossiersFromDocs(snap.docs);
@@ -1260,7 +1276,7 @@ function drawBusy(){
 
 function enterApp(){
   loginError = '';
-  addLog('Connexion', `${currentUser.nom} (${currentUser.role})`);
+  addLog('Connexion', `${fv(currentUser.nom)} (${fv(currentUser.role)})`);
   try{
     if(!formDraft.id) formDraft.id = nextId();
     document.getElementById('login-root').style.display = 'none';
@@ -1276,14 +1292,36 @@ function enterApp(){
   }
 }
 
-async function logout(){
+/* --- Fin de session ---
+   Toute déconnexion (volontaire, inactivité, compte désactivé, autre onglet)
+   se termine par un rechargement complet de la page : plus aucun dossier ne reste
+   en mémoire, à l'écran, dans une fenêtre ouverte ou dans la zone d'impression. */
+const AUTH_MSG_KEY = 'idme-auth-msg';
+let endingSession = false;
+async function endSession(message){
+  if(endingSession) return;
+  endingSession = true;
   stopSync();
-  currentUser = null;
-  users = [];
-  document.getElementById('app-root').style.display = 'none';
-  if(auth) await auth.signOut();
-  renderLogin();
+  try{ if(message) sessionStorage.setItem(AUTH_MSG_KEY, message); }catch(e){}
+  try{ if(auth) await auth.signOut(); }catch(e){}
+  location.replace(location.pathname + location.search);
 }
+async function logout(){
+  if(currentUser) await addLog('Déconnexion', `${currentUser.nom} (${currentUser.role})`);
+  await endSession(t('logout_done'));
+}
+
+// Déconnexion automatique après une période d'inactivité
+const IDLE_LIMIT_MIN = 30;
+let lastActivity = Date.now();
+['click','keydown','mousemove','touchstart','scroll'].forEach(ev=>
+  document.addEventListener(ev, ()=>{ lastActivity = Date.now(); }, { passive:true, capture:true }));
+setInterval(()=>{
+  if(currentUser && Date.now() - lastActivity > IDLE_LIMIT_MIN*60000) endSession(t('logout_idle'));
+}, 30000);
+
+// Page restaurée depuis le cache du navigateur (bouton Retour) : on la recharge
+window.addEventListener('pageshow', e=>{ if(e.persisted) location.reload(); });
 
 /* --- Changement de mot de passe (par l'utilisateur lui-même) --- */
 function openPasswordModal(forced){
@@ -1596,11 +1634,11 @@ async function saveData(){
       const taken = await db.collection('dossiers').doc(d.id).get();
       if(!taken.exists) continue;
       const m = String(d.id).match(/^(PSC-EC\d{4}-)(\d{4,})$/);
-      if(!m){ throw new Error(`Le numéro ${d.id} est déjà utilisé par un autre dossier.`); }
+      if(!m){ throw new Error(`Le numéro ${fv(d.id)} est déjà utilisé par un autre dossier.`); }
       let n = +m[2], freeId;
       do{ n++; freeId = m[1] + String(n).padStart(4,'0'); }
       while(dossiers.some(x=> x !== d && x.id === freeId) || (await db.collection('dossiers').doc(freeId).get()).exists);
-      alert(`Le numéro ${d.id} vient d'être attribué à un autre dossier par un collègue. Ce dossier reçoit le numéro ${freeId}.`);
+      alert(`Le numéro ${fv(d.id)} vient d'être attribué à un autre dossier par un collègue. Ce dossier reçoit le numéro ${freeId}.`);
       if(formDraft && formDraft.id === d.id) formDraft.id = freeId;
       d.id = freeId;
     }
@@ -1674,7 +1712,7 @@ function showConfirmModal(message){
   modal.innerHTML = `
     <div style="background:var(--paper-raised); border-radius:10px; padding:28px 26px; max-width:320px; width:90%; text-align:center; box-shadow:0 12px 32px rgba(0,0,0,0.25);">
       <div style="width:48px; height:48px; border-radius:50%; background:var(--brand-dark); color:#fff; font-size:24px; display:flex; align-items:center; justify-content:center; margin:0 auto 14px;">${ico('check')}</div>
-      <p style="font-size:15px; font-weight:600; color:var(--ink); margin:0 0 20px;">${message}</p>
+      <p style="font-size:15px; font-weight:600; color:var(--ink); margin:0 0 20px;">${fv(message)}</p>
       <button type="button" id="app-confirm-ok-btn" class="btn btn-primary" style="width:100%;">OK</button>
     </div>`;
   modal.style.display = 'flex';
@@ -1689,7 +1727,7 @@ function showToast(message){
     toast.style.cssText = 'position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-20px); background:var(--brand-dark); color:#fff; padding:11px 22px; border-radius:6px; font-size:13.5px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,0.2); z-index:9999; opacity:0; transition:opacity .25s, transform .25s; display:flex; align-items:center; gap:8px;';
     document.body.appendChild(toast);
   }
-  toast.innerHTML = `${ico('check')} ${message}`;
+  toast.innerHTML = `${ico('check')} ${fv(message)}`;
   clearTimeout(toast._hideTimer);
   requestAnimationFrame(()=>{
     toast.style.opacity = '1';
@@ -1730,7 +1768,7 @@ function printReceiptA4(d){
         </div>
         <table style="width:100%; border-collapse:collapse; font-size:13px;">
           <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Bénéficiaire</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right; font-weight:600;">${fv(d.nom)} ${fv(d.prenom)}</td></tr>
-          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Motif</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${(d.motif_paiement||[]).join(', ') || '—'}</td></tr>
+          <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Motif</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${fv((d.motif_paiement||[]).join(', ')) || '—'}</td></tr>
           <tr><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft);">Date</td><td style="padding:9px 0; border-bottom:1px solid var(--line-soft); text-align:right;">${fv(d.paiement_date) || '—'}</td></tr>
         </table>
         <div style="background:var(--paper); border-radius:8px; padding:14px 16px; margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
@@ -1771,7 +1809,7 @@ function printReceiptTicket(d){
       <div>Bénéficiaire :</div>
       <div style="font-weight:700;">${(fv(d.nom)+' '+fv(d.prenom)).toUpperCase()}</div>
       <div style="margin-top:4px;">Motif :</div>
-      <div>${(d.motif_paiement||[]).join(', ') || '—'}</div>
+      <div>${fv((d.motif_paiement||[]).join(', ')) || '—'}</div>
       <div style="border-top:1px dashed #888; margin:8px 0;"></div>
       <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
         <span>TOTAL</span><span>${fv(d.paiement_montant) || '—'} F</span>
@@ -2075,7 +2113,7 @@ function wireExoneration(form, draft, rerender){
     draft.paiement_exonere = true;
     draft.exoneration_motif = motif;
     draft.exoneration_par = currentUser.nom;
-    addLog('Exonération de paiement accordée', `${draft.id||''} — ${motif}`);
+    addLog('Exonération de paiement accordée', `${fv(draft.id)} — ${motif}`);
     rerender();
   });
 }
@@ -2334,10 +2372,17 @@ function wireStep4(form, draft, rerender){
   });
 }
 
-function fv(v){ return v ? String(v).replace(/"/g,'&quot;') : ''; }
+// Neutralise un texte avant de l'insérer dans la page (contenu ou attribut).
+// Indispensable : les champs des dossiers sont saisis par les utilisateurs.
+function fv(v){
+  if(!v) return ''; // même comportement qu'avant pour les valeurs vides (0, false, null…)
+  return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+// N'accepte que les images en data: URL (photos compressées par l'application).
+function safeImg(v){ return (typeof v === 'string' && /^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+\/=\s]+$/.test(v)) ? v : ''; }
 function selectOpts(options, current){
   return `<option value=""${!current?' selected':''}>—</option>` +
-    options.map(o=>`<option${o===current?' selected':''}>${o}</option>`).join('');
+    options.map(o=>`<option${o===current?' selected':''}>${fv(o)}</option>`).join('');
 }
 
 const STEP_SECTIONS = [
@@ -2356,7 +2401,7 @@ const STEP_SECTIONS = [
     </div>
     <div class="field"><label>Centre d'état civil concerné</label>
       ${searchableField('centre', [
-        ...(d.commune ? [`Centre d'état civil de ${d.commune}`] : []),
+        ...(d.commune ? [`Centre d'état civil de ${fv(d.commune)}`] : []),
         ...(d.departement && DEPT_CHEFLIEU[d.departement] ? [`Centre d'état civil de ${DEPT_CHEFLIEU[d.departement]}`] : [])
       ], d.centre, "Centre d'état civil…")}
     </div>
@@ -2590,7 +2635,7 @@ const STEP_SECTIONS = [
     <div style="height:1px; background:rgba(255,255,255,0.15); margin:6px 0;"></div>
     <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
       <span style="font-size:11px; color:#B8C4BC;">Motif de non-déclaration (90 jours)</span>
-      <span style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:14px; color:#fff; text-align:right;">${(d.motif_non_declaration||[]).join(', ') || 'Non renseigné'}</span>
+      <span style="font-family:'Atkinson Hyperlegible',system-ui,sans-serif; font-size:14px; color:#fff; text-align:right;">${fv((d.motif_non_declaration||[]).join(', ')) || 'Non renseigné'}</span>
     </div>
   </div>
   <div class="grid">
@@ -2609,23 +2654,23 @@ const STEP_SECTIONS = [
     ${d.pieces.map(p=>`
       <div style="display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-soft); flex-wrap:wrap;">
         <span style="flex:1; font-size:13.5px; min-width:140px;">${fv(p.nom)}</span>
-        <select class="piece-statut" data-piece-id="${p.id}" style="font-size:13px; padding:5px 8px; border:1px solid var(--line); border-radius:5px; background:var(--paper-raised);">
+        <select class="piece-statut" data-piece-id="${fv(p.id)}" style="font-size:13px; padding:5px 8px; border:1px solid var(--line); border-radius:5px; background:var(--paper-raised);">
           <option${p.statut==='Manquante'?' selected':''}>Manquante</option>
           <option${p.statut==='Fournie'?' selected':''}>Fournie</option>
         </select>
         ${p.statut==='Fournie' ? (
           p.fileData ? `
           <span style="display:flex; align-items:center; gap:6px; font-size:11.5px;">
-            <img src="${p.fileData}" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
-            <a href="${p.fileData}" target="_blank" style="color:var(--green-deep); text-decoration:underline; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fv(p.fileName)||'fichier'}</a>
-            <button type="button" class="piece-file-remove" data-piece-id="${p.id}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
+            <img src="${safeImg(p.fileData)}" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
+            <a href="${safeImg(p.fileData)}" target="_blank" style="color:var(--green-deep); text-decoration:underline; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fv(p.fileName)||'fichier'}</a>
+            <button type="button" class="piece-file-remove" data-piece-id="${fv(p.id)}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
           </span>`
           : `<label style="border:1px solid var(--green-deep); color:var(--green-deep); padding:4px 10px; border-radius:5px; font-size:11.5px; cursor:pointer;">
               ${ico('clip')} Charger
-              <input type="file" accept="image/*" class="piece-file-input" data-piece-id="${p.id}" style="display:none;">
+              <input type="file" accept="image/*" class="piece-file-input" data-piece-id="${fv(p.id)}" style="display:none;">
             </label>`
         ) : `<span style="font-size:11px; color:var(--ink-soft);">Chargement dispo une fois fournie</span>`}
-        <button type="button" class="piece-remove" data-piece-id="${p.id}" style="all:unset; cursor:pointer; color:var(--red); font-size:14px; padding:0 4px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
+        <button type="button" class="piece-remove" data-piece-id="${fv(p.id)}" style="all:unset; cursor:pointer; color:var(--red); font-size:14px; padding:0 4px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
       </div>`).join('')}
   </div>
   <div style="display:flex; gap:8px; margin-top:12px;">
@@ -2698,7 +2743,7 @@ const STEP_SECTIONS = [
           <div style="font-weight:600; font-size:13px; margin-bottom:8px;">${meta.label}</div>
           ${(d[meta.field]||[]).length ? (d[meta.field]||[]).map((doc,di)=>`
             <div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--line-soft);">
-              <img src="${doc.fileData}" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
+              <img src="${safeImg(doc.fileData)}" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1px solid var(--line);">
               <span style="flex:1; font-size:13px;">${fv(doc.nom)}</span>
               <button type="button" class="cycle-doc-remove" data-field="${meta.field}" data-index="${di}" style="all:unset; cursor:pointer; color:var(--red); font-size:13px;" aria-label="Retirer" title="Retirer">${ico('x')}</button>
             </div>`).join('') : `<p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 8px;">Aucun document chargé pour l'instant.</p>`}
@@ -2733,15 +2778,15 @@ const STEP_SECTIONS = [
       <div style="border:1px solid ${noPieces?'var(--warn-line)':'var(--line)'}; border-radius:6px; padding:10px 12px; margin-bottom:10px;">
         <div class="grid">
           <div class="field"><label>Destination</label>
-            <select class="envoi-destination" data-envoi-id="${e.id}">${DESTINATIONS.map(dd=>`<option${dd===e.destination?' selected':''}>${dd}</option>`).join('')}</select>
+            <select class="envoi-destination" data-envoi-id="${fv(e.id)}">${DESTINATIONS.map(dd=>`<option${dd===e.destination?' selected':''}>${fv(dd)}</option>`).join('')}</select>
           </div>
-          <div class="field"><label>Motif</label><input class="envoi-motif" data-envoi-id="${e.id}" value="${fv(e.motif)}"></div>
-          <div class="field"><label>Date d'envoi</label><input type="date" class="envoi-date-envoi" data-envoi-id="${e.id}" value="${fv(e.date_envoi)}" min="2020-01-01" max="2035-12-31"></div>
+          <div class="field"><label>Motif</label><input class="envoi-motif" data-envoi-id="${fv(e.id)}" value="${fv(e.motif)}"></div>
+          <div class="field"><label>Date d'envoi</label><input type="date" class="envoi-date-envoi" data-envoi-id="${fv(e.id)}" value="${fv(e.date_envoi)}" min="2020-01-01" max="2035-12-31"></div>
           <div class="field"><label>Statut</label>
-            <select class="envoi-statut" data-envoi-id="${e.id}">${ENVOI_STATUTS.map(s=>`<option${s===e.statut?' selected':''}>${s}</option>`).join('')}</select>
+            <select class="envoi-statut" data-envoi-id="${fv(e.id)}">${ENVOI_STATUTS.map(s=>`<option${s===e.statut?' selected':''}>${s}</option>`).join('')}</select>
           </div>
-          <div class="field"><label>Date de retour</label><input type="date" class="envoi-retour" data-envoi-id="${e.id}" value="${fv(e.date_retour)}" min="2020-01-01" max="2035-12-31"></div>
-          ${e.statut==='Retourné' ? `<div class="field"><label>Motif du retour</label><input class="envoi-motif-retour" data-envoi-id="${e.id}" value="${fv(e.motif_retour)}"></div>` : ''}
+          <div class="field"><label>Date de retour</label><input type="date" class="envoi-retour" data-envoi-id="${fv(e.id)}" value="${fv(e.date_retour)}" min="2020-01-01" max="2035-12-31"></div>
+          ${e.statut==='Retourné' ? `<div class="field"><label>Motif du retour</label><input class="envoi-motif-retour" data-envoi-id="${fv(e.id)}" value="${fv(e.motif_retour)}"></div>` : ''}
         </div>
 
         <div style="margin-top:12px; border-top:1px solid var(--line-soft); padding-top:10px;">
@@ -2751,20 +2796,20 @@ const STEP_SECTIONS = [
               const conflict = pieceAlreadySentElsewhere(d, p.id, e.destination, e.id);
               const checked = (e.pieces_envoyees||[]).includes(p.id);
               return `<label style="display:flex; align-items:center; gap:8px; font-size:13px; padding:3px 0; ${conflict?'color:var(--ink-soft);':''}">
-                <input type="checkbox" class="envoi-piece-check" data-envoi-id="${e.id}" data-piece-id="${p.id}" ${checked?'checked':''} ${conflict?'disabled':''}>
+                <input type="checkbox" class="envoi-piece-check" data-envoi-id="${fv(e.id)}" data-piece-id="${fv(p.id)}" ${checked?'checked':''} ${conflict?'disabled':''}>
                 ${fv(p.nom)}${conflict?` <em style="font-size:11px;">— déjà envoyé le ${fv(conflict.date_envoi)||'—'}</em>`:''}
               </label>`;
             }).join('')}
-            <button type="button" class="btn btn-ghost envoi-piece-done" data-envoi-id="${e.id}" style="margin-top:8px; font-size:12.5px; padding:6px 12px;">Terminé</button>
+            <button type="button" class="btn btn-ghost envoi-piece-done" data-envoi-id="${fv(e.id)}" style="margin-top:8px; font-size:12.5px; padding:6px 12px;">Terminé</button>
           ` : `
             <div style="font-size:13px;">
-              ${noPieces ? `<span style="color:var(--gold);">${ico('alert')} Aucune pièce associée à cet envoi</span>` : `<span style="color:var(--ink-soft);">Pièces :</span> ${piecesNames.join(', ')}`}
+              ${noPieces ? `<span style="color:var(--gold);">${ico('alert')} Aucune pièce associée à cet envoi</span>` : `<span style="color:var(--ink-soft);">Pièces :</span> ${fv(piecesNames.join(', '))}`}
             </div>
-            <button type="button" class="btn btn-ghost envoi-piece-toggle" data-envoi-id="${e.id}" style="margin-top:8px; font-size:12.5px; padding:6px 12px;">${noPieces?'Ajouter des pièces':'Modifier les pièces'}</button>
+            <button type="button" class="btn btn-ghost envoi-piece-toggle" data-envoi-id="${fv(e.id)}" style="margin-top:8px; font-size:12.5px; padding:6px 12px;">${noPieces?'Ajouter des pièces':'Modifier les pièces'}</button>
           `}
         </div>
 
-        <button type="button" class="btn envoi-cancel" data-envoi-id="${e.id}" style="margin-top:10px; font-size:12.5px; padding:6px 12px; background:transparent; border:1px solid var(--red); color:var(--red); border-radius:5px; cursor:pointer;">Annuler cet envoi</button>
+        <button type="button" class="btn envoi-cancel" data-envoi-id="${fv(e.id)}" style="margin-top:10px; font-size:12.5px; padding:6px 12px; background:transparent; border:1px solid var(--red); color:var(--red); border-radius:5px; cursor:pointer;">Annuler cet envoi</button>
       </div>`;
     }).join('') : `<p style="color:var(--ink-soft); font-size:13px;">Aucun envoi enregistré pour l'instant.</p>`}
   </div>
@@ -2772,7 +2817,7 @@ const STEP_SECTIONS = [
   <p style="font-size:13px; font-weight:600; color:var(--ink); margin:20px 0 8px;">Nouvel envoi</p>
   <div class="grid">
     <div class="field"><label>Destination</label>
-      <select id="new-envoi-dest">${DESTINATIONS.map(dd=>`<option${dd===newEnvoiDest?' selected':''}>${dd}</option>`).join('')}</select>
+      <select id="new-envoi-dest">${DESTINATIONS.map(dd=>`<option${dd===newEnvoiDest?' selected':''}>${fv(dd)}</option>`).join('')}</select>
     </div>
     <div class="field"><label>Motif</label><input id="new-envoi-motif" value="${fv(newEnvoiMotif)}" placeholder="Ex : authentification, complément de dossier"></div>
     <div class="field"><label>Date d'envoi</label><input type="date" id="new-envoi-date" value="${newEnvoiDate}"></div>
@@ -2784,7 +2829,7 @@ const STEP_SECTIONS = [
         const conflict = pieceAlreadySentElsewhere(d, p.id, newEnvoiDest, null);
         const checked = newEnvoiPieces.includes(p.id);
         return `<label style="display:flex; align-items:center; gap:8px; font-size:13px; padding:3px 0; ${conflict?'color:var(--ink-soft);':''}">
-          <input type="checkbox" class="new-envoi-piece-check" data-piece-id="${p.id}" ${checked?'checked':''} ${conflict?'disabled':''}>
+          <input type="checkbox" class="new-envoi-piece-check" data-piece-id="${fv(p.id)}" ${checked?'checked':''} ${conflict?'disabled':''}>
           ${fv(p.nom)}${conflict?` <em style="font-size:11px;">— déjà envoyé le ${fv(conflict.date_envoi)||'—'}</em>`:''}
         </label>`;
       }).join('')}
@@ -2887,7 +2932,7 @@ function render(){
   if(settingsBtn) settingsBtn.style.display = (currentUser && currentUser.role !== 'Agent') ? 'flex' : 'none';
   if((view==='dash' || view==='settings') && currentUser && currentUser.role==='Agent') view = 'list';
   const badge = document.getElementById('user-badge');
-  if(badge && currentUser) badge.innerHTML = `<strong>${currentUser.nom}</strong><br><span style="font-size:11px;">${currentUser.role}</span>`;
+  if(badge && currentUser) badge.innerHTML = `<strong>${fv(currentUser.nom)}</strong><br><span style="font-size:11px;">${fv(currentUser.role)}</span>`;
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
   const navHome = document.getElementById('nav-home'); if(navHome) navHome.textContent = t('nav_home');
   const navNew = document.getElementById('nav-new'); if(navNew) navNew.textContent = t('nav_new');
@@ -2999,9 +3044,9 @@ function renderSettingsUsers(){
                 ${u.mustChangePassword ? `<div style="font-size:11.5px; color:var(--ink-soft); margin-top:3px;">Mot de passe provisoire</div>` : ''}</td>
             <td style="text-align:right; white-space:nowrap;">
               ${protectedUser ? `<span style="font-size:12px; color:var(--ink-soft);">Réservé Super Admin</span>` : `
-              <button type="button" class="user-edit-btn" data-uid="${u.uid}" style="all:unset; cursor:pointer; color:var(--green-deep); font-size:12.5px; text-decoration:underline; margin-right:14px;">Modifier</button>
-              ${self || !active ? '' : `<button type="button" class="user-reset-btn" data-uid="${u.uid}" style="all:unset; cursor:pointer; color:var(--green-deep); font-size:12.5px; text-decoration:underline; margin-right:14px;">Réinitialiser le mot de passe</button>`}
-              ${self ? '' : `<button type="button" class="user-toggle-btn" data-uid="${u.uid}" style="all:unset; cursor:pointer; color:${active?'var(--red)':'var(--green-deep)'}; font-size:12.5px; text-decoration:underline;">${active ? 'Désactiver' : 'Réactiver'}</button>`}`}
+              <button type="button" class="user-edit-btn" data-uid="${fv(u.uid)}" style="all:unset; cursor:pointer; color:var(--green-deep); font-size:12.5px; text-decoration:underline; margin-right:14px;">Modifier</button>
+              ${self || !active ? '' : `<button type="button" class="user-reset-btn" data-uid="${fv(u.uid)}" style="all:unset; cursor:pointer; color:var(--green-deep); font-size:12.5px; text-decoration:underline; margin-right:14px;">Réinitialiser le mot de passe</button>`}
+              ${self ? '' : `<button type="button" class="user-toggle-btn" data-uid="${fv(u.uid)}" style="all:unset; cursor:pointer; color:${active?'var(--red)':'var(--green-deep)'}; font-size:12.5px; text-decoration:underline;">${active ? 'Désactiver' : 'Réactiver'}</button>`}`}
             </td>
           </tr>`;
         }).join('') : `<tr><td colspan="5" style="color:var(--ink-soft);">Aucun compte chargé.</td></tr>`}
@@ -3050,7 +3095,7 @@ function generateTempPassword(){
 
 async function resetUserPassword(u){
   const temp = generateTempPassword();
-  const email = `${u.username}.r${Date.now().toString(36)}@${firebaseConfig.authDomain}`;
+  const email = `${fv(u.username)}.r${Date.now().toString(36)}@${firebaseConfig.authDomain}`;
   const newUid = await createAuthAccount(email, temp);
   const now = new Date().toISOString();
   const profile = { ...u };
@@ -3060,7 +3105,7 @@ async function resetUserPassword(u){
   batch.update(db.collection('users').doc(u.uid), { active:false, replacedBy: newUid });
   batch.set(db.collection('logins').doc(u.username), { email, uid: newUid });
   await batch.commit();
-  addLog('Mot de passe réinitialisé', `${u.nom} (${u.username})`);
+  addLog('Mot de passe réinitialisé', `${fv(u.nom)} (${fv(u.username)})`);
   await loadUsers();
   return temp;
 }
@@ -3083,7 +3128,7 @@ function showTempPassword(u, temp){
   </div>`;
   document.getElementById('tmp-copy').addEventListener('click', async ()=>{
     const btn = document.getElementById('tmp-copy');
-    try{ await navigator.clipboard.writeText(`Identifiant : ${u.username}\nMot de passe provisoire : ${temp}`); btn.textContent = 'Copié'; }
+    try{ await navigator.clipboard.writeText(`Identifiant : ${fv(u.username)}\nMot de passe provisoire : ${temp}`); btn.textContent = 'Copié'; }
     catch(e){
       const range = document.createRange(); range.selectNodeContents(document.getElementById('tmp-pw'));
       const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
@@ -3231,7 +3276,7 @@ function wireSettings(){
       const u = users.find(x=>x.uid===btn.dataset.uid);
       if(!u) return;
       if(isAdminOrAbove(u.role) && currentUser.role!=='Super Admin'){ alert('Seul un Super Admin peut réinitialiser ce compte.'); return; }
-      if(!confirm(`Réinitialiser le mot de passe de ${u.nom} ? Son mot de passe actuel ne fonctionnera plus.`)) return;
+      if(!confirm(`Réinitialiser le mot de passe de ${fv(u.nom)} ? Son mot de passe actuel ne fonctionnera plus.`)) return;
       btn.disabled = true;
       try{
         const temp = await resetUserPassword(u);
@@ -3249,7 +3294,7 @@ function wireSettings(){
       if(!u) return;
       if(isAdminOrAbove(u.role) && currentUser.role!=='Super Admin'){ alert('Seul un Super Admin peut modifier ce compte.'); return; }
       const activate = u.active === false;
-      if(!confirm(activate ? `Réactiver le compte de ${u.nom} ?` : `Désactiver le compte de ${u.nom} ? Il ne pourra plus se connecter.`)) return;
+      if(!confirm(activate ? `Réactiver le compte de ${fv(u.nom)} ?` : `Désactiver le compte de ${fv(u.nom)} ? Il ne pourra plus se connecter.`)) return;
       try{
         await db.collection('users').doc(u.uid).update({ active: activate });
         addLog(activate ? 'Utilisateur réactivé' : 'Utilisateur désactivé', u.nom);
@@ -3413,13 +3458,13 @@ function renderForm(){
   <div class="page-head">
     <h1>${t('page_new')}</h1>
     <p>Fiche individuelle</p>
-    <p style="margin-top:8px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:15px;">${formDraft.id}</strong> — notez-le dès maintenant, il suit le dossier jusqu'à la clôture.</p>
+    <p style="margin-top:8px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:15px;">${fv(formDraft.id)}</strong> — notez-le dès maintenant, il suit le dossier jusqu'à la clôture.</p>
   </div>
   ${pendingDuplicate ? `
     <div class="alert alert-warn">
       <strong>${ico('alert')}</strong>
       <div>Attention : une personne présentant des informations similaires existe déjà
-      (${pendingDuplicate.map(d=>`<strong>${d.id}</strong> — ${d.nom||''} ${d.prenom||''}, ${d.commune||'commune non renseignée'}`).join(' ; ')}).
+      (${pendingDuplicate.map(d=>`<strong>${fv(d.id)}</strong> — ${fv(d.nom)} ${fv(d.prenom)}, ${fv(d.commune)||'commune non renseignée'}`).join(' ; ')}).
       Vérifiez avant de continuer, ou soumettez à nouveau pour confirmer la création d'un nouveau dossier distinct.</div>
     </div>` : ''}
   <form id="dossier-form" data-mode="new">
@@ -3494,7 +3539,7 @@ function renderModuleFormOther(){
   return `
   <div class="page-head">
     <h1>${mod.icon} ${fv(d.module)}</h1>
-    <p style="margin-top:4px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:15px;">${d.id}</strong></p>
+    <p style="margin-top:4px; font-size:13px;">Identifiant attribué : <strong style="color:var(--green-deep); font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:15px;">${fv(d.id)}</strong></p>
   </div>
   <form id="module-form" data-mode="new">
     <div class="wizard-head">
@@ -3602,7 +3647,7 @@ function renderList(){
         <select id="filter-destination">
           <option value=""${!filterDestination?' selected':''}>Toutes destinations</option>
           <option value="__envoyes__"${filterDestination==='__envoyes__'?' selected':''}>Dossiers envoyés (toutes)</option>
-          ${DESTINATIONS.map(dd=>`<option value="${dd}"${dd===filterDestination?' selected':''}>${dd}</option>`).join('')}
+          ${DESTINATIONS.map(dd=>`<option value="${fv(dd)}"${dd===filterDestination?' selected':''}>${fv(dd)}</option>`).join('')}
         </select>
       </div>
       <div class="field"><label>Situation du dossier</label>
@@ -3654,14 +3699,14 @@ function renderList(){
         const p = progressInfo(d);
         const label = p.closed ? `${STEP_ICONS[STEP_ICONS.length-1]} Clôturé` : `${STEP_ICONS[p.currentIndex]} ${STEP_LABELS[p.currentIndex]}`;
         return `
-        <tr class="row-clickable" data-id="${d.id}">
-          <td class="mono">${d.id}</td>
-          <td>${d.nom||''} ${d.prenom||''}</td>
-          <td>${d.commune||'—'} / ${d.village||'—'}</td>
+        <tr class="row-clickable" data-id="${fv(d.id)}">
+          <td class="mono">${fv(d.id)}</td>
+          <td>${fv(d.nom)} ${fv(d.prenom)}</td>
+          <td>${fv(d.commune)||'—'} / ${fv(d.village)||'—'}</td>
           <td><span class="badge ${badgeClass(p.currentIndex, p.closed)}">${label}</span></td>
-          <td>${(d.envois||[]).length ? d.envois.map(e=>`<span class="badge ${e.statut==='Reçu'||e.statut==='Complété'?'badge-done':e.statut==='Retourné'?'badge-mairie':'badge-new'}" style="margin:2px 4px 2px 0;">${e.destination}</span>`).join('') : '—'}</td>
-          <td>${d.agent||'—'}</td>
-          <td>${d.date_enrolement||'—'}</td>
+          <td>${(d.envois||[]).length ? d.envois.map(e=>`<span class="badge ${e.statut==='Reçu'||e.statut==='Complété'?'badge-done':e.statut==='Retourné'?'badge-mairie':'badge-new'}" style="margin:2px 4px 2px 0;">${fv(e.destination)}</span>`).join('') : '—'}</td>
+          <td>${fv(d.agent)||'—'}</td>
+          <td>${fv(d.date_enrolement)||'—'}</td>
         </tr>`;
       }).join('')}
     </tbody>
@@ -3802,10 +3847,10 @@ function renderDetail(d){
   document.getElementById('modal-root').innerHTML = `
     <div class="modal-back" id="modal-back">
       <div class="modal">
-        <h2>${d.nom||''} ${d.prenom||''}</h2>
-        <p style="color:var(--ink-soft); font-size:12.5px; margin:2px 0 16px;">${d.id}</p>
+        <h2>${fv(d.nom)} ${fv(d.prenom)}</h2>
+        <p style="color:var(--ink-soft); font-size:12.5px; margin:2px 0 16px;">${fv(d.id)}</p>
         ${editLockLevel==='full' ? `<div class="alert alert-warn">${ico('lock')} Dossier clôturé — modification réservée à l'administrateur.</div>` : ''}
-        <form id="edit-form" data-mode="edit" data-id="${d.id}">
+        <form id="edit-form" data-mode="edit" data-id="${fv(d.id)}">
           ${progressBadgeHtml(editDraft)}
           ${wizardHtml(editDraft, editStep, 'Enregistrer les modifications')}
         </form>
@@ -3821,7 +3866,7 @@ function renderDetail(d){
         <div class="section-block" style="margin-top:24px;">
           <h3>Journal de suivi</h3>
           <div id="journal-list">
-            ${journal.length ? journal.map(j=>`<div class="detail-row"><span class="k">${j.date}</span><span class="v">${j.note}</span></div>`).join('') : "<p style=\"color:var(--ink-soft); font-size:13px;\">Aucune entrée pour l'instant — chaque nouveau document, rapport ou mise à jour peut être noté ici.</p>"}
+            ${journal.length ? journal.map(j=>`<div class="detail-row"><span class="k">${fv(j.date)}</span><span class="v">${fv(j.note)}</span></div>`).join('') : "<p style=\"color:var(--ink-soft); font-size:13px;\">Aucune entrée pour l'instant — chaque nouveau document, rapport ou mise à jour peut être noté ici.</p>"}
           </div>
           <div class="field" style="margin-top:12px;">
             <label>Ajouter une entrée</label>
@@ -3850,7 +3895,7 @@ function renderDetail(d){
     if(deleteArmedId === d.id){
       dossiers = dossiers.filter(x=>x.id!==d.id);
       await saveData();
-      addLog('Dossier supprimé', `${d.id} — ${d.nom||''} ${d.prenom||''}`);
+      addLog('Dossier supprimé', `${fv(d.id)} — ${fv(d.nom)} ${fv(d.prenom)}`);
       deleteArmedId = null;
       closeModal();
       render();
@@ -3873,7 +3918,7 @@ function renderDetail(d){
     if(!paymentSatisfied(editDraft)){ renderDetail(d); return; }
     Object.assign(d, editDraft);
     await saveData();
-    addLog('Paiement enregistré', `${d.id} — ${d.nom||''} ${d.prenom||''}`);
+    addLog('Paiement enregistré', `${fv(d.id)} — ${fv(d.nom)} ${fv(d.prenom)}`);
     showConfirmModal(t('toast_paid'));
     editStep = Math.min(STEP_SECTIONS.length-1, editStep+1);
     renderDetail(d);
@@ -3883,7 +3928,7 @@ function renderDetail(d){
     captureStep(form, editDraft);
     Object.assign(d, editDraft);
     await saveData();
-    addLog('Dossier enregistré (étape)', `${d.id} — ${d.nom||''} ${d.prenom||''}`);
+    addLog('Dossier enregistré (étape)', `${fv(d.id)} — ${fv(d.nom)} ${fv(d.prenom)}`);
     showToast(t('toast_saved'));
     renderDetail(d);
   });
@@ -3909,7 +3954,7 @@ function renderDetail(d){
     captureStep(form, editDraft);
     Object.assign(d, editDraft);
     await saveData();
-    addLog('Dossier modifié', `${d.id} — ${d.nom||''} ${d.prenom||''}`);
+    addLog('Dossier modifié', `${fv(d.id)} — ${fv(d.nom)} ${fv(d.prenom)}`);
     closeModal();
     render();
   });
@@ -3968,7 +4013,7 @@ function attachHandlers(){
       }
       dossiers.push({ ...formDraft, decharge_remise: 'Oui' });
       await saveData();
-      addLog('Dossier créé', `${formDraft.id} — ${formDraft.module} — ${formDraft.nom||''} ${formDraft.prenom||''}`);
+      addLog('Dossier créé', `${fv(formDraft.id)} — ${fv(formDraft.module)} — ${fv(formDraft.nom)} ${fv(formDraft.prenom)}`);
       showToast('Dossier clôturé avec succès');
       formDraft = { id: nextId() };
       moduleStep = 0;
@@ -4011,7 +4056,7 @@ function attachHandlers(){
       if(existing) Object.assign(existing, formDraft);
       else dossiers.push({ ...formDraft });
       await saveData();
-      addLog('Dossier enregistré (étape)', `${formDraft.id} — ${formDraft.nom||''} ${formDraft.prenom||''}`);
+      addLog('Dossier enregistré (étape)', `${fv(formDraft.id)} — ${fv(formDraft.nom)} ${fv(formDraft.prenom)}`);
       pendingDuplicate = null;
       return true;
     };
@@ -4064,7 +4109,7 @@ function attachHandlers(){
       const record = { ...formDraft, id: formDraft.id || nextId() };
       dossiers.push(record);
       await saveData();
-      addLog('Dossier créé', `${record.id} — ${record.nom||''} ${record.prenom||''}`);
+      addLog('Dossier créé', `${fv(record.id)} — ${fv(record.nom)} ${fv(record.prenom)}`);
       pendingDuplicate = null;
       formDraft = { id: nextId() };
       formStep = 0;
@@ -4169,12 +4214,35 @@ document.addEventListener('click', function(e){
       }
     });
   }
+  // Retire tout ce qui pourrait exécuter du code : balises actives, attributs on…=,
+  // liens javascript:. Les écrans de l'application n'en utilisent jamais.
+  var BAD_TAGS = 'script,iframe,object,embed,base,meta,link,frame,frameset';
+  function sanitize(root){
+    if(!root || !root.querySelectorAll) return;
+    root.querySelectorAll(BAD_TAGS).forEach(function(n){ n.remove(); });
+    var all = [root].concat(Array.prototype.slice.call(root.querySelectorAll('*')));
+    all.forEach(function(el){
+      if(!el.attributes) return;
+      Array.prototype.slice.call(el.attributes).forEach(function(a){
+        var name = a.name.toLowerCase(), val = String(a.value).replace(/[\s\u0000-\u001f]/g,'').toLowerCase();
+        if(name.indexOf('on') === 0 ||
+           ((name === 'href' || name === 'src' || name === 'action' || name === 'formaction' || name === 'xlink:href') &&
+            (val.indexOf('javascript:') === 0 || val.indexOf('vbscript:') === 0 || (val.indexOf('data:') === 0 && val.indexOf('data:image/') !== 0)))){
+          el.removeAttribute(a.name);
+        }
+      });
+    });
+  }
   var obs = new MutationObserver(function(ms){
-    ms.forEach(function(m){ prepare(m.target.nodeType === 1 ? m.target : m.target.parentNode); });
+    ms.forEach(function(m){
+      var target = m.target.nodeType === 1 ? m.target : m.target.parentNode;
+      sanitize(target);
+      prepare(target);
+    });
   });
-  ['main','modal-root'].forEach(function(id){
+  ['main','modal-root','login-root','receipt-print'].forEach(function(id){
     var el = document.getElementById(id);
-    if(el){ prepare(el); obs.observe(el, { childList:true, subtree:true }); }
+    if(el){ sanitize(el); prepare(el); obs.observe(el, { childList:true, subtree:true }); }
   });
 })();
 

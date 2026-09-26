@@ -86,6 +86,40 @@ Votre première connexion efface aussi les anciens mots de passe encore enregist
 - **Sauvegarde :** l'export ne contient plus les comptes. Une restauration ne recrée pas
   les comptes, qui restent gérés par Firebase Authentication.
 
+## Protections de la plateforme
+
+- **Sessions :** la connexion ne dure que le temps de l'onglet. Fermer l'onglet ou le
+  navigateur déconnecte (important sur un ordinateur partagé).
+- **Inactivité :** déconnexion automatique après **30 minutes** sans activité.
+- **Déconnexion :** la page est entièrement rechargée ; aucun dossier ne reste en mémoire,
+  à l'écran ou dans la zone d'impression. Le bouton « Retour » ne réaffiche rien.
+- **Compte désactivé ou rôle modifié** pendant qu'un utilisateur est connecté : il est
+  déconnecté immédiatement, avec un message.
+- **Textes saisis :** tous les textes (noms, communes, listes, journal…) sont neutralisés avant
+  affichage ; un code écrit dans un champ ne peut pas s'exécuter chez un autre utilisateur.
+- **Politique de sécurité du contenu (CSP) :** le navigateur n'exécute que les scripts de la
+  plateforme et de Firebase. **Après toute modification d'un script de `id-me-platform.html`,
+  lancer `python3 tools/update-csp.py`**, sinon la plateforme ne démarre plus.
+
+### En-têtes conseillés sur LWS (fichier `.htaccess`)
+
+À **ajouter** à la fin du fichier `.htaccess` existant (sans effacer ce qu'il contient) :
+
+```
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "DENY"
+  Header always set Content-Security-Policy "frame-ancestors 'none'"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "same-origin"
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-store"
+  </FilesMatch>
+</IfModule>
+```
+
+Ils empêchent d'afficher la plateforme dans le cadre d'un autre site (piège au clic) et
+évitent que le navigateur garde une copie des pages.
+
 ## Pour aller plus loin
 
 - **Plan Blaze (payant) :** permettrait de supprimer réellement un compte depuis l'application,

@@ -76,21 +76,19 @@ Votre première connexion efface aussi les anciens mots de passe encore enregist
   Un Admin crée des Agents et des Responsables ; seul un Super Admin crée des Admins.
 - **Retirer l'accès à quelqu'un :** bouton **Désactiver**. Il pourra être réactivé.
 - **Changer son mot de passe :** bouton **Mot de passe** dans la barre latérale.
-- **Mot de passe oublié :** avec le plan gratuit de Firebase, un administrateur ne peut pas
-  changer le mot de passe d'un autre depuis l'application (et l'envoi d'un e-mail de
-  réinitialisation ne marche pas, l'adresse étant technique). Procédure :
-  1. dans l'application, **Désactivez** le compte ;
-  2. dans la console, **Authentication > Users**, supprimez le compte (menu ⋮ > Supprimer) ;
-  3. dans l'application, recréez-le avec le **même identifiant** et un mot de passe provisoire.
-
-  L'ancien profil reste affiché comme « Désactivé » ; il ne permet plus aucune connexion.
+- **Mot de passe oublié :** Paramétrage > Utilisateurs > **Réinitialiser le mot de passe**
+  à côté du compte. L'application affiche un **mot de passe provisoire** à transmettre à la
+  personne ; elle devra en choisir un nouveau à sa connexion. Son identifiant, son rôle et son
+  historique ne changent pas. (En coulisses, un nouvel accès est créé pour le même identifiant
+  et l'ancien est désactivé : le plan gratuit de Firebase ne permet pas de modifier directement
+  le mot de passe d'un autre compte.) Un Admin réinitialise les Agents et les Responsables ;
+  seul un Super Admin réinitialise un Admin ou un autre Super Admin.
 - **Sauvegarde :** l'export ne contient plus les comptes. Une restauration ne recrée pas
   les comptes, qui restent gérés par Firebase Authentication.
 
 ## Pour aller plus loin
 
-- **Plan Blaze (payant) :** permettrait à un administrateur de réinitialiser le mot de passe
-  d'un autre utilisateur ou de supprimer un compte directement depuis l'application,
+- **Plan Blaze (payant) :** permettrait de supprimer réellement un compte depuis l'application,
   via une petite fonction côté serveur.
 - **Clé API Firebase :** elle est visible dans le code, c'est normal pour une application web.
   La protection vient des règles de sécurité de l'étape 4. Vous pouvez en plus restreindre la clé

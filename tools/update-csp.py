@@ -15,11 +15,13 @@ scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
 hashes = ' '.join("'sha256-%s'" % base64.b64encode(hashlib.sha256(s.encode('utf-8')).digest()).decode()
                   for s in scripts)
 csp = ("default-src 'self' https: data: blob:; "
-       f"script-src {hashes} https://www.gstatic.com; "
+       # blob: + 'wasm-unsafe-eval' : outil PDF (pdf.js) téléchargé depuis jsDelivr, empreinte vérifiée avant usage
+       f"script-src {hashes} https://www.gstatic.com blob: 'wasm-unsafe-eval'; "
+       "worker-src blob:; "
        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
        "font-src 'self' https://fonts.gstatic.com data:; "
        "img-src 'self' data: blob:; "
-       "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com; "
+       "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://cdn.jsdelivr.net; "
        "frame-src https://*.firebaseapp.com; "
        "object-src 'none'; base-uri 'none'; form-action 'none'")
 new, n = re.subn(r'(<meta http-equiv="Content-Security-Policy" content=")[^"]*(">)',

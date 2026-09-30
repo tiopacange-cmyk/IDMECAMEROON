@@ -100,6 +100,10 @@ Votre première connexion efface aussi les anciens mots de passe encore enregist
 - **Politique de sécurité du contenu (CSP) :** le navigateur n'exécute que les scripts de la
   plateforme et de Firebase. **Après toute modification d'un script de `id-me-platform.html`,
   lancer `python3 tools/update-csp.py`**, sinon la plateforme ne démarre plus.
+- **Pièces jointes PDF :** un PDF est converti en images dans le navigateur (5 pages au maximum),
+  puis seules ces images sont enregistrées ; le PDF d'origine n'est jamais conservé. L'outil de
+  lecture (pdf.js de Mozilla, version 4.10.38) est téléchargé depuis jsDelivr uniquement au moment
+  d'ouvrir un PDF, et son empreinte est vérifiée : une copie modifiée est refusée.
 
 ### En-têtes conseillés sur LWS (fichier `.htaccess`)
 

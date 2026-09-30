@@ -405,7 +405,7 @@ button[data-tab].btn-primary::before,
 .auth-logo img{ max-width:100%; max-height:100%; }
 .auth-name{ display:block; font-weight:700; font-size:19px; letter-spacing:.16em; text-transform:uppercase; }
 .auth-by{ display:block; color:rgba(255,255,255,.85); font-size:15px; }
-.auth-mid{ margin-block:auto; position:relative; }
+.auth-mid{ margin-block:auto; position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; }
 .auth-title{ margin:0; font-size:clamp(30px,3vw,44px); line-height:1.08; font-weight:700; color:#fff; text-wrap:balance; }
 .auth-title{ width:fit-content; max-width:100%; background:rgba(0,0,0,.42); border-radius:18px; padding:16px 22px; }
 .auth-title span{ display:block; }
@@ -413,8 +413,8 @@ button[data-tab].btn-primary::before,
 .slogan{ display:inline-block; background:#07120D; border-radius:999px; padding:5px 14px; font-style:italic; font-weight:700; line-height:1.35;
   -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .sg-g{ color:#3DDC84; } .sg-r{ color:#FF5A67; } .sg-y{ color:#FCD116; }
-.auth-lead{ margin:16px 0 0; max-width:34em; font-size:16px; line-height:1.6; color:rgba(255,255,255,.9); }
-.auth-feats{ list-style:none; margin:0; padding:0; display:grid; gap:14px; position:relative; }
+.auth-lead{ margin:18px auto 0; max-width:30em; font-size:16px; line-height:1.6; color:rgba(255,255,255,.9); }
+.auth-feats{ list-style:none; margin:0 auto; padding:0; display:grid; gap:14px; position:relative; width:fit-content; max-width:100%; }
 .auth-feat{ display:flex; gap:14px; align-items:flex-start; }
 .auth-feat .ic-box{ width:40px; height:40px; border-radius:10px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); display:grid; place-items:center; flex:none; color:#FCD116; }
 .auth-feat .ic-box .ic{ width:22px; height:22px; }
@@ -458,6 +458,7 @@ button[data-tab].btn-primary::before,
   .auth-title{ font-size:30px; }
   .auth-lead{ font-size:16px; margin-top:12px; }
   .auth-side{ padding:16px 16px 20px; }
+  .auth-top{ justify-content:center; }
   .auth-card{ padding:28px 20px; border-radius:16px; }
   .auth-card h1{ font-size:28px; }
 }

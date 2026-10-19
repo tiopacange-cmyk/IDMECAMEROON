@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'sha256-fFU1ED6haPuY72V0jHPCBCdBXVLgY/6Ik0r36fgxszs=' 'sha256-G3GzLvw+2/+6Sc28DD+83AewFnS+Ng+NcZWE6d8/8nU=' https://www.gstatic.com blob: 'wasm-unsafe-eval'; worker-src blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://cdn.jsdelivr.net; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'sha256-qzjddrNSKaMz+nRQICb7WJidFusR6x0ESVxI368hRPo=' 'sha256-G3GzLvw+2/+6Sc28DD+83AewFnS+Ng+NcZWE6d8/8nU=' https://www.gstatic.com blob: 'wasm-unsafe-eval'; worker-src blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://cdn.jsdelivr.net; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ID Me Cameroon — Plateforme de suivi des dossiers</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
@@ -152,6 +152,8 @@ main{ flex:1; padding:32px 40px; max-width:1100px; }
   display:flex; gap:10px; align-items:flex-start;
 }
 .alert-warn{ background:var(--warn-bg); border:1px solid var(--warn-line); color:var(--gold); }
+.req{ color:var(--red); font-weight:700; }
+.field .is-missing{ border-color:var(--red) !important; box-shadow:0 0 0 1px var(--red); }
 .alert-ok{ background:var(--ok-bg); border:1px solid var(--ok-line); color:var(--green-deep); }
 
 /* --- Table --- */
@@ -1002,6 +1004,38 @@ function paymentSatisfied(d){
   if(!(parseFloat(d.paiement_montant) >= min)) return false;
   if(d.paiement_mode==='Mobile Money' && !(d.paiement_reference||'').trim()) return false;
   return true;
+}
+
+// Naissance et résidence des parents : obligatoires pour passer l'étape 3.
+const PARENTS = [['pere','Père','né'], ['mere','Mère','née']];
+let parentsCheckShown = false; // affiche les champs manquants en rouge après un essai de passage
+function parentYearOk(v){ const y = +String(v||'').trim(); return /^\d{4}$/.test(String(v||'').trim()) && y >= 1900 && y <= new Date().getFullYear(); }
+function parentMissing(d, k){
+  const miss = [];
+  if(!(d[k+'_naiss_date']||'').trim() && !parentYearOk(d[k+'_naiss_annee'])) miss.push('date de naissance (ou année)');
+  if(!(d[k+'_naiss_lieu']||'').trim()) miss.push('lieu de naissance');
+  if(!(d[k+'_adresse']||'').trim()) miss.push('adresse de résidence');
+  return miss;
+}
+function parentsSatisfied(d){ return PARENTS.every(([k])=> !parentMissing(d, k).length); }
+function parentNaissance(d, k){
+  if(d[k+'_naiss_date']) return d[k+'_naiss_date'].split('-').reverse().join('/');
+  return parentYearOk(d[k+'_naiss_annee']) ? 'vers ' + String(d[k+'_naiss_annee']).trim() : '';
+}
+function parentBirthFields(d, k, ne){
+  const miss = parentsCheckShown ? parentMissing(d, k) : [];
+  const bad = what => miss.includes(what) ? ' class="is-missing"' : '';
+  const today = new Date().toISOString().slice(0,10);
+  return `
+    <div class="field"><label>Date de naissance <span class="req" aria-hidden="true">*</span></label><input type="date" name="${k}_naiss_date" max="${today}" value="${fv(d[k+'_naiss_date'])}"${bad('date de naissance (ou année)')}></div>
+    <div class="field"><label>ou ${ne} vers (année, si date inconnue)</label><input name="${k}_naiss_annee" inputmode="numeric" maxlength="4" placeholder="ex. 1980" value="${fv(d[k+'_naiss_annee'])}"${bad('date de naissance (ou année)')}></div>
+    <div class="field"><label>Lieu de naissance <span class="req" aria-hidden="true">*</span></label><input name="${k}_naiss_lieu" placeholder="Commune, village ou pays" value="${fv(d[k+'_naiss_lieu'])}"${bad('lieu de naissance')}></div>
+    <div class="field" style="grid-column:1/-1;"><label>Adresse de résidence <span class="req" aria-hidden="true">*</span></label><input name="${k}_adresse" placeholder="Quartier, ville (ex. : Nkometou III, Yaoundé)" value="${fv(d[k+'_adresse'])}"${bad('adresse de résidence')}></div>`;
+}
+function parentsAlert(d){
+  if(!parentsCheckShown || parentsSatisfied(d)) return '';
+  const lines = PARENTS.map(([k,label])=>{ const m = parentMissing(d,k); return m.length ? `<li><strong>${label} :</strong> ${m.join(', ')}</li>` : ''; }).join('');
+  return `<div class="alert alert-warn" style="margin:0 0 16px; display:block;" role="alert">${ico('alert')} Pour continuer, complétez les informations obligatoires (<span class="req">*</span>) des parents :<ul style="margin:6px 0 0; padding-left:20px;">${lines}</ul></div>`;
 }
 
 function computeLockLevel(d){
@@ -2018,10 +2052,12 @@ function printFormulaire(d){
       ].join(''))}
 
       ${section('C — Identification des parents', [
-        field('Père — Nom', d.pere_nom), field('Père — Prénom', d.pere_prenom), field('Père — Statut', d.pere_statut), field('Père — CNI N°', d.pere_cni),
-        field('Père — Téléphone', d.pere_tel), field('Père — NIU', d.pere_niu),
-        field('Mère — Nom', d.mere_nom), field('Mère — Prénom', d.mere_prenom), field('Mère — Statut', d.mere_statut), field('Mère — CNI N°', d.mere_cni),
-        field('Mère — Téléphone', d.mere_tel), field('Mère — NIU', d.mere_niu)
+        field('Père — Nom', d.pere_nom), field('Père — Prénom', d.pere_prenom), field('Père — Statut', d.pere_statut),
+        field('Père — Né le', parentNaissance(d,'pere')), field('Père — Lieu de naissance', d.pere_naiss_lieu), field('Père — Adresse', d.pere_adresse),
+        field('Père — CNI N°', d.pere_cni), field('Père — Téléphone', d.pere_tel), field('Père — NIU', d.pere_niu),
+        field('Mère — Nom', d.mere_nom), field('Mère — Prénom', d.mere_prenom), field('Mère — Statut', d.mere_statut),
+        field('Mère — Née le', parentNaissance(d,'mere')), field('Mère — Lieu de naissance', d.mere_naiss_lieu), field('Mère — Adresse', d.mere_adresse),
+        field('Mère — CNI N°', d.mere_cni), field('Mère — Téléphone', d.mere_tel), field('Mère — NIU', d.mere_niu)
       ].join(''))}
 
       ${section('D — Motif de non-déclaration dans les 90 jours', [
@@ -2645,13 +2681,14 @@ const STEP_SECTIONS = [
     <button type="button" class="responsable-toggle" data-value="Tuteur(s) légal(aux)" style="flex:1; text-align:center; padding:10px; border-radius:6px; font-size:13.5px; cursor:pointer; border:1px solid var(--line); background:${d.responsable_type==='Tuteur(s) légal(aux)'?'var(--green)':'var(--paper-raised)'}; color:${d.responsable_type==='Tuteur(s) légal(aux)'?'#fff':'var(--ink-soft)'}; font-weight:${d.responsable_type==='Tuteur(s) légal(aux)'?'600':'400'};">Tuteur(s) légal(aux)</button>
   </div>
   <input type="hidden" name="responsable_type" value="${fv(d.responsable_type||'Parent(s) biologique(s)')}">
+  ${parentsAlert(d)}
   <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:700; margin:20px 0 12px;">Père</h3>
   <div class="grid">
     <div class="field"><label>Nom</label><input name="pere_nom" value="${fv(d.pere_nom)}"></div>
     <div class="field"><label>Prénom</label><input name="pere_prenom" value="${fv(d.pere_prenom)}"></div>
     <div class="field"><label>Statut</label>
       <select name="pere_statut">${selectOpts(['Vivant','Décédé'], d.pere_statut)}</select>
-    </div>
+    </div>${parentBirthFields(d, 'pere', 'né')}
     <div class="field"><label>CNI N°</label><input name="pere_cni" value="${fv(d.pere_cni)}"></div>
     <div class="field"><label>Lieu de délivrance CNI</label><input name="pere_cni_lieu" value="${fv(d.pere_cni_lieu)}"></div>
     <div class="field"><label>Date de délivrance CNI</label><input type="date" name="pere_cni_date" value="${fv(d.pere_cni_date)}"></div>
@@ -2664,7 +2701,7 @@ const STEP_SECTIONS = [
     <div class="field"><label>Prénom</label><input name="mere_prenom" value="${fv(d.mere_prenom)}"></div>
     <div class="field"><label>Statut</label>
       <select name="mere_statut">${selectOpts(['Vivante','Décédée'], d.mere_statut)}</select>
-    </div>
+    </div>${parentBirthFields(d, 'mere', 'née')}
     <div class="field"><label>CNI N°</label><input name="mere_cni" value="${fv(d.mere_cni)}"></div>
     <div class="field"><label>Lieu de délivrance CNI</label><input name="mere_cni_lieu" value="${fv(d.mere_cni_lieu)}"></div>
     <div class="field"><label>Date de délivrance CNI</label><input type="date" name="mere_cni_date" value="${fv(d.mere_cni_date)}"></div>
@@ -3032,7 +3069,7 @@ function badgeClass(index, closed){
 
 function setView(v){
   if(v==='new' && view!=='new'){
-    formDraft = { id: nextId() }; formStep = 0; moduleStep = 0;
+    formDraft = { id: nextId() }; formStep = 0; moduleStep = 0; parentsCheckShown = false;
     openPiecePicker = null; newEnvoiPieces = []; newEnvoiDest = DESTINATIONS[0]; newEnvoiMotif = ''; newEnvoiDate = new Date().toISOString().slice(0,10);
     editLockLevel = 'none';
   }
@@ -3948,7 +3985,7 @@ function renderDash(){
 }
 function openDetail(d){
   editDraft = { ...d };
-  editStep = 0;
+  editStep = 0; parentsCheckShown = false;
   deleteArmedId = null;
   openPiecePicker = null; newEnvoiPieces = []; newEnvoiDest = DESTINATIONS[0]; newEnvoiMotif = ''; newEnvoiDate = new Date().toISOString().slice(0,10);
   renderDetail(d);
@@ -4024,6 +4061,8 @@ function renderDetail(d){
   if(next) next.addEventListener('click', ()=>{
     captureStep(form, editDraft);
     if(editStep===1 && !paymentSatisfied(editDraft)){ renderDetail(d); return; }
+    if(editStep===2 && !parentsSatisfied(editDraft)){ parentsCheckShown = true; renderDetail(d); window.scrollTo(0,0); return; }
+    parentsCheckShown = false;
     editStep = Math.min(STEP_SECTIONS.length-1, editStep+1); renderDetail(d);
   });
   const savePayment = document.getElementById('wiz-save-payment');
@@ -4051,6 +4090,7 @@ function renderDetail(d){
       captureStep(form, editDraft);
       let target = +btn.dataset.step;
       if(target>1 && !paymentSatisfied(editDraft)) target = 1;
+      if(target>2 && editStep<=2 && !parentsSatisfied(editDraft)){ target = 2; parentsCheckShown = true; }
       editStep = target; renderDetail(d);
     });
   });
@@ -4155,6 +4195,8 @@ function attachHandlers(){
     if(next) next.addEventListener('click', ()=>{
       captureStep(form, formDraft);
       if(formStep===1 && !paymentSatisfied(formDraft)){ render(); return; }
+      if(formStep===2 && !parentsSatisfied(formDraft)){ parentsCheckShown = true; render(); window.scrollTo(0,0); return; }
+      parentsCheckShown = false;
       formStep = Math.min(STEP_SECTIONS.length-1, formStep+1); render();
     });
     const saveFormProgress = async ()=>{
@@ -4198,6 +4240,7 @@ function attachHandlers(){
         captureStep(form, formDraft);
         let target = +btn.dataset.step;
         if(target>1 && !paymentSatisfied(formDraft)) target = 1;
+        if(target>2 && formStep<=2 && !parentsSatisfied(formDraft)){ target = 2; parentsCheckShown = true; }
         formStep = target; render();
       });
     });

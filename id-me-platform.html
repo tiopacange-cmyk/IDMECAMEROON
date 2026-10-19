@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'sha256-qzjddrNSKaMz+nRQICb7WJidFusR6x0ESVxI368hRPo=' 'sha256-G3GzLvw+2/+6Sc28DD+83AewFnS+Ng+NcZWE6d8/8nU=' https://www.gstatic.com blob: 'wasm-unsafe-eval'; worker-src blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://cdn.jsdelivr.net; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'sha256-hvOcgQex0JPMmeduCcCZlPhiszqF8bZA3eQUS3I9CxY=' 'sha256-G3GzLvw+2/+6Sc28DD+83AewFnS+Ng+NcZWE6d8/8nU=' https://www.gstatic.com blob: 'wasm-unsafe-eval'; worker-src blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://cdn.jsdelivr.net; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ID Me Cameroon — Plateforme de suivi des dossiers</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
@@ -1010,8 +1010,10 @@ function paymentSatisfied(d){
 const PARENTS = [['pere','Père','né'], ['mere','Mère','née']];
 let parentsCheckShown = false; // affiche les champs manquants en rouge après un essai de passage
 function parentYearOk(v){ const y = +String(v||'').trim(); return /^\d{4}$/.test(String(v||'').trim()) && y >= 1900 && y <= new Date().getFullYear(); }
+function parentUnknown(d, k){ return /^Inconnue?$/.test(d[k+'_statut'] || ''); }
 function parentMissing(d, k){
   const miss = [];
+  if(parentUnknown(d, k)) return miss; // parent inconnu : rien d'obligatoire
   if(!(d[k+'_naiss_date']||'').trim() && !parentYearOk(d[k+'_naiss_annee'])) miss.push('date de naissance (ou année)');
   if(!(d[k+'_naiss_lieu']||'').trim()) miss.push('lieu de naissance');
   if(!(d[k+'_adresse']||'').trim()) miss.push('adresse de résidence');
@@ -1026,16 +1028,17 @@ function parentBirthFields(d, k, ne){
   const miss = parentsCheckShown ? parentMissing(d, k) : [];
   const bad = what => miss.includes(what) ? ' class="is-missing"' : '';
   const today = new Date().toISOString().slice(0,10);
+  const star = parentUnknown(d, k) ? '' : ' <span class="req" aria-hidden="true">*</span>';
   return `
-    <div class="field"><label>Date de naissance <span class="req" aria-hidden="true">*</span></label><input type="date" name="${k}_naiss_date" max="${today}" value="${fv(d[k+'_naiss_date'])}"${bad('date de naissance (ou année)')}></div>
+    <div class="field"><label>Date de naissance${star}</label><input type="date" name="${k}_naiss_date" max="${today}" value="${fv(d[k+'_naiss_date'])}"${bad('date de naissance (ou année)')}></div>
     <div class="field"><label>ou ${ne} vers (année, si date inconnue)</label><input name="${k}_naiss_annee" inputmode="numeric" maxlength="4" placeholder="ex. 1980" value="${fv(d[k+'_naiss_annee'])}"${bad('date de naissance (ou année)')}></div>
-    <div class="field"><label>Lieu de naissance <span class="req" aria-hidden="true">*</span></label><input name="${k}_naiss_lieu" placeholder="Commune, village ou pays" value="${fv(d[k+'_naiss_lieu'])}"${bad('lieu de naissance')}></div>
-    <div class="field" style="grid-column:1/-1;"><label>Adresse de résidence <span class="req" aria-hidden="true">*</span></label><input name="${k}_adresse" placeholder="Quartier, ville (ex. : Nkometou III, Yaoundé)" value="${fv(d[k+'_adresse'])}"${bad('adresse de résidence')}></div>`;
+    <div class="field"><label>Lieu de naissance${star}</label><input name="${k}_naiss_lieu" placeholder="Commune, village ou pays" value="${fv(d[k+'_naiss_lieu'])}"${bad('lieu de naissance')}></div>
+    <div class="field" style="grid-column:1/-1;"><label>Adresse de résidence${star}</label><input name="${k}_adresse" placeholder="Quartier, ville (ex. : Nkometou III, Yaoundé)" value="${fv(d[k+'_adresse'])}"${bad('adresse de résidence')}></div>`;
 }
 function parentsAlert(d){
   if(!parentsCheckShown || parentsSatisfied(d)) return '';
   const lines = PARENTS.map(([k,label])=>{ const m = parentMissing(d,k); return m.length ? `<li><strong>${label} :</strong> ${m.join(', ')}</li>` : ''; }).join('');
-  return `<div class="alert alert-warn" style="margin:0 0 16px; display:block;" role="alert">${ico('alert')} Pour continuer, complétez les informations obligatoires (<span class="req">*</span>) des parents :<ul style="margin:6px 0 0; padding-left:20px;">${lines}</ul></div>`;
+  return `<div class="alert alert-warn" style="margin:0 0 16px; display:block;" role="alert">${ico('alert')} Pour continuer, complétez les informations obligatoires (<span class="req">*</span>) des parents, ou choisissez « Inconnu(e) » dans Statut :<ul style="margin:6px 0 0; padding-left:20px;">${lines}</ul></div>`;
 }
 
 function computeLockLevel(d){
@@ -2197,6 +2200,12 @@ function wirePieceFileUploads(form, draft, rerender){
   });
 }
 
+function wireParentStatut(form, draft, rerender){
+  form.querySelectorAll('select[name="pere_statut"], select[name="mere_statut"]').forEach(sel=>{
+    sel.addEventListener('change', ()=>{ captureStep(form, draft); rerender(); });
+  });
+}
+
 function wireCycle(form, draft, rerender){
   const typeCasSel = form.querySelector('#type-cas-select');
   if(typeCasSel) typeCasSel.addEventListener('change', ()=>{
@@ -2687,7 +2696,7 @@ const STEP_SECTIONS = [
     <div class="field"><label>Nom</label><input name="pere_nom" value="${fv(d.pere_nom)}"></div>
     <div class="field"><label>Prénom</label><input name="pere_prenom" value="${fv(d.pere_prenom)}"></div>
     <div class="field"><label>Statut</label>
-      <select name="pere_statut">${selectOpts(['Vivant','Décédé'], d.pere_statut)}</select>
+      <select name="pere_statut">${selectOpts(['Vivant','Décédé','Inconnu'], d.pere_statut)}</select>
     </div>${parentBirthFields(d, 'pere', 'né')}
     <div class="field"><label>CNI N°</label><input name="pere_cni" value="${fv(d.pere_cni)}"></div>
     <div class="field"><label>Lieu de délivrance CNI</label><input name="pere_cni_lieu" value="${fv(d.pere_cni_lieu)}"></div>
@@ -2700,7 +2709,7 @@ const STEP_SECTIONS = [
     <div class="field"><label>Nom</label><input name="mere_nom" value="${fv(d.mere_nom)}"></div>
     <div class="field"><label>Prénom</label><input name="mere_prenom" value="${fv(d.mere_prenom)}"></div>
     <div class="field"><label>Statut</label>
-      <select name="mere_statut">${selectOpts(['Vivante','Décédée'], d.mere_statut)}</select>
+      <select name="mere_statut">${selectOpts(['Vivante','Décédée','Inconnue'], d.mere_statut)}</select>
     </div>${parentBirthFields(d, 'mere', 'née')}
     <div class="field"><label>CNI N°</label><input name="mere_cni" value="${fv(d.mere_cni)}"></div>
     <div class="field"><label>Lieu de délivrance CNI</label><input name="mere_cni_lieu" value="${fv(d.mere_cni_lieu)}"></div>
@@ -4037,6 +4046,7 @@ function renderDetail(d){
   wireMotifPaiement(form, editDraft, ()=>renderDetail(d));
   wireExoneration(form, editDraft, ()=>renderDetail(d));
   wireCycle(form, editDraft, ()=>renderDetail(d));
+  wireParentStatut(form, editDraft, ()=>renderDetail(d));
   wireDocUploads(form, editDraft, ()=>renderDetail(d));
   wirePieceFileUploads(form, editDraft, ()=>renderDetail(d));
   document.getElementById('modal-back').addEventListener('click', e=>{ if(e.target.id==='modal-back') closeModal(); });
@@ -4187,6 +4197,7 @@ function attachHandlers(){
     wireMotifPaiement(form, formDraft, render);
     wireExoneration(form, formDraft, render);
     wireCycle(form, formDraft, render);
+    wireParentStatut(form, formDraft, render);
     wireDocUploads(form, formDraft, render);
     wirePieceFileUploads(form, formDraft, render);
     const prev = document.getElementById('wiz-prev');
